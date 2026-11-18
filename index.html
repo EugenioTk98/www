@@ -7,8 +7,11 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="application-name" content="Pokédex 1025 GO" />
-  <title>Pokédex 1025 • Checklist Android & ODF</title>
+  <meta name="application-name" content="Pokédex 1025 GO • Legacy" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <title>Pokédex 1025 GO • Checklist Legacy, MT Elite & ODF</title>
   <style>
     :root {
       --md-bg: #0b1120;
@@ -28,7 +31,12 @@
       --c-iv-bg: rgba(244, 63, 94, 0.18);
       --c-size: #a855f7;
       --c-size-bg: rgba(168, 85, 247, 0.18);
-      --c-wa: #22d3ee;
+      --c-cd: #2dd4bf;
+      --c-cd-bg: rgba(45, 212, 191, 0.15);
+      --c-etm: #fbbf24;
+      --c-etm-bg: rgba(251, 191, 36, 0.15);
+      --c-old: #fb7185;
+      --c-old-bg: rgba(251, 113, 133, 0.16);
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
@@ -46,7 +54,7 @@
     .top-app-bar {
       position: sticky; top: 0; z-index: 40;
       padding: calc(10px + var(--safe-top)) 14px 10px;
-      background: rgba(11, 17, 32, 0.92);
+      background: rgba(11, 17, 32, 0.94);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--md-outline);
       display: flex; align-items: center; justify-content: space-between; gap: 10px;
@@ -62,27 +70,27 @@
       width: 11px; height: 11px; border-radius: 50%;
       background: #fff; border: 3px solid #1e293b;
     }
-    .app-title { font-size: 16px; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .app-title { font-size: 15px; font-weight: 800; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .app-subtitle { font-size: 11px; color: var(--md-text-muted); }
 
     .top-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .pill-counter {
       background: var(--md-surface-2); border: 1px solid var(--md-outline);
-      padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      padding: 5px 9px; border-radius: 999px; font-size: 11px; font-weight: 700;
       color: var(--c-cap);
     }
     .btn-odf-top {
       background: linear-gradient(135deg, #0284c7, #2563eb);
       color: #fff; border: none; border-radius: 999px;
       padding: 7px 12px; font-size: 12px; font-weight: 700;
-      display: inline-flex; align-items: center; gap: 5px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 4px; cursor: pointer;
       box-shadow: 0 2px 10px rgba(37, 99, 235, 0.35);
     }
     .btn-odf-top:active { transform: scale(0.96); }
 
     /* Main Container */
     .main-content {
-      max-width: 960px; margin: 0 auto;
+      max-width: 980px; margin: 0 auto;
       padding: 12px 12px calc(86px + var(--safe-bottom));
     }
     .tab-view { display: none; animation: fadeIn 0.18s ease; }
@@ -91,25 +99,37 @@
 
     /* Stats Dashboard */
     .stats-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px;
     }
-    @media (min-width: 640px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (min-width: 720px) { .stats-grid { grid-template-columns: repeat(5, 1fr); } }
     .stat-card {
       background: var(--md-surface); border: 1px solid var(--md-outline);
-      border-radius: 16px; padding: 10px 12px;
+      border-radius: 15px; padding: 9px 11px;
     }
-    .stat-head { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--md-text-muted); font-weight: 600; }
-    .stat-val { font-size: 18px; font-weight: 800; margin: 4px 0 6px; }
+    .stat-head { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--md-text-muted); font-weight: 700; }
+    .stat-val { font-size: 16px; font-weight: 800; margin: 3px 0 5px; }
     .stat-bar { height: 5px; border-radius: 999px; background: var(--md-surface-3); overflow: hidden; }
     .stat-bar > div { height: 100%; border-radius: 999px; transition: width 0.25s ease; }
 
-    /* Search & Filter Controls */
-    .search-box {
-      position: relative; margin-bottom: 10px;
+    /* Legend Banner */
+    .legend-bar {
+      display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+      background: var(--md-surface); border: 1px solid var(--md-outline);
+      border-radius: 12px; padding: 7px 10px; margin-bottom: 10px; font-size: 11px;
     }
+    .leg-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 999px; font-weight: 700; font-size: 10px;
+    }
+    .leg-cd { background: var(--c-cd-bg); color: var(--c-cd); border: 1px solid rgba(45, 212, 191, 0.35); }
+    .leg-etm { background: var(--c-etm-bg); color: var(--c-etm); border: 1px solid rgba(251, 191, 36, 0.35); }
+    .leg-old { background: var(--c-old-bg); color: var(--c-old); border: 1px solid rgba(251, 113, 133, 0.35); }
+
+    /* Search & Filter Controls */
+    .search-box { position: relative; margin-bottom: 8px; }
     .search-input {
       width: 100%; background: var(--md-surface); border: 1px solid var(--md-outline);
-      color: var(--md-text); border-radius: 14px; padding: 11px 38px 11px 38px;
+      color: var(--md-text); border-radius: 14px; padding: 11px 38px;
       font-size: 14px; outline: none;
     }
     .search-input:focus { border-color: var(--md-primary); }
@@ -121,21 +141,21 @@
     }
 
     .filter-scroll {
-      display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 6px;
+      display: flex; gap: 6px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 5px;
       scrollbar-width: none;
     }
     .filter-scroll::-webkit-scrollbar { display: none; }
     .chip {
       flex-shrink: 0; background: var(--md-surface); border: 1px solid var(--md-outline);
-      color: var(--md-text-muted); border-radius: 999px; padding: 6px 12px;
-      font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+      color: var(--md-text-muted); border-radius: 999px; padding: 6px 11px;
+      font-size: 11.5px; font-weight: 600; cursor: pointer; transition: all 0.15s;
     }
     .chip.active {
       background: var(--md-primary-container); border-color: var(--md-primary); color: var(--md-primary);
     }
-    .chip.wa-chip.active {
-      background: rgba(34, 211, 238, 0.16); border-color: var(--c-wa); color: var(--c-wa);
-    }
+    .chip.cd-chip.active { background: var(--c-cd-bg); border-color: var(--c-cd); color: var(--c-cd); }
+    .chip.etm-chip.active { background: var(--c-etm-bg); border-color: var(--c-etm); color: var(--c-etm); }
+    .chip.old-chip.active { background: var(--c-old-bg); border-color: var(--c-old); color: var(--c-old); }
 
     .results-meta {
       display: flex; justify-content: space-between; align-items: center;
@@ -146,33 +166,31 @@
     .poke-grid {
       display: grid; grid-template-columns: 1fr; gap: 10px;
     }
-    @media (min-width: 600px) { .poke-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (min-width: 900px) { .poke-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 620px) { .poke-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 940px) { .poke-grid { grid-template-columns: repeat(3, 1fr); } }
 
     .poke-card {
       background: var(--md-surface); border: 1px solid var(--md-outline);
-      border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 10px;
-      transition: border-color 0.2s, transform 0.1s;
+      border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 9px;
+      transition: border-color 0.2s;
     }
     .poke-card.is-captured { border-color: rgba(16, 185, 129, 0.45); }
     .poke-card.is-shiny { box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.45); }
 
-    .poke-top { display: flex; align-items: center; gap: 12px; }
+    .poke-top { display: flex; align-items: center; gap: 11px; }
     .sprite-wrap {
-      width: 68px; height: 68px; border-radius: 16px; flex-shrink: 0;
+      width: 64px; height: 64px; border-radius: 15px; flex-shrink: 0;
       background: radial-gradient(circle at center, var(--md-surface-3), var(--md-surface-2));
       display: flex; align-items: center; justify-content: center; position: relative;
       overflow: hidden;
     }
-    .sprite-wrap img { width: 60px; height: 60px; object-fit: contain; transition: transform 0.2s; }
+    .sprite-wrap img { width: 56px; height: 56px; object-fit: contain; }
     .poke-card.is-shiny .sprite-wrap { background: radial-gradient(circle at center, rgba(245, 158, 11, 0.28), var(--md-surface-2)); }
-    .shiny-sparkle {
-      position: absolute; top: 4px; right: 5px; font-size: 12px; display: none;
-    }
+    .shiny-sparkle { position: absolute; top: 3px; right: 5px; font-size: 11px; display: none; }
     .poke-card.is-shiny .shiny-sparkle { display: block; }
 
     .poke-info { flex: 1; min-width: 0; }
-    .poke-dex-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .poke-dex-row { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
     .dex-num { font-size: 11px; font-weight: 800; color: var(--md-primary); font-family: monospace; }
     .gen-badge {
       font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 6px;
@@ -180,15 +198,10 @@
     }
     .wa-badge {
       font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 6px;
-      background: rgba(34, 211, 238, 0.16); color: var(--c-wa);
+      background: rgba(34, 211, 238, 0.16); color: #22d3ee;
     }
-    .poke-name { font-size: 16px; font-weight: 800; margin: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .poke-name { font-size: 15.5px; font-weight: 800; margin: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .poke-sub { font-size: 11px; color: var(--md-text-muted); line-height: 1.3; }
-    .legacy-tag {
-      display: inline-block; margin-top: 4px; font-size: 10px; font-weight: 700;
-      padding: 2px 7px; border-radius: 6px;
-      background: rgba(244, 63, 94, 0.16); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.3);
-    }
 
     .note-btn {
       background: var(--md-surface-2); border: 1px solid var(--md-outline);
@@ -198,11 +211,50 @@
     }
     .note-btn.has-note { border-color: var(--md-primary); color: var(--md-primary); background: var(--md-primary-container); }
 
+    /* Legacy Moves List inside Card */
+    .legacy-box {
+      background: rgba(11, 17, 32, 0.55); border: 1px solid var(--md-outline);
+      border-radius: 12px; padding: 7px 8px; display: flex; flex-direction: column; gap: 6px;
+    }
+    .legacy-item {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+      padding: 5px 6px; border-radius: 9px; background: var(--md-surface-2);
+      cursor: pointer; border: 1px solid transparent; transition: all 0.15s;
+    }
+    .legacy-item.checked {
+      border-color: rgba(16, 185, 129, 0.5);
+      background: rgba(16, 185, 129, 0.12);
+    }
+    .legacy-left { min-width: 0; flex: 1; }
+    .legacy-move-title {
+      font-size: 12px; font-weight: 700; color: var(--md-text);
+      display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
+    }
+    .legacy-move-meta {
+      font-size: 10.5px; color: var(--md-text-muted); margin-top: 2px;
+    }
+    .legacy-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+    .m-badge {
+      font-size: 9.5px; font-weight: 800; padding: 2px 6px; border-radius: 5px;
+      letter-spacing: 0.2px;
+    }
+    .m-cd { background: var(--c-cd-bg); color: var(--c-cd); border: 1px solid rgba(45, 212, 191, 0.35); }
+    .m-etm { background: var(--c-etm-bg); color: var(--c-etm); border: 1px solid rgba(251, 191, 36, 0.35); }
+    .m-old { background: var(--c-old-bg); color: var(--c-old); border: 1px solid rgba(251, 113, 133, 0.35); }
+    .m-check-box {
+      width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0; margin-top: 2px;
+      border: 1.5px solid var(--md-text-muted); display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; color: transparent;
+    }
+    .legacy-item.checked .m-check-box {
+      background: var(--c-cap); border-color: var(--c-cap); color: #052e16;
+    }
+
     /* 4 Status Toggle Buttons */
-    .status-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .status-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: auto; }
     .st-btn {
       border: 1px solid var(--md-outline); background: var(--md-surface-2);
-      color: var(--md-text-muted); border-radius: 11px; padding: 7px 4px;
+      color: var(--md-text-muted); border-radius: 11px; padding: 6px 4px;
       font-size: 11px; font-weight: 700; cursor: pointer;
       display: flex; flex-direction: column; align-items: center; gap: 2px;
       transition: all 0.15s;
@@ -238,7 +290,7 @@
     .btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
     .action-btn {
       background: var(--md-primary); color: #0b1120; border: none;
-      border-radius: 12px; padding: 10px 14px; font-size: 13px; font-weight: 700;
+      border-radius: 12px; padding: 10px 14px; font-size: 12.5px; font-weight: 700;
       cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
     }
     .action-btn.secondary {
@@ -249,7 +301,7 @@
     .action-btn:active { transform: scale(0.97); }
 
     .gen-string-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 8px;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px;
     }
 
     /* Android Bottom Navigation */
@@ -265,9 +317,7 @@
       display: flex; flex-direction: column; align-items: center; gap: 3px;
       padding: 4px 0; cursor: pointer; font-size: 11px; font-weight: 600;
     }
-    .nav-pill {
-      padding: 4px 18px; border-radius: 999px; font-size: 16px; transition: background 0.15s;
-    }
+    .nav-pill { padding: 4px 18px; border-radius: 999px; font-size: 16px; transition: background 0.15s; }
     .nav-item.active { color: var(--md-primary); }
     .nav-item.active .nav-pill { background: var(--md-primary-container); }
 
@@ -309,8 +359,8 @@
     <div class="app-title-group">
       <div class="app-icon"></div>
       <div>
-        <div class="app-title">Pokédex 1025 GO</div>
-        <div class="app-subtitle">Nacional Completa • Android & ODF</div>
+        <div class="app-title">Pokédex 1025 GO • Legacy</div>
+        <div class="app-subtitle">MT Elite • Dia da Comunidade • Legado Antigo</div>
       </div>
     </div>
     <div class="top-actions">
@@ -322,7 +372,7 @@
   </header>
 
   <main class="main-content">
-    <!-- TAB 1: CHECKLIST 1025 -->
+    <!-- TAB 1: CHECKLIST 1025 + LEGACY MOVES -->
     <section id="tab-checklist" class="tab-view active">
       <div class="stats-grid">
         <div class="stat-card">
@@ -345,28 +395,50 @@
           <div class="stat-val" id="val-sz" style="color:var(--c-size)">0 / 1025</div>
           <div class="stat-bar"><div id="bar-sz" style="width:0%;background:var(--c-size)"></div></div>
         </div>
+        <div class="stat-card" style="grid-column: span 2 / auto;">
+          <div class="stat-head"><span>GOLPES LEGACY REGISTRADOS</span><span id="pct-leg" style="color:var(--c-cd)">0%</span></div>
+          <div class="stat-val" id="val-leg" style="color:var(--c-cd)">0 / 298</div>
+          <div class="stat-bar"><div id="bar-leg" style="width:0%;background:var(--c-cd)"></div></div>
+        </div>
+      </div>
+
+      <!-- Legend of Legacy Categories -->
+      <div class="legend-bar">
+        <span style="font-weight:700;color:var(--md-text-muted);">Legenda Legacy:</span>
+        <span class="leg-pill leg-cd">🌟 Dia da Comunidade (c/ MT Elite)</span>
+        <span class="leg-pill leg-etm">💎 Exclusivo / Evento (c/ MT Elite)</span>
+        <span class="leg-pill leg-old">🏛️ Legado Antigo / Forma (Sem MT Elite)</span>
       </div>
 
       <!-- Search -->
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input type="text" id="search-input" class="search-input" placeholder="Buscar por nome, #Dex (ex: 0006, 1025) ou golpe..." oninput="handleSearch(this.value)" />
+        <input type="text" id="search-input" class="search-input" placeholder="Buscar Pokémon, #Dex, golpe PT/EN (ex: Meteoro, Frenzy Plant, Ácido)..." oninput="handleSearch(this.value)" />
         <button id="clear-search" class="clear-search" onclick="clearSearch()">✕</button>
+      </div>
+
+      <!-- Legacy Category Chips -->
+      <div class="filter-scroll" id="legacy-chips">
+        <button class="chip active" data-leg="ALL" onclick="setLegacyFilter('ALL', this)">Todos os Golpes</button>
+        <button class="chip" data-leg="ANY_LEGACY" onclick="setLegacyFilter('ANY_LEGACY', this)">⚔️ Só c/ Golpe Legacy</button>
+        <button class="chip cd-chip" data-leg="CD" onclick="setLegacyFilter('CD', this)">🌟 Dia da Comunidade</button>
+        <button class="chip etm-chip" data-leg="ETM" onclick="setLegacyFilter('ETM', this)">💎 Disponível c/ MT Elite</button>
+        <button class="chip old-chip" data-leg="OLD" onclick="setLegacyFilter('OLD', this)">🏛️ Legado Antigo (Sem MT)</button>
       </div>
 
       <!-- Generation & Event Chips -->
       <div class="filter-scroll" id="gen-chips">
-        <button class="chip active" data-gen="ALL" onclick="setGenFilter('ALL', this)">Todos (1025)</button>
-        <button class="chip wa-chip" data-gen="WA2026" onclick="setGenFilter('WA2026', this)">⚡ Área Selvagem 2026 (21)</button>
-        <button class="chip" data-gen="1" onclick="setGenFilter('1', this)">Gen 1 • Kanto (151)</button>
-        <button class="chip" data-gen="2" onclick="setGenFilter('2', this)">Gen 2 • Johto (100)</button>
-        <button class="chip" data-gen="3" onclick="setGenFilter('3', this)">Gen 3 • Hoenn (135)</button>
-        <button class="chip" data-gen="4" onclick="setGenFilter('4', this)">Gen 4 • Sinnoh (107)</button>
-        <button class="chip" data-gen="5" onclick="setGenFilter('5', this)">Gen 5 • Unova (156)</button>
-        <button class="chip" data-gen="6" onclick="setGenFilter('6', this)">Gen 6 • Kalos (72)</button>
-        <button class="chip" data-gen="7" onclick="setGenFilter('7', this)">Gen 7 • Alola (88)</button>
-        <button class="chip" data-gen="8" onclick="setGenFilter('8', this)">Gen 8 • Galar/Hisui (96)</button>
-        <button class="chip" data-gen="9" onclick="setGenFilter('9', this)">Gen 9 • Paldea (120)</button>
+        <button class="chip active" data-gen="ALL" onclick="setGenFilter('ALL', this)">Todas Gerações (1025)</button>
+        <button class="chip" data-gen="WA2026" onclick="setGenFilter('WA2026', this)">⚡ Área Selvagem 2026 (21)</button>
+        <button class="chip" data-gen="1" onclick="setGenFilter('1', this)">Gen 1 • Kanto</button>
+        <button class="chip" data-gen="2" onclick="setGenFilter('2', this)">Gen 2 • Johto</button>
+        <button class="chip" data-gen="3" onclick="setGenFilter('3', this)">Gen 3 • Hoenn</button>
+        <button class="chip" data-gen="4" onclick="setGenFilter('4', this)">Gen 4 • Sinnoh</button>
+        <button class="chip" data-gen="5" onclick="setGenFilter('5', this)">Gen 5 • Unova</button>
+        <button class="chip" data-gen="6" onclick="setGenFilter('6', this)">Gen 6 • Kalos</button>
+        <button class="chip" data-gen="7" onclick="setGenFilter('7', this)">Gen 7 • Alola</button>
+        <button class="chip" data-gen="8" onclick="setGenFilter('8', this)">Gen 8 • Galar/Hisui</button>
+        <button class="chip" data-gen="9" onclick="setGenFilter('9', this)">Gen 9 • Paldea</button>
       </div>
 
       <!-- Status Chips -->
@@ -377,7 +449,7 @@
         <button class="chip" data-st="SHY" onclick="setStatusFilter('SHY', this)">✨ Brilhantes</button>
         <button class="chip" data-st="IV" onclick="setStatusFilter('IV', this)">💯 IV 100%</button>
         <button class="chip" data-st="SZ" onclick="setStatusFilter('SZ', this)">📏 XL / XXL</button>
-        <button class="chip" data-st="NOTE" onclick="setStatusFilter('NOTE', this)">📝 Com Notas/Legacy</button>
+        <button class="chip" data-st="LEG_DONE" onclick="setStatusFilter('LEG_DONE', this)">⚔️ Legacy Obtidos</button>
       </div>
 
       <div class="results-meta">
@@ -396,22 +468,28 @@
     <section id="tab-strings" class="tab-view">
       <div class="panel-card">
         <h2 class="panel-title">⚡ Gerador Dinâmico (Seu Progresso Atual)</h2>
-        <p class="panel-desc">Gera automaticamente strings compactadas com intervalos de Pokédex a partir dos seus registros atuais nos 1.025 Pokémon.</p>
+        <p class="panel-desc">Gera automaticamente strings compactadas de Pokédex a partir dos seus registros atuais (capturas, Shiny, IV 100%, tamanhos ou golpes Legacy).</p>
         <div class="btn-row" style="margin-bottom:10px;">
           <button class="action-btn" onclick="buildDynamicString('MISSING')">🎯 Faltando Capturar</button>
           <button class="action-btn secondary" onclick="buildDynamicString('CAP')">✓ Capturados</button>
           <button class="action-btn secondary" onclick="buildDynamicString('SHY')">✨ Brilhantes</button>
           <button class="action-btn secondary" onclick="buildDynamicString('IV')">💯 IV 100%</button>
           <button class="action-btn secondary" onclick="buildDynamicString('SZ')">📏 XL / XXL</button>
+          <button class="action-btn secondary" onclick="buildDynamicString('LEG_ALL')">⚔️ Todos c/ Legacy</button>
+          <button class="action-btn secondary" onclick="buildDynamicString('LEG_CD')">🌟 Só Dia da Comunidade</button>
+          <button class="action-btn secondary" onclick="buildDynamicString('LEG_OLD')">🏛️ Só Legado Antigo</button>
         </div>
         <div class="string-box" id="dynamic-string-box">1-1025</div>
         <button class="action-btn emerald" onclick="copyTextById('dynamic-string-box')">📋 Copiar String Gerada</button>
       </div>
 
       <div class="panel-card">
-        <h2 class="panel-title">🌍 Strings por Região / Geração</h2>
-        <p class="panel-desc">Toque em uma geração para copiar o intervalo exato da Pokédex Nacional no Pokémon GO.</p>
+        <h2 class="panel-title">🌍 Strings Rápidas por Geração & Filtro @especial</h2>
+        <p class="panel-desc">Toque para copiar e colar direto na busca do armazenamento do Pokémon GO.</p>
         <div class="gen-string-grid">
+          <button class="action-btn secondary" onclick="copyRawString('@especial', 'Todos @especial')">Todos @especial</button>
+          <button class="action-btn secondary" onclick="copyRawString('@especial&4*', 'Legacy IV 100%')">Legacy IV 100%</button>
+          <button class="action-btn secondary" onclick="copyRawString('@especial&brilhante', 'Legacy Shiny')">Legacy Shiny</button>
           <button class="action-btn secondary" onclick="copyRawString('1-151', 'Gen 1 • Kanto')">Gen 1 (1-151)</button>
           <button class="action-btn secondary" onclick="copyRawString('152-251', 'Gen 2 • Johto')">Gen 2 (152-251)</button>
           <button class="action-btn secondary" onclick="copyRawString('252-386', 'Gen 3 • Hoenn')">Gen 3 (252-386)</button>
@@ -421,9 +499,6 @@
           <button class="action-btn secondary" onclick="copyRawString('722-809', 'Gen 7 • Alola')">Gen 7 (722-809)</button>
           <button class="action-btn secondary" onclick="copyRawString('810-905', 'Gen 8 • Galar')">Gen 8 (810-905)</button>
           <button class="action-btn secondary" onclick="copyRawString('906-1025', 'Gen 9 • Paldea')">Gen 9 (906-1025)</button>
-          <button class="action-btn secondary" onclick="copyRawString('1-1025&4*', 'Todos IV 100%')">Todos IV 100%</button>
-          <button class="action-btn secondary" onclick="copyRawString('1-1025&brilhante', 'Todos Brilhantes')">Todos Shiny</button>
-          <button class="action-btn secondary" onclick="copyRawString('1-1025&@especial', 'Golpes Legacy')">Golpes Legacy</button>
         </div>
       </div>
 
@@ -444,8 +519,8 @@
       <div class="panel-card">
         <h2 class="panel-title">📊 Exportar Planilha ODF (.ods) Offline</h2>
         <p class="panel-desc">
-          Gera nativamente no seu Android um arquivo OpenDocument Spreadsheet (<strong>pokedex_1025_checklist.ods</strong>) com <strong>3 abas</strong>:
-          <em>Resumo_Geral</em>, <em>Resumo_Por_Geracao</em> e <em>Pokedex_1025</em> (todos os 1.025 Pokémon, status, golpes Legacy e notas).
+          Gera nativamente no seu Android a planilha OpenDocument (<strong>pokedex_1025_legacy_checklist.ods</strong>) com <strong>4 abas completas</strong>:
+          <em>Resumo_Geral</em>, <em>Resumo_Por_Geracao</em>, <em>Pokedex_1025</em> e <em>Catalogo_Golpes_Legacy</em> (com sinalização de MT Elite, Dia da Comunidade e Legado Antigo).
         </p>
         <div class="btn-row">
           <button class="action-btn emerald" onclick="exportODS(false)">⬇️ Baixar Planilha .ODS</button>
@@ -457,11 +532,11 @@
       <div class="panel-card">
         <h2 class="panel-title">📱 Instalar no Android (WebAPK & APK)</h2>
         <p class="panel-desc">
-          Este aplicativo já inclui <strong>Manifesto WebAPK + Service Worker offline</strong> para funcionar em tela cheia no Android sem barra de navegador:
+          Este aplicativo já inclui <strong>Manifesto WebAPK + Service Worker offline</strong> para rodar em tela cheia no Android:
         </p>
         <ul style="font-size:13px; color:var(--md-text-muted); padding-left:18px; line-height:1.6; margin:0 0 12px;">
           <li><strong>Instalação Direta no Celular (1 toque):</strong> Abra este arquivo no Google Chrome do Android, toque nos <strong>3 pontinhos (⋮)</strong> e selecione <strong>"Instalar aplicativo"</strong> ou <strong>"Adicionar à tela inicial"</strong>.</li>
-          <li><strong>Gerar pacote .APK instalável:</strong> Utilize o arquivo <code>pokedex_1025_android_projeto_apk.zip</code> fornecido junto com este app para compilar o <code>app-release.apk</code> via Capacitor/Android Studio ou PWABuilder.</li>
+          <li><strong>Compilar pacote .APK:</strong> Use o projeto <code>pokedex_1025_android_projeto_apk-v5.zip</code> para gerar o <code>app-debug.apk</code> via Capacitor/Android Studio ou PWABuilder.</li>
         </ul>
         <div class="btn-row">
           <button class="action-btn" id="btn-pwa-install" onclick="triggerPWAInstall()">📲 Instalar App na Tela Inicial</button>
@@ -470,8 +545,8 @@
       </div>
 
       <div class="panel-card">
-        <h2 class="panel-title">🔄 Backup & Restauração dos 1.025 Registros</h2>
-        <p class="panel-desc">Salve um backup JSON do seu progresso ou restaure seus dados a qualquer momento.</p>
+        <h2 class="panel-title">🔄 Backup & Restauração dos Registros</h2>
+        <p class="panel-desc">Exporte ou restaure todos os seus registros de captura, Shiny, IV 100%, XL/XXL, golpes Legacy e notas.</p>
         <div class="btn-row">
           <button class="action-btn secondary" onclick="exportJSON()">⬇️ Exportar Backup (.json)</button>
           <label class="action-btn secondary" style="cursor:pointer;">
@@ -488,7 +563,7 @@
   <nav class="bottom-nav">
     <button class="nav-item active" onclick="switchTab('checklist', this)">
       <span class="nav-pill">📋</span>
-      <span>Pokédex (1025)</span>
+      <span>Pokédex & Legacy</span>
     </button>
     <button class="nav-item" onclick="switchTab('strings', this)">
       <span class="nav-pill">🔍</span>
@@ -503,9 +578,9 @@
   <!-- Note Modal -->
   <div class="modal-backdrop" id="note-modal" onclick="if(event.target===this) closeNoteModal()">
     <div class="modal-card">
-      <div style="font-size:16px;font-weight:800;" id="note-modal-title">Notas & Golpe Legacy</div>
-      <div style="font-size:12px;color:var(--md-text-muted);margin-top:2px;" id="note-modal-sub">Registre golpes Legacy, CP, local de captura ou trocas.</div>
-      <textarea id="note-modal-input" class="modal-textarea" placeholder="Ex: Meteoro Esmagador, Lucky Trade, Shiny 98%..."></textarea>
+      <div style="font-size:16px;font-weight:800;" id="note-modal-title">Notas Personalizadas</div>
+      <div style="font-size:12px;color:var(--md-text-muted);margin-top:2px;">Registre CP, ano de captura (ex: 2016 Garantido Sorte), local ou trocas.</div>
+      <textarea id="note-modal-input" class="modal-textarea" placeholder="Ex: Capturado em Ago/2016 • Legado Antigo Ácido..."></textarea>
       <div class="btn-row" style="justify-content:flex-end;">
         <button class="action-btn secondary" onclick="closeNoteModal()">Cancelar</button>
         <button class="action-btn" onclick="saveNoteModal()">Salvar Nota</button>
@@ -517,50 +592,34 @@
   <div class="snackbar" id="snackbar"></div>
 
   <script>
-    // Embedded National Pokédex #0001 to #1025
-    // Format: [id, name, gen, isWildArea, waAvail, legacyMove, legacyType, shinyLocked]
-    const RAW_DEX = [[1,"Bulbasaur",1,0,"","","",0],[2,"Ivysaur",1,0,"","","",0],[3,"Venusaur",1,0,"","","",0],[4,"Charmander",1,0,"","","",0],[5,"Charmeleon",1,0,"","","",0],[6,"Charizard",1,0,"","","",0],[7,"Squirtle",1,0,"","","",0],[8,"Wartortle",1,0,"","","",0],[9,"Blastoise",1,0,"","","",0],[10,"Caterpie",1,0,"","","",0],[11,"Metapod",1,0,"","","",0],[12,"Butterfree",1,0,"","","",0],[13,"Weedle",1,0,"","","",0],[14,"Kakuna",1,0,"","","",0],[15,"Beedrill",1,0,"","","",0],[16,"Pidgey",1,0,"","","",0],[17,"Pidgeotto",1,0,"","","",0],[18,"Pidgeot",1,0,"","","",0],[19,"Rattata",1,0,"","","",0],[20,"Raticate",1,0,"","","",0],[21,"Spearow",1,0,"","","",0],[22,"Fearow",1,0,"","","",0],[23,"Ekans",1,0,"","","",0],[24,"Arbok",1,0,"","","",0],[25,"Pikachu",1,0,"","","",0],[26,"Raichu",1,0,"","","",0],[27,"Sandshrew",1,0,"","","",0],[28,"Sandslash",1,0,"","","",0],[29,"Nidoran♀",1,0,"","","",0],[30,"Nidorina",1,0,"","","",0],[31,"Nidoqueen",1,0,"","","",0],[32,"Nidoran♂",1,0,"","","",0],[33,"Nidorino",1,0,"","","",0],[34,"Nidoking",1,0,"","","",0],[35,"Clefairy",1,0,"","","",0],[36,"Clefable",1,0,"","","",0],[37,"Vulpix",1,0,"","","",0],[38,"Ninetales",1,0,"","","",0],[39,"Jigglypuff",1,0,"","","",0],[40,"Wigglytuff",1,0,"","","",0],[41,"Zubat",1,0,"","","",0],[42,"Golbat",1,0,"","","",0],[43,"Oddish",1,0,"","","",0],[44,"Gloom",1,0,"","","",0],[45,"Vileplume",1,0,"","","",0],[46,"Paras",1,0,"","","",0],[47,"Parasect",1,0,"","","",0],[48,"Venonat",1,0,"","","",0],[49,"Venomoth",1,0,"","","",0],[50,"Diglett",1,0,"","","",0],[51,"Dugtrio",1,0,"","","",0],[52,"Meowth",1,0,"","","",0],[53,"Persian",1,0,"","","",0],[54,"Psyduck",1,0,"","","",0],[55,"Golduck",1,0,"","","",0],[56,"Mankey",1,0,"","","",0],[57,"Primeape",1,0,"","","",0],[58,"Growlithe",1,0,"","","",0],[59,"Arcanine",1,0,"","","",0],[60,"Poliwag",1,0,"","","",0],[61,"Poliwhirl",1,0,"","","",0],[62,"Poliwrath",1,0,"","","",0],[63,"Abra",1,0,"","","",0],[64,"Kadabra",1,0,"","","",0],[65,"Alakazam",1,0,"","","",0],[66,"Machop",1,0,"","","",0],[67,"Machoke",1,0,"","","",0],[68,"Machamp",1,0,"","","",0],[69,"Bellsprout",1,0,"","","",0],[70,"Weepinbell",1,0,"","","",0],[71,"Victreebel",1,0,"","","",0],[72,"Tentacool",1,0,"","","",0],[73,"Tentacruel",1,0,"","","",0],[74,"Geodude",1,0,"","","",0],[75,"Graveler",1,0,"","","",0],[76,"Golem",1,0,"","","",0],[77,"Ponyta",1,0,"","","",0],[78,"Rapidash",1,0,"","","",0],[79,"Slowpoke",1,0,"","","",0],[80,"Slowbro",1,0,"","","",0],[81,"Magnemite",1,0,"","","",0],[82,"Magneton",1,0,"","","",0],[83,"Farfetch'd",1,0,"","","",0],[84,"Doduo",1,0,"","","",0],[85,"Dodrio",1,0,"","","",0],[86,"Seel",1,0,"","","",0],[87,"Dewgong",1,0,"","","",0],[88,"Grimer",1,0,"","","",0],[89,"Muk",1,0,"","","",0],[90,"Shellder",1,0,"","","",0],[91,"Cloyster",1,0,"","","",0],[92,"Gastly",1,0,"","","",0],[93,"Haunter",1,0,"","","",0],[94,"Gengar",1,0,"","","",0],[95,"Onix",1,0,"","","",0],[96,"Drowzee",1,0,"","","",0],[97,"Hypno",1,0,"","","",0],[98,"Krabby",1,0,"","","",0],[99,"Kingler",1,0,"","","",0],[100,"Voltorb",1,0,"","","",0],[101,"Electrode",1,0,"","","",0],[102,"Exeggcute",1,0,"","","",0],[103,"Exeggutor",1,1,"Sáb (Nat) • Sáb/Dom (Inc)","","",0],[104,"Cubone",1,0,"","","",0],[105,"Marowak",1,0,"","","",0],[106,"Hitmonlee",1,0,"","","",0],[107,"Hitmonchan",1,0,"","","",0],[108,"Lickitung",1,0,"","","",0],[109,"Koffing",1,0,"","","",0],[110,"Weezing",1,0,"","","",0],[111,"Rhyhorn",1,0,"","","",0],[112,"Rhydon",1,0,"","","",0],[113,"Chansey",1,0,"","","",0],[114,"Tangela",1,0,"","","",0],[115,"Kangaskhan",1,0,"","","",0],[116,"Horsea",1,0,"","","",0],[117,"Seadra",1,0,"","","",0],[118,"Goldeen",1,0,"","","",0],[119,"Seaking",1,0,"","","",0],[120,"Staryu",1,0,"","","",0],[121,"Starmie",1,0,"","","",0],[122,"Mr. Mime",1,0,"","","",0],[123,"Scyther",1,0,"","","",0],[124,"Jynx",1,0,"","","",0],[125,"Electabuzz",1,0,"","","",0],[126,"Magmar",1,0,"","","",0],[127,"Pinsir",1,0,"","","",0],[128,"Tauros",1,0,"","","",0],[129,"Magikarp",1,0,"","","",0],[130,"Gyarados",1,0,"","","",0],[131,"Lapras",1,0,"","","",0],[132,"Ditto",1,0,"","","",0],[133,"Eevee",1,0,"","","",0],[134,"Vaporeon",1,0,"","","",0],[135,"Jolteon",1,0,"","","",0],[136,"Flareon",1,0,"","","",0],[137,"Porygon",1,0,"","","",0],[138,"Omanyte",1,0,"","","",0],[139,"Omastar",1,0,"","","",0],[140,"Kabuto",1,0,"","","",0],[141,"Kabutops",1,0,"","","",0],[142,"Aerodactyl",1,0,"","","",0],[143,"Snorlax",1,0,"","","",0],[144,"Articuno",1,0,"","","",0],[145,"Zapdos",1,0,"","","",0],[146,"Moltres",1,0,"","","",0],[147,"Dratini",1,0,"","","",0],[148,"Dragonair",1,0,"","","",0],[149,"Dragonite",1,0,"","","",0],[150,"Mewtwo",1,0,"","","",0],[151,"Mew",1,0,"","","",0],[152,"Chikorita",2,0,"","","",0],[153,"Bayleef",2,0,"","","",0],[154,"Meganium",2,0,"","","",0],[155,"Cyndaquil",2,0,"","","",0],[156,"Quilava",2,0,"","","",0],[157,"Typhlosion",2,0,"","","",0],[158,"Totodile",2,0,"","","",0],[159,"Croconaw",2,0,"","","",0],[160,"Feraligatr",2,0,"","","",0],[161,"Sentret",2,0,"","","",0],[162,"Furret",2,0,"","","",0],[163,"Hoothoot",2,0,"","","",0],[164,"Noctowl",2,0,"","","",0],[165,"Ledyba",2,0,"","","",0],[166,"Ledian",2,0,"","","",0],[167,"Spinarak",2,0,"","","",0],[168,"Ariados",2,0,"","","",0],[169,"Crobat",2,0,"","","",0],[170,"Chinchou",2,0,"","","",0],[171,"Lanturn",2,0,"","","",0],[172,"Pichu",2,0,"","","",0],[173,"Cleffa",2,0,"","","",0],[174,"Igglybuff",2,0,"","","",0],[175,"Togepi",2,0,"","","",0],[176,"Togetic",2,0,"","","",0],[177,"Natu",2,0,"","","",0],[178,"Xatu",2,0,"","","",0],[179,"Mareep",2,0,"","","",0],[180,"Flaaffy",2,0,"","","",0],[181,"Ampharos",2,0,"","","",0],[182,"Bellossom",2,0,"","","",0],[183,"Marill",2,0,"","","",0],[184,"Azumarill",2,1,"Dom (Nat) • Sáb/Dom (Inc)","","",0],[185,"Sudowoodo",2,0,"","","",0],[186,"Politoed",2,0,"","","",0],[187,"Hoppip",2,0,"","","",0],[188,"Skiploom",2,0,"","","",0],[189,"Jumpluff",2,0,"","","",0],[190,"Aipom",2,0,"","","",0],[191,"Sunkern",2,0,"","","",0],[192,"Sunflora",2,0,"","","",0],[193,"Yanma",2,0,"","","",0],[194,"Wooper",2,0,"","","",0],[195,"Quagsire",2,0,"","","",0],[196,"Espeon",2,0,"","","",0],[197,"Umbreon",2,0,"","","",0],[198,"Murkrow",2,0,"","","",0],[199,"Slowking",2,0,"","","",0],[200,"Misdreavus",2,0,"","","",0],[201,"Unown",2,0,"","","",0],[202,"Wobbuffet",2,0,"","","",0],[203,"Girafarig",2,0,"","","",0],[204,"Pineco",2,0,"","","",0],[205,"Forretress",2,0,"","","",0],[206,"Dunsparce",2,0,"","","",0],[207,"Gligar",2,0,"","","",0],[208,"Steelix",2,0,"","","",0],[209,"Snubbull",2,0,"","","",0],[210,"Granbull",2,0,"","","",0],[211,"Qwilfish",2,0,"","","",0],[212,"Scizor",2,1,"Sáb (Nat) • Sáb/Dom (Inc)","","",0],[213,"Shuckle",2,0,"","","",0],[214,"Heracross",2,0,"","","",0],[215,"Sneasel",2,0,"","","",0],[216,"Teddiursa",2,0,"","","",0],[217,"Ursaring",2,0,"","","",0],[218,"Slugma",2,0,"","","",0],[219,"Magcargo",2,0,"","","",0],[220,"Swinub",2,0,"","","",0],[221,"Piloswine",2,0,"","","",0],[222,"Corsola",2,0,"","","",0],[223,"Remoraid",2,0,"","","",0],[224,"Octillery",2,0,"","","",0],[225,"Delibird",2,0,"","","",0],[226,"Mantine",2,0,"","","",0],[227,"Skarmory",2,0,"","","",0],[228,"Houndour",2,0,"","","",0],[229,"Houndoom",2,0,"","","",0],[230,"Kingdra",2,1,"Dom (Nat) • Sáb/Dom (Inc)","","",0],[231,"Phanpy",2,0,"","","",0],[232,"Donphan",2,0,"","","",0],[233,"Porygon2",2,0,"","","",0],[234,"Stantler",2,0,"","","",0],[235,"Smeargle",2,0,"","","",0],[236,"Tyrogue",2,0,"","","",0],[237,"Hitmontop",2,0,"","","",0],[238,"Smoochum",2,0,"","","",0],[239,"Elekid",2,0,"","","",0],[240,"Magby",2,0,"","","",0],[241,"Miltank",2,0,"","","",0],[242,"Blissey",2,0,"","","",0],[243,"Raikou",2,0,"","","",0],[244,"Entei",2,0,"","","",0],[245,"Suicune",2,0,"","","",0],[246,"Larvitar",2,0,"","","",0],[247,"Pupitar",2,0,"","","",0],[248,"Tyranitar",2,0,"","","",0],[249,"Lugia",2,0,"","","",0],[250,"Ho-Oh",2,0,"","","",0],[251,"Celebi",2,0,"","","",0],[252,"Treecko",3,0,"","","",0],[253,"Grovyle",3,0,"","","",0],[254,"Sceptile",3,0,"","","",0],[255,"Torchic",3,0,"","","",0],[256,"Combusken",3,0,"","","",0],[257,"Blaziken",3,0,"","","",0],[258,"Mudkip",3,0,"","","",0],[259,"Marshtomp",3,0,"","","",0],[260,"Swampert",3,0,"","","",0],[261,"Poochyena",3,0,"","","",0],[262,"Mightyena",3,0,"","","",0],[263,"Zigzagoon",3,0,"","","",0],[264,"Linoone",3,0,"","","",0],[265,"Wurmple",3,0,"","","",0],[266,"Silcoon",3,0,"","","",0],[267,"Beautifly",3,0,"","","",0],[268,"Cascoon",3,0,"","","",0],[269,"Dustox",3,0,"","","",0],[270,"Lotad",3,0,"","","",0],[271,"Lombre",3,0,"","","",0],[272,"Ludicolo",3,0,"","","",0],[273,"Seedot",3,0,"","","",0],[274,"Nuzleaf",3,0,"","","",0],[275,"Shiftry",3,0,"","","",0],[276,"Taillow",3,0,"","","",0],[277,"Swellow",3,0,"","","",0],[278,"Wingull",3,0,"","","",0],[279,"Pelipper",3,0,"","","",0],[280,"Ralts",3,0,"","","",0],[281,"Kirlia",3,0,"","","",0],[282,"Gardevoir",3,0,"","","",0],[283,"Surskit",3,0,"","","",0],[284,"Masquerain",3,0,"","","",0],[285,"Shroomish",3,0,"","","",0],[286,"Breloom",3,0,"","","",0],[287,"Slakoth",3,0,"","","",0],[288,"Vigoroth",3,0,"","","",0],[289,"Slaking",3,0,"","","",0],[290,"Nincada",3,0,"","","",0],[291,"Ninjask",3,0,"","","",0],[292,"Shedinja",3,0,"","","",0],[293,"Whismur",3,0,"","","",0],[294,"Loudred",3,0,"","","",0],[295,"Exploud",3,0,"","","",0],[296,"Makuhita",3,0,"","","",0],[297,"Hariyama",3,0,"","","",0],[298,"Azurill",3,0,"","","",0],[299,"Nosepass",3,0,"","","",0],[300,"Skitty",3,0,"","","",0],[301,"Delcatty",3,0,"","","",0],[302,"Sableye",3,0,"","","",0],[303,"Mawile",3,0,"","","",0],[304,"Aron",3,0,"","","",0],[305,"Lairon",3,0,"","","",0],[306,"Aggron",3,0,"","","",0],[307,"Meditite",3,0,"","","",0],[308,"Medicham",3,0,"","","",0],[309,"Electrike",3,0,"","","",0],[310,"Manectric",3,0,"","","",0],[311,"Plusle",3,0,"","","",0],[312,"Minun",3,0,"","","",0],[313,"Volbeat",3,0,"","","",0],[314,"Illumise",3,0,"","","",0],[315,"Roselia",3,0,"","","",0],[316,"Gulpin",3,0,"","","",0],[317,"Swalot",3,0,"","","",0],[318,"Carvanha",3,0,"","","",0],[319,"Sharpedo",3,0,"","","",0],[320,"Wailmer",3,0,"","","",0],[321,"Wailord",3,0,"","","",0],[322,"Numel",3,0,"","","",0],[323,"Camerupt",3,0,"","","",0],[324,"Torkoal",3,0,"","","",0],[325,"Spoink",3,0,"","","",0],[326,"Grumpig",3,0,"","","",0],[327,"Spinda",3,0,"","","",0],[328,"Trapinch",3,0,"","","",0],[329,"Vibrava",3,0,"","","",0],[330,"Flygon",3,1,"Sáb (Nat) • Sáb/Dom (Inc)","Poder da Terra","Terrestre",0],[331,"Cacnea",3,0,"","","",0],[332,"Cacturne",3,0,"","","",0],[333,"Swablu",3,0,"","","",0],[334,"Altaria",3,0,"","","",0],[335,"Zangoose",3,0,"","","",0],[336,"Seviper",3,0,"","","",0],[337,"Lunatone",3,0,"","","",0],[338,"Solrock",3,0,"","","",0],[339,"Barboach",3,0,"","","",0],[340,"Whiscash",3,0,"","","",0],[341,"Corphish",3,0,"","","",0],[342,"Crawdaunt",3,0,"","","",0],[343,"Baltoy",3,0,"","","",0],[344,"Claydol",3,0,"","","",0],[345,"Lileep",3,0,"","","",0],[346,"Cradily",3,0,"","","",0],[347,"Anorith",3,0,"","","",0],[348,"Armaldo",3,0,"","","",0],[349,"Feebas",3,0,"","","",0],[350,"Milotic",3,0,"","","",0],[351,"Castform",3,0,"","","",0],[352,"Kecleon",3,0,"","","",0],[353,"Shuppet",3,0,"","","",0],[354,"Banette",3,0,"","","",0],[355,"Duskull",3,0,"","","",0],[356,"Dusclops",3,0,"","","",0],[357,"Tropius",3,0,"","","",0],[358,"Chimecho",3,0,"","","",0],[359,"Absol",3,0,"","","",0],[360,"Wynaut",3,0,"","","",0],[361,"Snorunt",3,0,"","","",0],[362,"Glalie",3,0,"","","",0],[363,"Spheal",3,0,"","","",0],[364,"Sealeo",3,0,"","","",0],[365,"Walrein",3,1,"Sábado (Natureza)","","",0],[366,"Clamperl",3,0,"","","",0],[367,"Huntail",3,0,"","","",0],[368,"Gorebyss",3,0,"","","",0],[369,"Relicanth",3,0,"","","",0],[370,"Luvdisc",3,0,"","","",0],[371,"Bagon",3,0,"","","",0],[372,"Shelgon",3,0,"","","",0],[373,"Salamence",3,0,"","","",0],[374,"Beldum",3,0,"","","",0],[375,"Metang",3,0,"","","",0],[376,"Metagross",3,1,"Sábado (Natureza)","Meteoro Esmagador","Aço",0],[377,"Regirock",3,0,"","","",0],[378,"Regice",3,0,"","","",0],[379,"Registeel",3,0,"","","",0],[380,"Latias",3,0,"","","",0],[381,"Latios",3,0,"","","",0],[382,"Kyogre",3,0,"","","",0],[383,"Groudon",3,0,"","","",0],[384,"Rayquaza",3,0,"","","",0],[385,"Jirachi",3,0,"","","",0],[386,"Deoxys",3,0,"","","",0],[387,"Turtwig",4,0,"","","",0],[388,"Grotle",4,0,"","","",0],[389,"Torterra",4,0,"","","",0],[390,"Chimchar",4,0,"","","",0],[391,"Monferno",4,0,"","","",0],[392,"Infernape",4,0,"","","",0],[393,"Piplup",4,0,"","","",0],[394,"Prinplup",4,0,"","","",0],[395,"Empoleon",4,1,"Sáb (Nat) • Sáb/Dom (Inc)","","",0],[396,"Starly",4,0,"","","",0],[397,"Staravia",4,0,"","","",0],[398,"Staraptor",4,0,"","","",0],[399,"Bidoof",4,0,"","","",0],[400,"Bibarel",4,0,"","","",0],[401,"Kricketot",4,0,"","","",0],[402,"Kricketune",4,0,"","","",0],[403,"Shinx",4,0,"","","",0],[404,"Luxio",4,0,"","","",0],[405,"Luxray",4,0,"","","",0],[406,"Budew",4,0,"","","",0],[407,"Roserade",4,0,"","","",0],[408,"Cranidos",4,0,"","","",0],[409,"Rampardos",4,0,"","","",0],[410,"Shieldon",4,0,"","","",0],[411,"Bastiodon",4,0,"","","",0],[412,"Burmy",4,0,"","","",0],[413,"Wormadam",4,0,"","","",0],[414,"Mothim",4,0,"","","",0],[415,"Combee",4,0,"","","",0],[416,"Vespiquen",4,0,"","","",0],[417,"Pachirisu",4,0,"","","",0],[418,"Buizel",4,0,"","","",0],[419,"Floatzel",4,0,"","","",0],[420,"Cherubi",4,0,"","","",0],[421,"Cherrim",4,0,"","","",0],[422,"Shellos",4,0,"","","",0],[423,"Gastrodon",4,0,"","","",0],[424,"Ambipom",4,0,"","","",0],[425,"Drifloon",4,0,"","","",0],[426,"Drifblim",4,0,"","","",0],[427,"Buneary",4,0,"","","",0],[428,"Lopunny",4,0,"","","",0],[429,"Mismagius",4,0,"","","",0],[430,"Honchkrow",4,1,"Domingo (Natureza)","","",0],[431,"Glameow",4,0,"","","",0],[432,"Purugly",4,0,"","","",0],[433,"Chingling",4,0,"","","",0],[434,"Stunky",4,0,"","","",0],[435,"Skuntank",4,0,"","","",0],[436,"Bronzor",4,0,"","","",0],[437,"Bronzong",4,0,"","","",0],[438,"Bonsly",4,0,"","","",0],[439,"Mime Jr.",4,0,"","","",0],[440,"Happiny",4,0,"","","",0],[441,"Chatot",4,0,"","","",0],[442,"Spiritomb",4,0,"","","",0],[443,"Gible",4,0,"","","",0],[444,"Gabite",4,0,"","","",0],[445,"Garchomp",4,0,"","","",0],[446,"Munchlax",4,0,"","","",0],[447,"Riolu",4,0,"","","",0],[448,"Lucario",4,0,"","","",0],[449,"Hippopotas",4,0,"","","",0],[450,"Hippowdon",4,0,"","","",0],[451,"Skorupi",4,0,"","","",0],[452,"Drapion",4,1,"Domingo (Natureza)","","",0],[453,"Croagunk",4,0,"","","",0],[454,"Toxicroak",4,0,"","","",0],[455,"Carnivine",4,0,"","","",0],[456,"Finneon",4,0,"","","",0],[457,"Lumineon",4,0,"","","",0],[458,"Mantyke",4,0,"","","",0],[459,"Snover",4,0,"","","",0],[460,"Abomasnow",4,0,"","","",0],[461,"Weavile",4,1,"Domingo (Natureza)","","",0],[462,"Magnezone",4,1,"Sábado (Natureza)","Bomba Imã","Aço",0],[463,"Lickilicky",4,0,"","","",0],[464,"Rhyperior",4,0,"","","",0],[465,"Tangrowth",4,0,"","","",0],[466,"Electivire",4,0,"","","",0],[467,"Magmortar",4,0,"","","",0],[468,"Togekiss",4,0,"","","",0],[469,"Yanmega",4,0,"","","",0],[470,"Leafeon",4,0,"","","",0],[471,"Glaceon",4,0,"","","",0],[472,"Gliscor",4,0,"","","",0],[473,"Mamoswine",4,0,"","","",0],[474,"Porygon-Z",4,0,"","","",0],[475,"Gallade",4,0,"","","",0],[476,"Probopass",4,0,"","","",0],[477,"Dusknoir",4,0,"","","",0],[478,"Froslass",4,0,"","","",0],[479,"Rotom",4,0,"","","",0],[480,"Uxie",4,0,"","","",0],[481,"Mesprit",4,0,"","","",0],[482,"Azelf",4,0,"","","",0],[483,"Dialga",4,0,"","","",0],[484,"Palkia",4,0,"","","",0],[485,"Heatran",4,0,"","","",0],[486,"Regigigas",4,0,"","","",0],[487,"Giratina",4,0,"","","",0],[488,"Cresselia",4,0,"","","",0],[489,"Phione",4,0,"","","",0],[490,"Manaphy",4,0,"","","",0],[491,"Darkrai",4,0,"","","",0],[492,"Shaymin",4,0,"","","",0],[493,"Arceus",4,0,"","","",0],[494,"Victini",5,0,"","","",0],[495,"Snivy",5,0,"","","",0],[496,"Servine",5,0,"","","",0],[497,"Serperior",5,0,"","","",0],[498,"Tepig",5,0,"","","",0],[499,"Pignite",5,0,"","","",0],[500,"Emboar",5,0,"","","",0],[501,"Oshawott",5,0,"","","",0],[502,"Dewott",5,0,"","","",0],[503,"Samurott",5,0,"","","",0],[504,"Patrat",5,0,"","","",0],[505,"Watchog",5,0,"","","",0],[506,"Lillipup",5,0,"","","",0],[507,"Herdier",5,0,"","","",0],[508,"Stoutland",5,0,"","","",0],[509,"Purrloin",5,0,"","","",0],[510,"Liepard",5,0,"","","",0],[511,"Pansage",5,0,"","","",0],[512,"Simisage",5,0,"","","",0],[513,"Pansear",5,0,"","","",0],[514,"Simisear",5,0,"","","",0],[515,"Panpour",5,0,"","","",0],[516,"Simipour",5,0,"","","",0],[517,"Munna",5,0,"","","",0],[518,"Musharna",5,0,"","","",0],[519,"Pidove",5,0,"","","",0],[520,"Tranquill",5,0,"","","",0],[521,"Unfezant",5,0,"","","",0],[522,"Blitzle",5,0,"","","",0],[523,"Zebstrika",5,0,"","","",0],[524,"Roggenrola",5,0,"","","",0],[525,"Boldore",5,0,"","","",0],[526,"Gigalith",5,1,"Sábado (Natureza)","","",0],[527,"Woobat",5,0,"","","",0],[528,"Swoobat",5,0,"","","",0],[529,"Drilbur",5,0,"","","",0],[530,"Excadrill",5,0,"","","",0],[531,"Audino",5,0,"","","",0],[532,"Timburr",5,0,"","","",0],[533,"Gurdurr",5,0,"","","",0],[534,"Conkeldurr",5,1,"Sáb (Nat) • Sáb/Dom (Inc)","","",0],[535,"Tympole",5,0,"","","",0],[536,"Palpitoad",5,0,"","","",0],[537,"Seismitoad",5,0,"","","",0],[538,"Throh",5,0,"","","",0],[539,"Sawk",5,0,"","","",0],[540,"Sewaddle",5,0,"","","",0],[541,"Swadloon",5,0,"","","",0],[542,"Leavanny",5,0,"","","",0],[543,"Venipede",5,0,"","","",0],[544,"Whirlipede",5,0,"","","",0],[545,"Scolipede",5,0,"","","",0],[546,"Cottonee",5,0,"","","",0],[547,"Whimsicott",5,0,"","","",0],[548,"Petilil",5,0,"","","",0],[549,"Lilligant",5,0,"","","",0],[550,"Basculin",5,0,"","","",0],[551,"Sandile",5,0,"","","",0],[552,"Krokorok",5,0,"","","",0],[553,"Krookodile",5,0,"","","",0],[554,"Darumaka",5,0,"","","",0],[555,"Darmanitan",5,0,"","","",0],[556,"Maractus",5,0,"","","",0],[557,"Dwebble",5,0,"","","",0],[558,"Crustle",5,0,"","","",0],[559,"Scraggy",5,0,"","","",0],[560,"Scrafty",5,1,"Sábado (Natureza)","","",0],[561,"Sigilyph",5,0,"","","",0],[562,"Yamask",5,0,"","","",0],[563,"Cofagrigus",5,0,"","","",0],[564,"Tirtouga",5,0,"","","",0],[565,"Carracosta",5,0,"","","",0],[566,"Archen",5,0,"","","",0],[567,"Archeops",5,0,"","","",0],[568,"Trubbish",5,0,"","","",0],[569,"Garbodor",5,0,"","","",0],[570,"Zorua",5,0,"","","",0],[571,"Zoroark",5,0,"","","",0],[572,"Minccino",5,0,"","","",0],[573,"Cinccino",5,0,"","","",0],[574,"Gothita",5,0,"","","",0],[575,"Gothorita",5,0,"","","",0],[576,"Gothitelle",5,0,"","","",0],[577,"Solosis",5,0,"","","",0],[578,"Duosion",5,0,"","","",0],[579,"Reuniclus",5,0,"","","",0],[580,"Ducklett",5,0,"","","",0],[581,"Swanna",5,0,"","","",0],[582,"Vanillite",5,0,"","","",0],[583,"Vanillish",5,0,"","","",0],[584,"Vanilluxe",5,0,"","","",0],[585,"Deerling",5,0,"","","",0],[586,"Sawsbuck",5,0,"","","",0],[587,"Emolga",5,0,"","","",0],[588,"Karrablast",5,0,"","","",0],[589,"Escavalier",5,0,"","","",0],[590,"Foongus",5,0,"","","",0],[591,"Amoonguss",5,0,"","","",0],[592,"Frillish",5,0,"","","",0],[593,"Jellicent",5,0,"","","",0],[594,"Alomomola",5,0,"","","",0],[595,"Joltik",5,0,"","","",0],[596,"Galvantula",5,0,"","","",0],[597,"Ferroseed",5,0,"","","",0],[598,"Ferrothorn",5,0,"","","",0],[599,"Klink",5,0,"","","",0],[600,"Klang",5,0,"","","",0],[601,"Klinklang",5,0,"","","",0],[602,"Tynamo",5,0,"","","",0],[603,"Eelektrik",5,0,"","","",0],[604,"Eelektross",5,0,"","","",0],[605,"Elgyem",5,0,"","","",0],[606,"Beheeyem",5,0,"","","",0],[607,"Litwick",5,0,"","","",0],[608,"Lampent",5,0,"","","",0],[609,"Chandelure",5,0,"","","",0],[610,"Axew",5,0,"","","",0],[611,"Fraxure",5,0,"","","",0],[612,"Haxorus",5,0,"","","",0],[613,"Cubchoo",5,0,"","","",0],[614,"Beartic",5,0,"","","",0],[615,"Cryogonal",5,0,"","","",0],[616,"Shelmet",5,0,"","","",0],[617,"Accelgor",5,0,"","","",0],[618,"Stunfisk",5,0,"","","",0],[619,"Mienfoo",5,0,"","","",0],[620,"Mienshao",5,0,"","","",0],[621,"Druddigon",5,0,"","","",0],[622,"Golett",5,0,"","","",0],[623,"Golurk",5,0,"","","",0],[624,"Pawniard",5,0,"","","",0],[625,"Bisharp",5,0,"","","",0],[626,"Bouffalant",5,0,"","","",0],[627,"Rufflet",5,0,"","","",0],[628,"Braviary",5,0,"","","",0],[629,"Vullaby",5,0,"","","",0],[630,"Mandibuzz",5,0,"","","",0],[631,"Heatmor",5,0,"","","",0],[632,"Durant",5,0,"","","",0],[633,"Deino",5,0,"","","",0],[634,"Zweilous",5,0,"","","",0],[635,"Hydreigon",5,1,"Dom (Nat) • Sáb/Dom (Inc)","Balanço Violento","Sombrio",0],[636,"Larvesta",5,0,"","","",0],[637,"Volcarona",5,0,"","","",0],[638,"Cobalion",5,0,"","","",0],[639,"Terrakion",5,0,"","","",0],[640,"Virizion",5,0,"","","",0],[641,"Tornadus",5,0,"","","",0],[642,"Thundurus",5,0,"","","",0],[643,"Reshiram",5,0,"","","",0],[644,"Zekrom",5,0,"","","",0],[645,"Landorus",5,0,"","","",0],[646,"Kyurem",5,0,"","","",0],[647,"Keldeo",5,0,"","","",0],[648,"Meloetta",5,0,"","","",0],[649,"Genesect",5,0,"","","",0],[650,"Chespin",6,0,"","","",0],[651,"Quilladin",6,0,"","","",0],[652,"Chesnaught",6,0,"","","",0],[653,"Fennekin",6,0,"","","",0],[654,"Braixen",6,0,"","","",0],[655,"Delphox",6,0,"","","",0],[656,"Froakie",6,0,"","","",0],[657,"Frogadier",6,0,"","","",0],[658,"Greninja",6,0,"","","",0],[659,"Bunnelby",6,0,"","","",0],[660,"Diggersby",6,0,"","","",0],[661,"Fletchling",6,0,"","","",0],[662,"Fletchinder",6,0,"","","",0],[663,"Talonflame",6,0,"","","",0],[664,"Scatterbug",6,0,"","","",0],[665,"Spewpa",6,0,"","","",0],[666,"Vivillon",6,0,"","","",0],[667,"Litleo",6,0,"","","",0],[668,"Pyroar",6,0,"","","",0],[669,"Flabébé",6,0,"","","",0],[670,"Floette",6,0,"","","",0],[671,"Florges",6,0,"","","",0],[672,"Skiddo",6,0,"","","",0],[673,"Gogoat",6,0,"","","",0],[674,"Pancham",6,0,"","","",0],[675,"Pangoro",6,0,"","","",0],[676,"Furfrou",6,0,"","","",0],[677,"Espurr",6,0,"","","",0],[678,"Meowstic",6,0,"","","",0],[679,"Honedge",6,0,"","","",0],[680,"Doublade",6,0,"","","",0],[681,"Aegislash",6,0,"","","",0],[682,"Spritzee",6,0,"","","",0],[683,"Aromatisse",6,0,"","","",0],[684,"Swirlix",6,0,"","","",0],[685,"Slurpuff",6,0,"","","",0],[686,"Inkay",6,0,"","","",0],[687,"Malamar",6,0,"","","",0],[688,"Binacle",6,0,"","","",0],[689,"Barbaracle",6,0,"","","",0],[690,"Skrelp",6,0,"","","",0],[691,"Dragalge",6,1,"Domingo (Natureza)","","",0],[692,"Clauncher",6,0,"","","",0],[693,"Clawitzer",6,0,"","","",0],[694,"Helioptile",6,0,"","","",0],[695,"Heliolisk",6,0,"","","",0],[696,"Tyrunt",6,0,"","","",0],[697,"Tyrantrum",6,0,"","","",0],[698,"Amaura",6,0,"","","",0],[699,"Aurorus",6,0,"","","",0],[700,"Sylveon",6,0,"","","",0],[701,"Hawlucha",6,0,"","","",0],[702,"Dedenne",6,0,"","","",0],[703,"Carbink",6,0,"","","",0],[704,"Goomy",6,0,"","","",0],[705,"Sliggoo",6,0,"","","",0],[706,"Goodra",6,0,"","","",0],[707,"Klefki",6,0,"","","",0],[708,"Phantump",6,0,"","","",0],[709,"Trevenant",6,0,"","","",0],[710,"Pumpkaboo",6,0,"","","",0],[711,"Gourgeist",6,0,"","","",0],[712,"Bergmite",6,0,"","","",0],[713,"Avalugg",6,0,"","","",0],[714,"Noibat",6,0,"","","",0],[715,"Noivern",6,0,"","","",0],[716,"Xerneas",6,0,"","","",0],[717,"Yveltal",6,0,"","","",0],[718,"Zygarde",6,0,"","","",0],[719,"Diancie",6,0,"","","",0],[720,"Hoopa",6,0,"","","",0],[721,"Volcanion",6,0,"","","",0],[722,"Rowlet",7,0,"","","",0],[723,"Dartrix",7,0,"","","",0],[724,"Decidueye",7,0,"","","",0],[725,"Litten",7,0,"","","",0],[726,"Torracat",7,0,"","","",0],[727,"Incineroar",7,0,"","","",0],[728,"Popplio",7,0,"","","",0],[729,"Brionne",7,0,"","","",0],[730,"Primarina",7,0,"","","",0],[731,"Pikipek",7,0,"","","",0],[732,"Trumbeak",7,0,"","","",0],[733,"Toucannon",7,0,"","","",0],[734,"Yungoos",7,0,"","","",0],[735,"Gumshoos",7,0,"","","",0],[736,"Grubbin",7,0,"","","",0],[737,"Charjabug",7,0,"","","",0],[738,"Vikavolt",7,0,"","","",0],[739,"Crabrawler",7,0,"","","",0],[740,"Crabominable",7,0,"","","",0],[741,"Oricorio",7,0,"","","",0],[742,"Cutiefly",7,0,"","","",0],[743,"Ribombee",7,0,"","","",0],[744,"Rockruff",7,0,"","","",0],[745,"Lycanroc",7,0,"","","",0],[746,"Wishiwashi",7,0,"","","",0],[747,"Mareanie",7,0,"","","",0],[748,"Toxapex",7,0,"","","",0],[749,"Mudbray",7,0,"","","",0],[750,"Mudsdale",7,0,"","","",0],[751,"Dewpider",7,0,"","","",0],[752,"Araquanid",7,0,"","","",0],[753,"Fomantis",7,0,"","","",0],[754,"Lurantis",7,0,"","","",0],[755,"Morelull",7,0,"","","",0],[756,"Shiinotic",7,0,"","","",0],[757,"Salandit",7,0,"","","",0],[758,"Salazzle",7,0,"","","",0],[759,"Stufful",7,0,"","","",0],[760,"Bewear",7,0,"","","",0],[761,"Bounsweet",7,0,"","","",0],[762,"Steenee",7,0,"","","",0],[763,"Tsareena",7,0,"","","",0],[764,"Comfey",7,0,"","","",0],[765,"Oranguru",7,0,"","","",0],[766,"Passimian",7,0,"","","",0],[767,"Wimpod",7,0,"","","",0],[768,"Golisopod",7,0,"","","",0],[769,"Sandygast",7,0,"","","",0],[770,"Palossand",7,0,"","","",0],[771,"Pyukumuku",7,0,"","","",0],[772,"Type: Null",7,0,"","","",0],[773,"Silvally",7,0,"","","",0],[774,"Minior",7,0,"","","",0],[775,"Komala",7,0,"","","",0],[776,"Turtonator",7,0,"","","",0],[777,"Togedemaru",7,0,"","","",0],[778,"Mimikyu",7,0,"","","",0],[779,"Bruxish",7,0,"","","",0],[780,"Drampa",7,0,"","","",0],[781,"Dhelmise",7,0,"","","",0],[782,"Jangmo-o",7,0,"","","",0],[783,"Hakamo-o",7,0,"","","",0],[784,"Kommo-o",7,0,"","","",0],[785,"Tapu Koko",7,0,"","","",0],[786,"Tapu Lele",7,0,"","","",0],[787,"Tapu Bulu",7,0,"","","",0],[788,"Tapu Fini",7,0,"","","",0],[789,"Cosmog",7,0,"","","",0],[790,"Cosmoem",7,0,"","","",0],[791,"Solgaleo",7,0,"","","",0],[792,"Lunala",7,0,"","","",0],[793,"Nihilego",7,0,"","","",0],[794,"Buzzwole",7,0,"","","",0],[795,"Pheromosa",7,0,"","","",0],[796,"Xurkitree",7,0,"","","",0],[797,"Celesteela",7,0,"","","",0],[798,"Kartana",7,0,"","","",0],[799,"Guzzlord",7,0,"","","",0],[800,"Necrozma",7,0,"","","",0],[801,"Magearna",7,0,"","","",0],[802,"Marshadow",7,0,"","","",0],[803,"Poipole",7,0,"","","",0],[804,"Naganadel",7,0,"","","",0],[805,"Stakataka",7,0,"","","",0],[806,"Blacephalon",7,0,"","","",0],[807,"Zeraora",7,0,"","","",0],[808,"Meltan",7,0,"","","",0],[809,"Melmetal",7,0,"","","",0],[810,"Grookey",8,0,"","","",0],[811,"Thwackey",8,0,"","","",0],[812,"Rillaboom",8,0,"","","",0],[813,"Scorbunny",8,0,"","","",0],[814,"Raboot",8,0,"","","",0],[815,"Cinderace",8,0,"","","",0],[816,"Sobble",8,0,"","","",0],[817,"Drizzile",8,0,"","","",0],[818,"Inteleon",8,0,"","","",0],[819,"Skwovet",8,0,"","","",0],[820,"Greedent",8,0,"","","",0],[821,"Rookidee",8,0,"","","",0],[822,"Corvisquire",8,0,"","","",0],[823,"Corviknight",8,0,"","","",0],[824,"Blipbug",8,0,"","","",0],[825,"Dottler",8,0,"","","",0],[826,"Orbeetle",8,0,"","","",0],[827,"Nickit",8,0,"","","",0],[828,"Thievul",8,0,"","","",0],[829,"Gossifleur",8,0,"","","",0],[830,"Eldegoss",8,0,"","","",0],[831,"Wooloo",8,0,"","","",0],[832,"Dubwool",8,0,"","","",0],[833,"Chewtle",8,0,"","","",0],[834,"Drednaw",8,0,"","","",0],[835,"Yamper",8,0,"","","",0],[836,"Boltund",8,0,"","","",0],[837,"Rolycoly",8,0,"","","",0],[838,"Carkol",8,0,"","","",0],[839,"Coalossal",8,0,"","","",0],[840,"Applin",8,0,"","","",0],[841,"Flapple",8,0,"","","",0],[842,"Appletun",8,0,"","","",0],[843,"Silicobra",8,0,"","","",0],[844,"Sandaconda",8,0,"","","",0],[845,"Cramorant",8,0,"","","",0],[846,"Arrokuda",8,0,"","","",0],[847,"Barraskewda",8,0,"","","",0],[848,"Toxel",8,0,"","","",0],[849,"Toxtricity",8,0,"","","",0],[850,"Sizzlipede",8,0,"","","",0],[851,"Centiskorch",8,0,"","","",0],[852,"Clobbopus",8,0,"","","",0],[853,"Grapploct",8,0,"","","",0],[854,"Sinistea",8,0,"","","",0],[855,"Polteageist",8,0,"","","",0],[856,"Hatenna",8,0,"","","",0],[857,"Hattrem",8,0,"","","",0],[858,"Hatterene",8,1,"Domingo (Natureza)","","",1],[859,"Impidimp",8,0,"","","",0],[860,"Morgrem",8,0,"","","",0],[861,"Grimmsnarl",8,1,"Domingo (Natureza)","","",0],[862,"Obstagoon",8,1,"Sáb/Dom (Apenas Incenso)","Golpe Deslizante","Sombrio",0],[863,"Perrserker",8,0,"","","",0],[864,"Cursola",8,0,"","","",0],[865,"Sirfetch'd",8,0,"","","",0],[866,"Mr. Rime",8,0,"","","",0],[867,"Runerigus",8,0,"","","",0],[868,"Milcery",8,0,"","","",0],[869,"Alcremie",8,0,"","","",0],[870,"Falinks",8,0,"","","",0],[871,"Pincurchin",8,0,"","","",0],[872,"Snom",8,0,"","","",0],[873,"Frosmoth",8,0,"","","",0],[874,"Stonjourner",8,0,"","","",0],[875,"Eiscue",8,0,"","","",0],[876,"Indeedee",8,0,"","","",0],[877,"Morpeko",8,0,"","","",0],[878,"Cufant",8,0,"","","",0],[879,"Copperajah",8,0,"","","",0],[880,"Dracozolt",8,0,"","","",0],[881,"Arctozolt",8,0,"","","",0],[882,"Dracovish",8,0,"","","",0],[883,"Arctovish",8,0,"","","",0],[884,"Duraludon",8,0,"","","",0],[885,"Dreepy",8,0,"","","",0],[886,"Drakloak",8,0,"","","",0],[887,"Dragapult",8,0,"","","",0],[888,"Zacian",8,0,"","","",0],[889,"Zamazenta",8,0,"","","",0],[890,"Eternatus",8,0,"","","",0],[891,"Kubfu",8,0,"","","",0],[892,"Urshifu",8,0,"","","",0],[893,"Zarude",8,0,"","","",0],[894,"Regieleki",8,0,"","","",0],[895,"Regidrago",8,0,"","","",0],[896,"Glastrier",8,0,"","","",0],[897,"Spectrier",8,0,"","","",0],[898,"Calyrex",8,0,"","","",0],[899,"Wyrdeer",8,0,"","","",0],[900,"Kleavor",8,0,"","","",0],[901,"Ursaluna",8,0,"","","",0],[902,"Basculegion",8,0,"","","",0],[903,"Sneasler",8,0,"","","",0],[904,"Overqwil",8,0,"","","",0],[905,"Enamorus",8,0,"","","",0],[906,"Sprigatito",9,0,"","","",0],[907,"Floragato",9,0,"","","",0],[908,"Meowscarada",9,0,"","","",0],[909,"Fuecoco",9,0,"","","",0],[910,"Crocalor",9,0,"","","",0],[911,"Skeledirge",9,0,"","","",0],[912,"Quaxly",9,0,"","","",0],[913,"Quaxwell",9,0,"","","",0],[914,"Quaquaval",9,0,"","","",0],[915,"Lechonk",9,0,"","","",0],[916,"Oinkologne",9,0,"","","",0],[917,"Tarountula",9,0,"","","",0],[918,"Spidops",9,0,"","","",0],[919,"Nymble",9,0,"","","",0],[920,"Lokix",9,0,"","","",0],[921,"Pawmi",9,0,"","","",0],[922,"Pawmo",9,0,"","","",0],[923,"Pawmot",9,0,"","","",0],[924,"Tandemaus",9,0,"","","",0],[925,"Maushold",9,0,"","","",0],[926,"Fidough",9,0,"","","",0],[927,"Dachsbun",9,0,"","","",0],[928,"Smoliv",9,0,"","","",0],[929,"Dolliv",9,0,"","","",0],[930,"Arboliva",9,0,"","","",0],[931,"Squawkabilly",9,0,"","","",0],[932,"Nacli",9,0,"","","",0],[933,"Naclstack",9,0,"","","",0],[934,"Garganacl",9,0,"","","",0],[935,"Charcadet",9,0,"","","",0],[936,"Armarouge",9,0,"","","",0],[937,"Ceruledge",9,0,"","","",0],[938,"Tadbulb",9,0,"","","",0],[939,"Bellibolt",9,0,"","","",0],[940,"Wattrel",9,0,"","","",0],[941,"Kilowattrel",9,0,"","","",0],[942,"Maschiff",9,0,"","","",0],[943,"Mabosstiff",9,0,"","","",0],[944,"Shroodle",9,0,"","","",0],[945,"Grafaiai",9,0,"","","",0],[946,"Bramblin",9,0,"","","",0],[947,"Brambleghast",9,0,"","","",0],[948,"Toedscool",9,0,"","","",0],[949,"Toedscruel",9,0,"","","",0],[950,"Klawf",9,0,"","","",0],[951,"Capsakid",9,0,"","","",0],[952,"Scovillain",9,0,"","","",0],[953,"Rellor",9,0,"","","",0],[954,"Rabsca",9,0,"","","",0],[955,"Flittle",9,0,"","","",0],[956,"Espathra",9,0,"","","",0],[957,"Tinkatink",9,0,"","","",0],[958,"Tinkatuff",9,0,"","","",0],[959,"Tinkaton",9,0,"","","",0],[960,"Wiglett",9,0,"","","",0],[961,"Wugtrio",9,0,"","","",0],[962,"Bombirdier",9,0,"","","",0],[963,"Finizen",9,0,"","","",0],[964,"Palafin",9,0,"","","",0],[965,"Varoom",9,0,"","","",0],[966,"Revavroom",9,0,"","","",0],[967,"Cyclizar",9,0,"","","",0],[968,"Orthworm",9,0,"","","",0],[969,"Glimmet",9,0,"","","",0],[970,"Glimmora",9,0,"","","",0],[971,"Greavard",9,0,"","","",0],[972,"Houndstone",9,0,"","","",0],[973,"Flamigo",9,0,"","","",0],[974,"Cetoddle",9,0,"","","",0],[975,"Cetitan",9,0,"","","",0],[976,"Veluza",9,0,"","","",0],[977,"Dondozo",9,0,"","","",0],[978,"Tatsugiri",9,0,"","","",0],[979,"Annihilape",9,0,"","","",0],[980,"Clodsire",9,1,"Domingo (Natureza)","","",0],[981,"Farigiraf",9,0,"","","",0],[982,"Dudunsparce",9,0,"","","",0],[983,"Kingambit",9,0,"","","",0],[984,"Great Tusk",9,0,"","","",0],[985,"Scream Tail",9,0,"","","",0],[986,"Brute Bonnet",9,0,"","","",0],[987,"Flutter Mane",9,0,"","","",0],[988,"Slither Wing",9,0,"","","",0],[989,"Sandy Shocks",9,0,"","","",0],[990,"Iron Treads",9,0,"","","",0],[991,"Iron Bundle",9,0,"","","",0],[992,"Iron Hands",9,0,"","","",0],[993,"Iron Jugulis",9,0,"","","",0],[994,"Iron Moth",9,0,"","","",0],[995,"Iron Thorns",9,0,"","","",0],[996,"Frigibax",9,0,"","","",0],[997,"Arctibax",9,0,"","","",0],[998,"Baxcalibur",9,0,"","","",0],[999,"Gimmighoul",9,0,"","","",0],[1000,"Gholdengo",9,0,"","","",0],[1001,"Wo-Chien",9,0,"","","",0],[1002,"Chien-Pao",9,0,"","","",0],[1003,"Ting-Lu",9,0,"","","",0],[1004,"Chi-Yu",9,0,"","","",0],[1005,"Roaring Moon",9,0,"","","",0],[1006,"Iron Valiant",9,0,"","","",0],[1007,"Koraidon",9,0,"","","",0],[1008,"Miraidon",9,0,"","","",0],[1009,"Walking Wake",9,0,"","","",0],[1010,"Iron Leaves",9,0,"","","",0],[1011,"Dipplin",9,0,"","","",0],[1012,"Poltchageist",9,0,"","","",0],[1013,"Sinistcha",9,0,"","","",0],[1014,"Okidogi",9,0,"","","",0],[1015,"Munkidori",9,0,"","","",0],[1016,"Fezandipiti",9,0,"","","",0],[1017,"Ogerpon",9,0,"","","",0],[1018,"Archaludon",9,0,"","","",0],[1019,"Hydrapple",9,0,"","","",0],[1020,"Gouging Fire",9,0,"","","",0],[1021,"Raging Bolt",9,0,"","","",0],[1022,"Iron Boulder",9,0,"","","",0],[1023,"Iron Crown",9,0,"","","",0],[1024,"Terapagos",9,0,"","","",0],[1025,"Pecharunt",9,0,"","","",0]];
+    // Embedded National Pokédex #0001 to #1025 with All Legacy Moves
+    // Format: [id, name, gen, isWildArea, waAvail, shinyLocked, moves[]]
+    // Move format: [movePt, moveEn, typePt, slot, cat("CD"|"ETM"|"OLD"), etmOk(0|1), note]
+    const RAW_DEX = [[1,"Bulbasaur",1,0,"",0,[]],[2,"Ivysaur",1,0,"",0,[]],[3,"Venusaur",1,0,"",0,[["Planta Mortal","Frenzy Plant","Planta","Carregado","CD",1,"Dia da Comunidade (Bulbasaur)"]]],[4,"Charmander",1,0,"",0,[]],[5,"Charmeleon",1,0,"",0,[["Arranhão","Scratch","Normal","Ágil","ETM",1,"Legado 2017 (MT Elite Ágil)"]]],[6,"Charizard",1,0,"",0,[["Queimadura Explosiva","Blast Burn","Fogo","Carregado","CD",1,"Dia da Comunidade (Charmander)"],["Sopro do Dragão","Dragon Breath","Dragão","Ágil","CD",1,"Dia da Comunidade Out/2020"],["Ataque de Asa","Wing Attack","Voador","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"],["Brasas","Ember","Fogo","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"],["Lança-chamas","Flamethrower","Fogo","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[7,"Squirtle",1,0,"",0,[]],[8,"Wartortle",1,0,"",0,[]],[9,"Blastoise",1,0,"",0,[["Hidrocanhão","Hydro Cannon","Água","Carregado","CD",1,"Dia da Comunidade (Squirtle)"]]],[10,"Caterpie",1,0,"",0,[]],[11,"Metapod",1,0,"",0,[]],[12,"Butterfree",1,0,"",0,[["Picada","Bug Bite","Inseto","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"]]],[13,"Weedle",1,0,"",0,[]],[14,"Kakuna",1,0,"",0,[]],[15,"Beedrill",1,0,"",0,[["Furação","Drill Run","Terrestre","Carregado","CD",1,"Dia da Comunidade (Weedle)"],["Picada","Bug Bite","Inseto","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"]]],[16,"Pidgey",1,0,"",0,[]],[17,"Pidgeotto",1,0,"",0,[]],[18,"Pidgeot",1,0,"",0,[["Lufada de Vento","Gust","Voador","Ágil","ETM",1,"Evento / GO Battle Day (MT Elite Ágil)"],["Ataque de Asa","Wing Attack","Voador","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"],["Cortador de Ar","Air Cutter","Voador","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[19,"Rattata",1,0,"",0,[]],[20,"Raticate",1,0,"",0,[]],[21,"Spearow",1,0,"",0,[["Ciclone","Twister","Dragão","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[22,"Fearow",1,0,"",0,[["Ciclone","Twister","Dragão","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[23,"Ekans",1,0,"",0,[]],[24,"Arbok",1,0,"",0,[["Tiro de Sujeira","Gunk Shot","Venenoso","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[25,"Pikachu",1,0,"",0,[["Surfar","Surf","Água","Carregado","CD",1,"1º Dia da Comunidade Jan/2018"],["Presente","Present","Normal","Ágil","ETM",1,"Eventos Festivos (MT Elite Ágil)"],["Trovão","Thunder","Elétrico","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"],["Nó de Grama","Grass Knot","Planta","Carregado","OLD",0,"Pikachu Fantasia Shaymin (Sem MT)"],["Investida Trovão","Volt Tackle","Elétrico","Carregado","OLD",0,"Pikachu Boné do Capitão (Sem MT)"]]],[26,"Raichu",1,0,"",0,[["Trovão","Thunder","Elétrico","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[27,"Sandshrew",1,0,"",0,[["Tumba de Rochas","Rock Tomb","Pedra","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[28,"Sandslash",1,0,"",0,[["Talho Noturno","Night Slash","Sombrio","Carregado","CD",1,"Dia da Comunidade (Sandshrew)"],["Garra Sombria (Alola)","Shadow Claw","Fantasma","Ágil","CD",1,"Dia da Comunidade (Sandshrew Alola)"]]],[29,"Nidoran♀",1,0,"",0,[]],[30,"Nidorina",1,0,"",0,[]],[31,"Nidoqueen",1,0,"",0,[]],[32,"Nidoran♂",1,0,"",0,[]],[33,"Nidorino",1,0,"",0,[]],[34,"Nidoking",1,0,"",0,[["Cortador de Fúria","Fury Cutter","Inseto","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"]]],[35,"Clefairy",1,0,"",0,[]],[36,"Clefable",1,0,"",0,[["Pancada","Pound","Normal","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"]]],[37,"Vulpix",1,0,"",0,[]],[38,"Ninetales",1,0,"",0,[["Esfera de Energia","Energy Ball","Planta","Carregado","CD",1,"Dia da Comunidade Fev/2026 (Vulpix)"],["Água Fria (Alola)","Chilling Water","Água","Carregado","CD",1,"Dia da Comunidade Fev/2026 (Vulpix Alola)"],["Brasas","Ember","Fogo","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"],["Lança-chamas","Flamethrower","Fogo","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"],["Rajada de Fogo","Fire Blast","Fogo","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[39,"Jigglypuff",1,0,"",0,[["Pancada Corporal","Body Slam","Normal","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"],["Jogo Duro","Play Rough","Fada","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[40,"Wigglytuff",1,0,"",0,[]],[41,"Zubat",1,0,"",0,[["Bomba de Lodo","Sludge Bomb","Venenoso","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[42,"Golbat",1,0,"",0,[["Vento Ominoso","Ominous Wind","Fantasma","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[43,"Oddish",1,0,"",0,[]],[44,"Gloom",1,0,"",0,[]],[45,"Vileplume",1,0,"",0,[]],[46,"Paras",1,0,"",0,[]],[47,"Parasect",1,0,"",0,[["Picada","Bug Bite","Inseto","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"]]],[48,"Venonat",1,0,"",0,[]],[49,"Venomoth",1,0,"",0,[["Picada","Bug Bite","Inseto","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"]]],[50,"Diglett",1,0,"",0,[]],[51,"Dugtrio",1,0,"",0,[]],[52,"Meowth",1,0,"",0,[["Pancada Corporal","Body Slam","Normal","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[53,"Persian",1,0,"",0,[["Talho Noturno","Night Slash","Sombrio","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[54,"Psyduck",1,0,"",0,[]],[55,"Golduck",1,0,"",0,[]],[56,"Mankey",1,0,"",0,[]],[57,"Primeape",1,0,"",0,[["Punho da Raiva","Rage Fist","Fantasma","Carregado","CD",1,"Dia da Comunidade Nov/2024 (Mankey)"],["Golpe de Caratê","Karate Chop","Lutador","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"],["Golpe Cruzado","Cross Chop","Lutador","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[58,"Growlithe",1,0,"",0,[]],[59,"Arcanine",1,0,"",0,[["Mordida","Bite","Sombrio","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"],["Terramoto","Bulldoze","Terrestre","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[60,"Poliwag",1,0,"",0,[]],[61,"Poliwhirl",1,0,"",0,[["Escaldar","Scald","Água","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[62,"Poliwrath",1,0,"",0,[["Contra-atacar","Counter","Lutador","Ágil","CD",1,"Dia da Comunidade Jul/2023 (Poliwag)"],["Submissão","Submission","Lutador","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[63,"Abra",1,0,"",0,[]],[64,"Kadabra",1,0,"",0,[]],[65,"Alakazam",1,0,"",0,[["Contra-atacar","Counter","Lutador","Ágil","CD",1,"Dia da Comunidade Abr/2020 (Abra)"],["Psíquico","Psychic","Psíquico","Carregado","ETM",1,"Legado / Evento Psíquico (MT Elite)"],["Clarão Deslumbrante","Dazzling Gleam","Fada","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[66,"Machop",1,0,"",0,[["Rasteira","Low Kick","Lutador","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"]]],[67,"Machoke",1,0,"",0,[["Golpe Cruzado","Cross Chop","Lutador","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[68,"Machamp",1,0,"",0,[["Revide","Payback","Sombrio","Carregado","CD",1,"Dia da Comunidade Jan/2021 (Machop)"],["Golpe de Caratê","Karate Chop","Lutador","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"],["Gume de Pedra","Stone Edge","Pedra","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"],["Submissão","Submission","Lutador","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[69,"Bellsprout",1,0,"",0,[]],[70,"Weepinbell",1,0,"",0,[["Folha Navalha","Razor Leaf","Planta","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"]]],[71,"Victreebel",1,0,"",0,[["Folha Mágica","Magical Leaf","Planta","Ágil","CD",1,"Dia da Comunidade Abr/2024 (Bellsprout)"]]],[72,"Tentacool",1,0,"",0,[]],[73,"Tentacruel",1,0,"",0,[]],[74,"Geodude",1,0,"",0,[]],[75,"Graveler",1,0,"",0,[["Deslize de Pedras","Rock Slide","Pedra","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[76,"Golem",1,0,"",0,[["Rolagem (Alola)","Rollout","Pedra","Ágil","CD",1,"Dia da Comunidade Mai/2022 (Geodude Alola)"]]],[77,"Ponyta",1,0,"",0,[["Rajada de Fogo","Fire Blast","Fogo","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[78,"Rapidash",1,0,"",0,[["Ataque Selvagem","Wild Charge","Elétrico","Carregado","CD",1,"Dia da Comunidade Set/2024 (Ponyta & Galar)"],["Brasas","Ember","Fogo","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"]]],[79,"Slowpoke",1,0,"",0,[]],[80,"Slowbro",1,0,"",0,[["Surfar","Surf","Água","Carregado","CD",1,"Dia da Comunidade Mar/2023 (Slowpoke & Galar)"]]],[81,"Magnemite",1,0,"",0,[]],[82,"Magneton",1,0,"",0,[]],[83,"Farfetch'd",1,0,"",0,[["Cortar","Cut","Normal","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"]]],[84,"Doduo",1,0,"",0,[["Ataque Rápido","Swift","Normal","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[85,"Dodrio",1,0,"",0,[["Cortador de Ar","Air Cutter","Voador","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[86,"Seel",1,0,"",0,[["Revólver d'Água","Water Gun","Água","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"],["Jato d'Água","Aqua Jet","Água","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[87,"Dewgong",1,0,"",0,[["Caco de Gelo","Ice Shard","Gelo","Ágil","ETM",1,"Legado Fev/2017 / GO Battle Day"],["Vento Congelante","Icy Wind","Gelo","Carregado","ETM",1,"Legado Fev/2017 / GO Battle Day"],["Jato d'Água","Aqua Jet","Água","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[88,"Grimer",1,0,"",0,[["Ácido","Acid","Venenoso","Ágil","OLD",0,"Legado Antigo Ago/2016 (Sem MT Elite)"]]],[89,"Muk",1,0,"",0,[["Ácido","Acid","Venenoso","Ágil","OLD",0,"Legado Antigo Ago/2016 (Sem MT Elite)"],["Lambida","Lick","Fantasma","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"]]],[90,"Shellder",1,0,"",0,[]],[91,"Cloyster",1,0,"",0,[["Nevasca","Blizzard","Gelo","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[92,"Gastly",1,0,"",0,[["Soco Surpresa","Sucker Punch","Sombrio","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"],["Vento Ominoso","Ominous Wind","Fantasma","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[93,"Haunter",1,0,"",0,[["Lambida","Lick","Fantasma","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"]]],[94,"Gengar",1,0,"",0,[["Soco Sombrio","Shadow Punch","Fantasma","Carregado","CD",1,"Dia da Comunidade Jul/2020 (Gastly)"],["Lambida","Lick","Fantasma","Ágil","ETM",1,"Dia de Reides 2018 (MT Elite Ágil)"],["Psíquico","Psychic","Psíquico","Carregado","ETM",1,"Dia de Reides 2018 (MT Elite Carregado)"],["Pulso Sombrio","Dark Pulse","Sombrio","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"],["Onda de Lodo","Sludge Wave","Venenoso","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[95,"Onix",1,0,"",0,[["Cabeça de Ferro","Iron Head","Aço","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"],["Deslize de Pedras","Rock Slide","Pedra","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[96,"Drowzee",1,0,"",0,[]],[97,"Hypno",1,0,"",0,[["Choque Psíquico","Psyshock","Psíquico","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[98,"Krabby",1,0,"",0,[]],[99,"Kingler",1,0,"",0,[["Tiro de Lama","Mud Shot","Terrestre","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"]]],[100,"Voltorb",1,0,"",0,[["Feixe Sinalizador","Signal Beam","Inseto","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[101,"Electrode",1,0,"",0,[["Investida","Tackle","Normal","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"]]],[102,"Exeggcute",1,0,"",0,[]],[103,"Exeggutor",1,1,"Sáb (Nat) • Sáb/Dom (Inc)",0,[["Cabeçada Zen","Zen Headbutt","Psíquico","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"],["Meteoro do Dragão (Alola)","Draco Meteor","Dragão","Carregado","ETM",1,"Evento Exeggutor de Alola (MT Elite)"]]],[104,"Cubone",1,0,"",0,[]],[105,"Marowak",1,0,"",0,[["Osso Sombrio (Alola)","Shadow Bone","Fantasma","Carregado","ETM",1,"Dia de Reides Marowak Alola (MT Elite)"]]],[106,"Hitmonlee",1,0,"",0,[["Quebra-telha","Brick Break","Lutador","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"],["Pisotear","Stomp","Normal","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[107,"Hitmonchan",1,0,"",0,[["Esmagamento de Pedra","Rock Smash","Lutador","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"],["Quebra-telha","Brick Break","Lutador","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[108,"Lickitung",1,0,"",0,[["Pancada Corporal","Body Slam","Normal","Carregado","ETM",1,"Dia de Reides Lickitung (MT Elite)"]]],[109,"Koffing",1,0,"",0,[["Ácido","Acid","Venenoso","Ágil","OLD",0,"Legado Antigo Ago/2016 (Sem MT Elite)"]]],[110,"Weezing",1,0,"",0,[["Ácido","Acid","Venenoso","Ágil","OLD",0,"Legado Antigo Ago/2016 (Sem MT Elite)"]]],[111,"Rhyhorn",1,0,"",0,[]],[112,"Rhydon",1,0,"",0,[["Megachifre","Megahorn","Inseto","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[113,"Chansey",1,0,"",0,[["Raio Psíquico","Psybeam","Psíquico","Carregado","OLD",0,"Legado Antigo Ago/2016 (Sem MT Elite)"]]],[114,"Tangela",1,0,"",0,[["Chicote Poderoso","Power Whip","Planta","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[115,"Kangaskhan",1,0,"",0,[["Quebra-telha","Brick Break","Lutador","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"],["Pisotear","Stomp","Normal","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[116,"Horsea",1,0,"",0,[]],[117,"Seadra",1,0,"",0,[["Nevasca","Blizzard","Gelo","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[118,"Goldeen",1,0,"",0,[]],[119,"Seaking",1,0,"",0,[["Golpe Envenenado","Poison Jab","Venenoso","Ágil","ETM",1,"Legado Dez/2017 (MT Elite Ágil)"],["Furação","Drill Run","Terrestre","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"],["Vento Congelante","Icy Wind","Gelo","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[120,"Staryu",1,0,"",0,[["Ataque Rápido","Quick Attack","Normal","Ágil","OLD",0,"Legado Antigo Ago/2016 (Sem MT Elite)"]]],[121,"Starmie",1,0,"",0,[["Ataque Rápido","Quick Attack","Normal","Ágil","OLD",0,"Legado Antigo Ago/2016 (Sem MT Elite)"],["Investida","Tackle","Normal","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"]]],[122,"Mr. Mime",1,0,"",0,[]],[123,"Scyther",1,0,"",0,[["Asa de Aço","Steel Wing","Aço","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"],["Zumbido de Inseto","Bug Buzz","Inseto","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[124,"Jynx",1,0,"",0,[["Pancada","Pound","Normal","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"],["Soco de Gelo","Ice Punch","Gelo","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[125,"Electabuzz",1,0,"",0,[]],[126,"Magmar",1,0,"",0,[]],[127,"Pinsir",1,0,"",0,[["Submissão","Submission","Lutador","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[128,"Tauros",1,0,"",0,[]],[129,"Magikarp",1,0,"",0,[]],[130,"Gyarados",1,0,"",0,[["Cauda Aquática","Aqua Tail","Água","Carregado","CD",1,"Dia da Comunidade Ago/2020 (Magikarp)"],["Cauda do Dragão","Dragon Tail","Dragão","Ágil","ETM",1,"Legado Dez/2017 (MT Elite Ágil)"],["Pulso do Dragão","Dragon Pulse","Dragão","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[131,"Lapras",1,0,"",0,[["Caco de Gelo","Ice Shard","Gelo","Ágil","ETM",1,"Legado Fev/2017 / Dia de Reides"],["Raio Congelante","Ice Beam","Gelo","Carregado","ETM",1,"Dia de Reides Lapras (MT Elite)"],["Pulso do Dragão","Dragon Pulse","Dragão","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[132,"Ditto",1,0,"",0,[]],[133,"Eevee",1,0,"",0,[["Último Recurso","Last Resort","Normal","Carregado","CD",1,"Dia da Comunidade Eevee 2018"],["Pancada Corporal","Body Slam","Normal","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[134,"Vaporeon",1,0,"",0,[["Último Recurso","Last Resort","Normal","Carregado","CD",1,"Dia da Comunidade Eevee 2018"],["Escaldar","Scald","Água","Carregado","CD",1,"Dia da Comunidade Eevee 2021"]]],[135,"Jolteon",1,0,"",0,[["Último Recurso","Last Resort","Normal","Carregado","CD",1,"Dia da Comunidade Eevee 2018"],["Canhão Zap","Zap Cannon","Elétrico","Carregado","CD",1,"Dia da Comunidade Eevee 2021"]]],[136,"Flareon",1,0,"",0,[["Último Recurso","Last Resort","Normal","Carregado","CD",1,"Dia da Comunidade Eevee 2018"],["Superpoder","Superpower","Lutador","Carregado","CD",1,"Dia da Comunidade Eevee 2021"],["Onda de Calor","Heat Wave","Fogo","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[137,"Porygon",1,0,"",0,[["Ataque Rápido","Quick Attack","Normal","Ágil","OLD",0,"Legado Antigo Ago/2016 (Sem MT Elite)"],["Investida","Tackle","Normal","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"],["Cabeçada Zen","Zen Headbutt","Psíquico","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"],["Descarga","Discharge","Elétrico","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"],["Raio Psíquico","Psybeam","Psíquico","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"],["Feixe Sinalizador","Signal Beam","Inseto","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[138,"Omanyte",1,0,"",0,[["Salmoura","Brine","Água","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"],["Tumba de Rochas","Rock Tomb","Pedra","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[139,"Omastar",1,0,"",0,[["Lançamento de Rocha","Rock Throw","Pedra","Ágil","ETM",1,"Legado Antigo Ago/2016 (MT Elite Ágil)"],["Deslize de Pedras","Rock Slide","Pedra","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[140,"Kabuto",1,0,"",0,[]],[141,"Kabutops",1,0,"",0,[["Cortador de Fúria","Fury Cutter","Inseto","Ágil","ETM",1,"Legado Fev/2017 (MT Elite Ágil)"]]],[142,"Aerodactyl",1,0,"",0,[]],[143,"Snorlax",1,0,"",0,[["Bocejo","Yawn","Normal","Ágil","ETM",1,"Evento Snorlax Dorminhoco 2019 (MT Elite)"]]],[144,"Articuno",1,0,"",0,[["Vendaval","Hurricane","Voador","Carregado","ETM",1,"Dia de Reides Articuno (MT Elite)"]]],[145,"Zapdos",1,0,"",0,[["Choque do Trovão","Thunder Shock","Elétrico","Ágil","ETM",1,"Dia de Reides Zapdos (MT Elite Ágil)"]]],[146,"Moltres",1,0,"",0,[["Ataque do Céu","Sky Attack","Voador","Carregado","ETM",1,"Dia de Reides Moltres (MT Elite)"]]],[147,"Dratini",1,0,"",0,[]],[148,"Dragonair",1,0,"",0,[]],[149,"Dragonite",1,0,"",0,[["Meteoro do Dragão","Draco Meteor","Dragão","Carregado","CD",1,"Dia da Comunidade Fev/2018 (Dratini)"],["Pulso do Dragão","Dragon Pulse","Dragão","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[150,"Mewtwo",1,0,"",0,[["Golpe Psíquico","Psystrike","Psíquico","Carregado","ETM",1,"Reides Especiais Mewtwo (MT Elite)"],["Bola Sombria","Shadow Ball","Fantasma","Carregado","ETM",1,"Reides EX Mewtwo (MT Elite)"],["Hiper-raio","Hyper Beam","Normal","Carregado","ETM",1,"Reides EX Mewtwo (MT Elite)"]]],[151,"Mew",1,0,"",0,[]],[152,"Chikorita",2,0,"",0,[]],[153,"Bayleef",2,0,"",0,[]],[154,"Meganium",2,0,"",0,[["Planta Mortal","Frenzy Plant","Planta","Carregado","CD",1,"Dia da Comunidade (Chikorita)"]]],[155,"Cyndaquil",2,0,"",0,[]],[156,"Quilava",2,0,"",0,[]],[157,"Typhlosion",2,0,"",0,[["Queimadura Explosiva","Blast Burn","Fogo","Carregado","CD",1,"Dia da Comunidade (Cyndaquil)"]]],[158,"Totodile",2,0,"",0,[]],[159,"Croconaw",2,0,"",0,[]],[160,"Feraligatr",2,0,"",0,[["Hidrocanhão","Hydro Cannon","Água","Carregado","CD",1,"Dia da Comunidade (Totodile)"]]],[161,"Sentret",2,0,"",0,[]],[162,"Furret",2,0,"",0,[]],[163,"Hoothoot",2,0,"",0,[]],[164,"Noctowl",2,0,"",0,[]],[165,"Ledyba",2,0,"",0,[]],[166,"Ledian",2,0,"",0,[]],[167,"Spinarak",2,0,"",0,[]],[168,"Ariados",2,0,"",0,[]],[169,"Crobat",2,0,"",0,[]],[170,"Chinchou",2,0,"",0,[]],[171,"Lanturn",2,0,"",0,[]],[172,"Pichu",2,0,"",0,[["Ataque Rápido","Quick Attack","Normal","Ágil","OLD",0,"Legado Antigo Fev/2017 (Sem MT Elite)"]]],[173,"Cleffa",2,0,"",0,[]],[174,"Igglybuff",2,0,"",0,[]],[175,"Togepi",2,0,"",0,[]],[176,"Togetic",2,0,"",0,[]],[177,"Natu",2,0,"",0,[]],[178,"Xatu",2,0,"",0,[]],[179,"Mareep",2,0,"",0,[]],[180,"Flaaffy",2,0,"",0,[]],[181,"Ampharos",2,0,"",0,[["Pulso do Dragão","Dragon Pulse","Dragão","Carregado","CD",1,"Dia da Comunidade (Mareep)"]]],[182,"Bellossom",2,0,"",0,[]],[183,"Marill",2,0,"",0,[]],[184,"Azumarill",2,1,"Dom (Nat) • Sáb/Dom (Inc)",0,[]],[185,"Sudowoodo",2,0,"",0,[]],[186,"Politoed",2,0,"",0,[["Terremoto","Earthquake","Terrestre","Carregado","ETM",1,"Legado Dez/2017 (MT Elite Carregado)"]]],[187,"Hoppip",2,0,"",0,[]],[188,"Skiploom",2,0,"",0,[]],[189,"Jumpluff",2,0,"",0,[["Acrobático","Acrobatics","Voador","Carregado","CD",1,"Dia da Comunidade Fev/2022 (Hoppip)"]]],[190,"Aipom",2,0,"",0,[]],[191,"Sunkern",2,0,"",0,[]],[192,"Sunflora",2,0,"",0,[]],[193,"Yanma",2,0,"",0,[]],[194,"Wooper",2,0,"",0,[]],[195,"Quagsire",2,0,"",0,[]],[196,"Espeon",2,0,"",0,[["Bola Sombria","Shadow Ball","Fantasma","Carregado","CD",1,"Dia da Comunidade Eevee 2021"]]],[197,"Umbreon",2,0,"",0,[["Último Recurso","Last Resort","Normal","Carregado","CD",1,"Dia da Comunidade Eevee 2018"],["Psíquico","Psychic","Psíquico","Carregado","CD",1,"Dia da Comunidade Eevee 2021"]]],[198,"Murkrow",2,0,"",0,[]],[199,"Slowking",2,0,"",0,[]],[200,"Misdreavus",2,0,"",0,[]],[201,"Unown",2,0,"",0,[]],[202,"Wobbuffet",2,0,"",0,[]],[203,"Girafarig",2,0,"",0,[]],[204,"Pineco",2,0,"",0,[]],[205,"Forretress",2,0,"",0,[]],[206,"Dunsparce",2,0,"",0,[]],[207,"Gligar",2,0,"",0,[]],[208,"Steelix",2,0,"",0,[]],[209,"Snubbull",2,0,"",0,[]],[210,"Granbull",2,0,"",0,[]],[211,"Qwilfish",2,0,"",0,[]],[212,"Scizor",2,1,"Sáb (Nat) • Sáb/Dom (Inc)",0,[]],[213,"Shuckle",2,0,"",0,[]],[214,"Heracross",2,0,"",0,[]],[215,"Sneasel",2,0,"",0,[]],[216,"Teddiursa",2,0,"",0,[]],[217,"Ursaring",2,0,"",0,[]],[218,"Slugma",2,0,"",0,[]],[219,"Magcargo",2,0,"",0,[]],[220,"Swinub",2,0,"",0,[]],[221,"Piloswine",2,0,"",0,[]],[222,"Corsola",2,0,"",0,[]],[223,"Remoraid",2,0,"",0,[]],[224,"Octillery",2,0,"",0,[]],[225,"Delibird",2,0,"",0,[["Presente","Present","Normal","Ágil","ETM",1,"Legado / Eventos Festivos"]]],[226,"Mantine",2,0,"",0,[]],[227,"Skarmory",2,0,"",0,[]],[228,"Houndour",2,0,"",0,[]],[229,"Houndoom",2,0,"",0,[]],[230,"Kingdra",2,1,"Dom (Nat) • Sáb/Dom (Inc)",0,[]],[231,"Phanpy",2,0,"",0,[]],[232,"Donphan",2,0,"",0,[]],[233,"Porygon2",2,0,"",0,[["Triataque","Tri Attack","Normal","Carregado","CD",1,"Dia da Comunidade Set/2020 (Porygon)"]]],[234,"Stantler",2,0,"",0,[]],[235,"Smeargle",2,0,"",0,[["Esboço (Todos Golpes)","Sketch","Normal","Ambos","OLD",0,"Cópia via Retrato GO (Sem MT Elite)"]]],[236,"Tyrogue",2,0,"",0,[]],[237,"Hitmontop",2,0,"",0,[]],[238,"Smoochum",2,0,"",0,[]],[239,"Elekid",2,0,"",0,[]],[240,"Magby",2,0,"",0,[]],[241,"Miltank",2,0,"",0,[]],[242,"Blissey",2,0,"",0,[["Ataque Selvagem","Wild Charge","Elétrico","Carregado","CD",1,"Dia da Comunidade Fev/2024 (Chansey)"]]],[243,"Raikou",2,0,"",0,[]],[244,"Entei",2,0,"",0,[]],[245,"Suicune",2,0,"",0,[]],[246,"Larvitar",2,0,"",0,[]],[247,"Pupitar",2,0,"",0,[]],[248,"Tyranitar",2,0,"",0,[["Derrubada","Smack Down","Pedra","Ágil","CD",1,"Dia da Comunidade Jun/2018 (Larvitar)"]]],[249,"Lugia",2,0,"",0,[["Aerojato","Aeroblast","Voador","Carregado","ETM",1,"Reides Especiais Lugia (MT Elite)"],["Aerojato+","Aeroblast+","Voador","Carregado","OLD",0,"Lugia Sombroso Apex (Sem MT Elite)"]]],[250,"Ho-Oh",2,0,"",0,[["Fogo Sagrado","Sacred Fire","Fogo","Carregado","ETM",1,"Reides Especiais Ho-Oh (MT Elite)"],["Terremoto","Earthquake","Terrestre","Carregado","ETM",1,"Evento Ho-Oh 2020 (MT Elite)"],["Fogo Sagrado+","Sacred Fire+","Fogo","Carregado","OLD",0,"Ho-Oh Sombroso Apex (Sem MT Elite)"]]],[251,"Celebi",2,0,"",0,[]],[252,"Treecko",3,0,"",0,[]],[253,"Grovyle",3,0,"",0,[]],[254,"Sceptile",3,0,"",0,[["Planta Mortal","Frenzy Plant","Planta","Carregado","CD",1,"Dia da Comunidade (Treecko)"]]],[255,"Torchic",3,0,"",0,[]],[256,"Combusken",3,0,"",0,[]],[257,"Blaziken",3,0,"",0,[["Queimadura Explosiva","Blast Burn","Fogo","Carregado","CD",1,"Dia da Comunidade (Torchic)"],["Gume de Pedra","Stone Edge","Pedra","Carregado","ETM",1,"Legado Fev/2017 (MT Elite Carregado)"]]],[258,"Mudkip",3,0,"",0,[]],[259,"Marshtomp",3,0,"",0,[]],[260,"Swampert",3,0,"",0,[["Hidrocanhão","Hydro Cannon","Água","Carregado","CD",1,"Dia da Comunidade (Mudkip)"]]],[261,"Poochyena",3,0,"",0,[]],[262,"Mightyena",3,0,"",0,[]],[263,"Zigzagoon",3,0,"",0,[]],[264,"Linoone",3,0,"",0,[]],[265,"Wurmple",3,0,"",0,[]],[266,"Silcoon",3,0,"",0,[]],[267,"Beautifly",3,0,"",0,[]],[268,"Cascoon",3,0,"",0,[]],[269,"Dustox",3,0,"",0,[]],[270,"Lotad",3,0,"",0,[]],[271,"Lombre",3,0,"",0,[]],[272,"Ludicolo",3,0,"",0,[]],[273,"Seedot",3,0,"",0,[]],[274,"Nuzleaf",3,0,"",0,[]],[275,"Shiftry",3,0,"",0,[["Tempestade de Folhas","Leaf Tornado","Planta","Carregado","CD",1,"Dia da Comunidade Mai/2020 (Seedot)"]]],[276,"Taillow",3,0,"",0,[]],[277,"Swellow",3,0,"",0,[]],[278,"Wingull",3,0,"",0,[]],[279,"Pelipper",3,0,"",0,[]],[280,"Ralts",3,0,"",0,[]],[281,"Kirlia",3,0,"",0,[]],[282,"Gardevoir",3,0,"",0,[["Sincronizar","Synchronoise","Psíquico","Carregado","CD",1,"Dia da Comunidade Ago/2019 (Ralts)"]]],[283,"Surskit",3,0,"",0,[]],[284,"Masquerain",3,0,"",0,[]],[285,"Shroomish",3,0,"",0,[]],[286,"Breloom",3,0,"",0,[["Nó de Grama","Grass Knot","Planta","Carregado","ETM",1,"Evento Hoenn 2019 (MT Elite)"]]],[287,"Slakoth",3,0,"",0,[]],[288,"Vigoroth",3,0,"",0,[]],[289,"Slaking",3,0,"",0,[["Pancada Corporal","Body Slam","Normal","Carregado","CD",1,"Dia da Comunidade Jun/2019 (Slakoth)"]]],[290,"Nincada",3,0,"",0,[]],[291,"Ninjask",3,0,"",0,[]],[292,"Shedinja",3,0,"",0,[["Mordida","Bite","Sombrio","Ágil","OLD",0,"Legado Antigo Nov/2018 (Sem MT Elite)"]]],[293,"Whismur",3,0,"",0,[]],[294,"Loudred",3,0,"",0,[]],[295,"Exploud",3,0,"",0,[]],[296,"Makuhita",3,0,"",0,[]],[297,"Hariyama",3,0,"",0,[]],[298,"Azurill",3,0,"",0,[]],[299,"Nosepass",3,0,"",0,[]],[300,"Skitty",3,0,"",0,[]],[301,"Delcatty",3,0,"",0,[]],[302,"Sableye",3,0,"",0,[]],[303,"Mawile",3,0,"",0,[]],[304,"Aron",3,0,"",0,[]],[305,"Lairon",3,0,"",0,[]],[306,"Aggron",3,0,"",0,[]],[307,"Meditite",3,0,"",0,[]],[308,"Medicham",3,0,"",0,[]],[309,"Electrike",3,0,"",0,[]],[310,"Manectric",3,0,"",0,[]],[311,"Plusle",3,0,"",0,[]],[312,"Minun",3,0,"",0,[]],[313,"Volbeat",3,0,"",0,[]],[314,"Illumise",3,0,"",0,[]],[315,"Roselia",3,0,"",0,[]],[316,"Gulpin",3,0,"",0,[]],[317,"Swalot",3,0,"",0,[]],[318,"Carvanha",3,0,"",0,[]],[319,"Sharpedo",3,0,"",0,[]],[320,"Wailmer",3,0,"",0,[]],[321,"Wailord",3,0,"",0,[]],[322,"Numel",3,0,"",0,[]],[323,"Camerupt",3,0,"",0,[]],[324,"Torkoal",3,0,"",0,[]],[325,"Spoink",3,0,"",0,[]],[326,"Grumpig",3,0,"",0,[]],[327,"Spinda",3,0,"",0,[]],[328,"Trapinch",3,0,"",0,[]],[329,"Vibrava",3,0,"",0,[]],[330,"Flygon",3,1,"Sáb (Nat) • Sáb/Dom (Inc)",0,[["Poder da Terra","Earth Power","Terrestre","Carregado","CD",1,"Dia da Comunidade Out/2019 (Trapinch)"]]],[331,"Cacnea",3,0,"",0,[]],[332,"Cacturne",3,0,"",0,[]],[333,"Swablu",3,0,"",0,[]],[334,"Altaria",3,0,"",0,[["Explosão Lunar","Moonblast","Fada","Carregado","CD",1,"Dia da Comunidade Mai/2021 (Swablu)"]]],[335,"Zangoose",3,0,"",0,[]],[336,"Seviper",3,0,"",0,[]],[337,"Lunatone",3,0,"",0,[]],[338,"Solrock",3,0,"",0,[]],[339,"Barboach",3,0,"",0,[]],[340,"Whiscash",3,0,"",0,[]],[341,"Corphish",3,0,"",0,[]],[342,"Crawdaunt",3,0,"",0,[]],[343,"Baltoy",3,0,"",0,[]],[344,"Claydol",3,0,"",0,[]],[345,"Lileep",3,0,"",0,[]],[346,"Cradily",3,0,"",0,[]],[347,"Anorith",3,0,"",0,[]],[348,"Armaldo",3,0,"",0,[]],[349,"Feebas",3,0,"",0,[]],[350,"Milotic",3,0,"",0,[]],[351,"Castform",3,0,"",0,[]],[352,"Kecleon",3,0,"",0,[]],[353,"Shuppet",3,0,"",0,[]],[354,"Banette",3,0,"",0,[]],[355,"Duskull",3,0,"",0,[]],[356,"Dusclops",3,0,"",0,[]],[357,"Tropius",3,0,"",0,[]],[358,"Chimecho",3,0,"",0,[]],[359,"Absol",3,0,"",0,[]],[360,"Wynaut",3,0,"",0,[]],[361,"Snorunt",3,0,"",0,[]],[362,"Glalie",3,0,"",0,[]],[363,"Spheal",3,0,"",0,[]],[364,"Sealeo",3,0,"",0,[]],[365,"Walrein",3,1,"Sábado (Natureza)",0,[["Neve em Pó","Powder Snow","Gelo","Ágil","CD",1,"Dia da Comunidade Jan/2022 (Spheal)"],["Lança de Gelo","Icicle Spear","Gelo","Carregado","CD",1,"Dia da Comunidade Jan/2022 (Spheal)"]]],[366,"Clamperl",3,0,"",0,[]],[367,"Huntail",3,0,"",0,[]],[368,"Gorebyss",3,0,"",0,[]],[369,"Relicanth",3,0,"",0,[]],[370,"Luvdisc",3,0,"",0,[]],[371,"Bagon",3,0,"",0,[]],[372,"Shelgon",3,0,"",0,[]],[373,"Salamence",3,0,"",0,[["Ultraje","Outrage","Dragão","Carregado","CD",1,"Dia da Comunidade Abr/2019 (Bagon)"]]],[374,"Beldum",3,0,"",0,[]],[375,"Metang",3,0,"",0,[]],[376,"Metagross",3,1,"Sábado (Natureza)",0,[["Meteoro Esmagador","Meteor Mash","Aço","Carregado","CD",1,"Dia da Comunidade Out/2018 (Beldum)"]]],[377,"Regirock",3,0,"",0,[]],[378,"Regice",3,0,"",0,[]],[379,"Registeel",3,0,"",0,[]],[380,"Latias",3,0,"",0,[["Esfera de Névoa","Mist Ball","Psíquico","Carregado","ETM",1,"Reides / Evento Latias (MT Elite)"]]],[381,"Latios",3,0,"",0,[["Lustre Purga","Luster Purge","Psíquico","Carregado","ETM",1,"Reides / Evento Latios (MT Elite)"]]],[382,"Kyogre",3,0,"",0,[["Pulso Primordial","Origin Pulse","Água","Carregado","ETM",1,"GO Tour Hoenn Kyogre (MT Elite)"]]],[383,"Groudon",3,0,"",0,[["Lâmina do Precipício","Precipice Blades","Terrestre","Carregado","ETM",1,"GO Tour Hoenn Groudon (MT Elite)"],["Soco de Fogo","Fire Punch","Fogo","Carregado","ETM",1,"Desafio Retorno Groudon (MT Elite)"]]],[384,"Rayquaza",3,0,"",0,[["Ascensão do Dragão","Dragon Ascent","Voador","Carregado","OLD",0,"Requer Meteorito p/ Mega (Sem MT Elite)"],["Vasto Impacto","Breaking Swipe","Dragão","Carregado","ETM",1,"Reides Especiais Rayquaza (MT Elite)"],["Vendaval","Hurricane","Voador","Carregado","ETM",1,"Evento Rayquaza 2021 (MT Elite)"]]],[385,"Jirachi",3,0,"",0,[]],[386,"Deoxys",3,0,"",0,[["Impulso Psíquico","Psycho Boost","Psíquico","Carregado","ETM",1,"Exclusivo Deoxys (MT Elite)"]]],[387,"Turtwig",4,0,"",0,[]],[388,"Grotle",4,0,"",0,[]],[389,"Torterra",4,0,"",0,[["Planta Mortal","Frenzy Plant","Planta","Carregado","CD",1,"Dia da Comunidade Set/2019 (Turtwig)"]]],[390,"Chimchar",4,0,"",0,[]],[391,"Monferno",4,0,"",0,[]],[392,"Infernape",4,0,"",0,[["Queimadura Explosiva","Blast Burn","Fogo","Carregado","CD",1,"Dia da Comunidade Nov/2019 (Chimchar)"]]],[393,"Piplup",4,0,"",0,[]],[394,"Prinplup",4,0,"",0,[]],[395,"Empoleon",4,1,"Sáb (Nat) • Sáb/Dom (Inc)",0,[["Hidrocanhão","Hydro Cannon","Água","Carregado","CD",1,"Dia da Comunidade Jan/2020 (Piplup)"]]],[396,"Starly",4,0,"",0,[]],[397,"Staravia",4,0,"",0,[]],[398,"Staraptor",4,0,"",0,[["Lufada de Vento","Gust","Voador","Ágil","CD",1,"Dia da Comunidade Jul/2022 (Starly)"]]],[399,"Bidoof",4,0,"",0,[]],[400,"Bibarel",4,0,"",0,[]],[401,"Kricketot",4,0,"",0,[]],[402,"Kricketune",4,0,"",0,[]],[403,"Shinx",4,0,"",0,[]],[404,"Luxio",4,0,"",0,[]],[405,"Luxray",4,0,"",0,[["Presas Psíquicas","Psychic Fangs","Psíquico","Carregado","CD",1,"Dia da Comunidade Nov/2021 (Shinx)"]]],[406,"Budew",4,0,"",0,[]],[407,"Roserade",4,0,"",0,[["Semente de Bala","Bullet Seed","Planta","Ágil","CD",1,"Dia da Comunidade Fev/2021 (Roselia)"],["Esfera Climática (Fogo)","Weather Ball","Fogo","Carregado","CD",1,"Dia da Comunidade Fev/2021 (Roselia)"]]],[408,"Cranidos",4,0,"",0,[]],[409,"Rampardos",4,0,"",0,[]],[410,"Shieldon",4,0,"",0,[]],[411,"Bastiodon",4,0,"",0,[]],[412,"Burmy",4,0,"",0,[]],[413,"Wormadam",4,0,"",0,[]],[414,"Mothim",4,0,"",0,[]],[415,"Combee",4,0,"",0,[]],[416,"Vespiquen",4,0,"",0,[]],[417,"Pachirisu",4,0,"",0,[]],[418,"Buizel",4,0,"",0,[]],[419,"Floatzel",4,0,"",0,[]],[420,"Cherubi",4,0,"",0,[]],[421,"Cherrim",4,0,"",0,[]],[422,"Shellos",4,0,"",0,[]],[423,"Gastrodon",4,0,"",0,[]],[424,"Ambipom",4,0,"",0,[]],[425,"Drifloon",4,0,"",0,[]],[426,"Drifblim",4,0,"",0,[]],[427,"Buneary",4,0,"",0,[]],[428,"Lopunny",4,0,"",0,[]],[429,"Mismagius",4,0,"",0,[]],[430,"Honchkrow",4,1,"Domingo (Natureza)",0,[]],[431,"Glameow",4,0,"",0,[]],[432,"Purugly",4,0,"",0,[]],[433,"Chingling",4,0,"",0,[]],[434,"Stunky",4,0,"",0,[]],[435,"Skuntank",4,0,"",0,[]],[436,"Bronzor",4,0,"",0,[]],[437,"Bronzong",4,0,"",0,[]],[438,"Bonsly",4,0,"",0,[]],[439,"Mime Jr.",4,0,"",0,[]],[440,"Happiny",4,0,"",0,[]],[441,"Chatot",4,0,"",0,[]],[442,"Spiritomb",4,0,"",0,[]],[443,"Gible",4,0,"",0,[]],[444,"Gabite",4,0,"",0,[]],[445,"Garchomp",4,0,"",0,[["Poder da Terra","Earth Power","Terrestre","Carregado","CD",1,"Dia da Comunidade Jun/2021 (Gible)"]]],[446,"Munchlax",4,0,"",0,[]],[447,"Riolu",4,0,"",0,[]],[448,"Lucario",4,0,"",0,[["Palma da Força","Force Palm","Lutador","Ágil","ETM",1,"Dia de Reides Mega Lucario (MT Elite)"]]],[449,"Hippopotas",4,0,"",0,[]],[450,"Hippowdon",4,0,"",0,[]],[451,"Skorupi",4,0,"",0,[]],[452,"Drapion",4,1,"Domingo (Natureza)",0,[]],[453,"Croagunk",4,0,"",0,[]],[454,"Toxicroak",4,0,"",0,[]],[455,"Carnivine",4,0,"",0,[]],[456,"Finneon",4,0,"",0,[]],[457,"Lumineon",4,0,"",0,[]],[458,"Mantyke",4,0,"",0,[]],[459,"Snover",4,0,"",0,[]],[460,"Abomasnow",4,0,"",0,[]],[461,"Weavile",4,1,"Domingo (Natureza)",0,[]],[462,"Magnezone",4,1,"Sábado (Natureza)",0,[]],[463,"Lickilicky",4,0,"",0,[]],[464,"Rhyperior",4,0,"",0,[["Demolidor de Rochas","Rock Wrecker","Pedra","Carregado","CD",1,"Dia da Comunidade Fev/2020 (Rhyhorn)"]]],[465,"Tangrowth",4,0,"",0,[]],[466,"Electivire",4,0,"",0,[["Lança-chamas","Flamethrower","Fogo","Carregado","CD",1,"Dia da Comunidade Nov/2020 (Electabuzz)"]]],[467,"Magmortar",4,0,"",0,[["Relâmpago","Thunderbolt","Elétrico","Carregado","CD",1,"Dia da Comunidade Nov/2020 (Magmar)"]]],[468,"Togekiss",4,0,"",0,[["Esfera de Aura","Aura Sphere","Lutador","Carregado","CD",1,"Dia da Comunidade Abr/2023 (Togetic)"]]],[469,"Yanmega",4,0,"",0,[]],[470,"Leafeon",4,0,"",0,[["Semente de Bala","Bullet Seed","Planta","Ágil","CD",1,"Dia da Comunidade Eevee 2021"]]],[471,"Glaceon",4,0,"",0,[["Pulso d'Água","Water Pulse","Água","Carregado","CD",1,"Dia da Comunidade Eevee 2021"]]],[472,"Gliscor",4,0,"",0,[]],[473,"Mamoswine",4,0,"",0,[["Poder Ancestral","Ancient Power","Pedra","Carregado","CD",1,"Dia da Comunidade Fev/2019 (Swinub)"]]],[474,"Porygon-Z",4,0,"",0,[["Triataque","Tri Attack","Normal","Carregado","CD",1,"Dia da Comunidade Set/2020 (Porygon)"]]],[475,"Gallade",4,0,"",0,[["Sincronizar","Synchronoise","Psíquico","Carregado","CD",1,"Dia da Comunidade Ago/2019 (Ralts)"]]],[476,"Probopass",4,0,"",0,[]],[477,"Dusknoir",4,0,"",0,[["Bola Sombria","Shadow Ball","Fantasma","Carregado","CD",1,"Dia da Comunidade Out/2021 (Duskull)"]]],[478,"Froslass",4,0,"",0,[]],[479,"Rotom",4,0,"",0,[]],[480,"Uxie",4,0,"",0,[]],[481,"Mesprit",4,0,"",0,[]],[482,"Azelf",4,0,"",0,[]],[483,"Dialga",4,0,"",0,[["Rugido do Tempo (Origem)","Roar of Time","Dragão","Carregado","OLD",0,"Efeito Aventura Dialga Origem (Sem MT)"]]],[484,"Palkia",4,0,"",0,[["Corte Espacial (Origem)","Spacial Rend","Dragão","Carregado","OLD",0,"Efeito Aventura Palkia Origem (Sem MT)"]]],[485,"Heatran",4,0,"",0,[["Tempestade de Magma","Magma Storm","Fogo","Carregado","ETM",1,"Reides Especiais Heatran (MT Elite)"]]],[486,"Regigigas",4,0,"",0,[["Esmagamento","Crush Grip","Normal","Carregado","ETM",1,"Evento Regigigas (MT Elite)"]]],[487,"Giratina",4,0,"",0,[["Força Sombria","Shadow Force","Fantasma","Carregado","ETM",1,"Halloween Giratina (MT Elite)"]]],[488,"Cresselia",4,0,"",0,[["Nó de Grama","Grass Knot","Planta","Carregado","ETM",1,"Desafio Retorno Cresselia (MT Elite)"]]],[489,"Phione",4,0,"",0,[]],[490,"Manaphy",4,0,"",0,[]],[491,"Darkrai",4,0,"",0,[["Bomba de Lodo","Sludge Bomb","Venenoso","Carregado","ETM",1,"Halloween Darkrai (MT Elite)"]]],[492,"Shaymin",4,0,"",0,[]],[493,"Arceus",4,0,"",0,[]],[494,"Victini",5,0,"",0,[["Criação em V","V-create","Fogo","Carregado","ETM",1,"Exclusivo Victini (MT Elite)"]]],[495,"Snivy",5,0,"",0,[]],[496,"Servine",5,0,"",0,[]],[497,"Serperior",5,0,"",0,[["Planta Mortal","Frenzy Plant","Planta","Carregado","CD",1,"Dia da Comunidade Abr/2021 (Snivy)"]]],[498,"Tepig",5,0,"",0,[]],[499,"Pignite",5,0,"",0,[]],[500,"Emboar",5,0,"",0,[["Queimadura Explosiva","Blast Burn","Fogo","Carregado","CD",1,"Dia da Comunidade Jul/2021 (Tepig)"]]],[501,"Oshawott",5,0,"",0,[]],[502,"Dewott",5,0,"",0,[]],[503,"Samurott",5,0,"",0,[["Hidrocanhão","Hydro Cannon","Água","Carregado","CD",1,"Dia da Comunidade Set/2021 (Oshawott)"]]],[504,"Patrat",5,0,"",0,[]],[505,"Watchog",5,0,"",0,[]],[506,"Lillipup",5,0,"",0,[]],[507,"Herdier",5,0,"",0,[]],[508,"Stoutland",5,0,"",0,[]],[509,"Purrloin",5,0,"",0,[]],[510,"Liepard",5,0,"",0,[]],[511,"Pansage",5,0,"",0,[]],[512,"Simisage",5,0,"",0,[]],[513,"Pansear",5,0,"",0,[]],[514,"Simisear",5,0,"",0,[]],[515,"Panpour",5,0,"",0,[]],[516,"Simipour",5,0,"",0,[]],[517,"Munna",5,0,"",0,[]],[518,"Musharna",5,0,"",0,[]],[519,"Pidove",5,0,"",0,[]],[520,"Tranquill",5,0,"",0,[]],[521,"Unfezant",5,0,"",0,[]],[522,"Blitzle",5,0,"",0,[]],[523,"Zebstrika",5,0,"",0,[]],[524,"Roggenrola",5,0,"",0,[]],[525,"Boldore",5,0,"",0,[]],[526,"Gigalith",5,1,"Sábado (Natureza)",0,[["Feixe Meteórico","Meteor Beam","Pedra","Carregado","CD",1,"Dia da Comunidade Set/2022 (Roggenrola)"]]],[527,"Woobat",5,0,"",0,[]],[528,"Swoobat",5,0,"",0,[]],[529,"Drilbur",5,0,"",0,[]],[530,"Excadrill",5,0,"",0,[]],[531,"Audino",5,0,"",0,[]],[532,"Timburr",5,0,"",0,[]],[533,"Gurdurr",5,0,"",0,[]],[534,"Conkeldurr",5,1,"Sáb (Nat) • Sáb/Dom (Inc)",0,[["Balanço Violento","Brutal Swing","Sombrio","Carregado","CD",1,"Dia da Comunidade Out/2023 (Timburr)"]]],[535,"Tympole",5,0,"",0,[]],[536,"Palpitoad",5,0,"",0,[]],[537,"Seismitoad",5,0,"",0,[]],[538,"Throh",5,0,"",0,[]],[539,"Sawk",5,0,"",0,[]],[540,"Sewaddle",5,0,"",0,[]],[541,"Swadloon",5,0,"",0,[]],[542,"Leavanny",5,0,"",0,[["Garra Sombria","Shadow Claw","Fantasma","Ágil","CD",1,"Dia da Comunidade Out/2024 (Sewaddle)"]]],[543,"Venipede",5,0,"",0,[]],[544,"Whirlipede",5,0,"",0,[]],[545,"Scolipede",5,0,"",0,[]],[546,"Cottonee",5,0,"",0,[]],[547,"Whimsicott",5,0,"",0,[]],[548,"Petilil",5,0,"",0,[]],[549,"Lilligant",5,0,"",0,[]],[550,"Basculin",5,0,"",0,[]],[551,"Sandile",5,0,"",0,[]],[552,"Krokorok",5,0,"",0,[]],[553,"Krookodile",5,0,"",0,[]],[554,"Darumaka",5,0,"",0,[]],[555,"Darmanitan",5,0,"",0,[]],[556,"Maractus",5,0,"",0,[]],[557,"Dwebble",5,0,"",0,[]],[558,"Crustle",5,0,"",0,[]],[559,"Scraggy",5,0,"",0,[]],[560,"Scrafty",5,1,"Sábado (Natureza)",0,[]],[561,"Sigilyph",5,0,"",0,[]],[562,"Yamask",5,0,"",0,[]],[563,"Cofagrigus",5,0,"",0,[]],[564,"Tirtouga",5,0,"",0,[]],[565,"Carracosta",5,0,"",0,[]],[566,"Archen",5,0,"",0,[]],[567,"Archeops",5,0,"",0,[]],[568,"Trubbish",5,0,"",0,[]],[569,"Garbodor",5,0,"",0,[]],[570,"Zorua",5,0,"",0,[]],[571,"Zoroark",5,0,"",0,[["Soco Surpresa","Sucker Punch","Sombrio","Ágil","CD",1,"Dia da Comunidade Out/2026 (Zorua)"]]],[572,"Minccino",5,0,"",0,[]],[573,"Cinccino",5,0,"",0,[]],[574,"Gothita",5,0,"",0,[]],[575,"Gothorita",5,0,"",0,[]],[576,"Gothitelle",5,0,"",0,[]],[577,"Solosis",5,0,"",0,[]],[578,"Duosion",5,0,"",0,[]],[579,"Reuniclus",5,0,"",0,[["Encantar","Charm","Fada","Ágil","CD",1,"Dia da Comunidade Out/2025 (Solosis)"]]],[580,"Ducklett",5,0,"",0,[]],[581,"Swanna",5,0,"",0,[]],[582,"Vanillite",5,0,"",0,[]],[583,"Vanillish",5,0,"",0,[]],[584,"Vanilluxe",5,0,"",0,[["Avalanche","Avalanche","Gelo","Carregado","CD",1,"Dia da Comunidade Abr/2025 (Vanillite)"]]],[585,"Deerling",5,0,"",0,[]],[586,"Sawsbuck",5,0,"",0,[]],[587,"Emolga",5,0,"",0,[]],[588,"Karrablast",5,0,"",0,[]],[589,"Escavalier",5,0,"",0,[["Concha Navalha","Razor Shell","Água","Carregado","CD",1,"Dia da Comunidade Fev/2025 (Karrablast)"]]],[590,"Foongus",5,0,"",0,[]],[591,"Amoonguss",5,0,"",0,[]],[592,"Frillish",5,0,"",0,[]],[593,"Jellicent",5,0,"",0,[]],[594,"Alomomola",5,0,"",0,[]],[595,"Joltik",5,0,"",0,[]],[596,"Galvantula",5,0,"",0,[]],[597,"Ferroseed",5,0,"",0,[]],[598,"Ferrothorn",5,0,"",0,[]],[599,"Klink",5,0,"",0,[]],[600,"Klang",5,0,"",0,[]],[601,"Klinklang",5,0,"",0,[]],[602,"Tynamo",5,0,"",0,[]],[603,"Eelektrik",5,0,"",0,[]],[604,"Eelektross",5,0,"",0,[["Troca Elétrica","Volt Switch","Elétrico","Ágil","CD",1,"Dia da Comunidade Jul/2024 (Tynamo)"]]],[605,"Elgyem",5,0,"",0,[]],[606,"Beheeyem",5,0,"",0,[]],[607,"Litwick",5,0,"",0,[]],[608,"Lampent",5,0,"",0,[]],[609,"Chandelure",5,0,"",0,[["Poltergeist","Poltergeist","Fantasma","Carregado","CD",1,"Dia da Comunidade Out/2022 (Litwick)"]]],[610,"Axew",5,0,"",0,[]],[611,"Fraxure",5,0,"",0,[]],[612,"Haxorus",5,0,"",0,[["Vasto Impacto","Breaking Swipe","Dragão","Carregado","CD",1,"Dia da Comunidade Jun/2023 (Axew)"]]],[613,"Cubchoo",5,0,"",0,[]],[614,"Beartic",5,0,"",0,[]],[615,"Cryogonal",5,0,"",0,[]],[616,"Shelmet",5,0,"",0,[]],[617,"Accelgor",5,0,"",0,[["Esfera de Energia","Energy Ball","Planta","Carregado","CD",1,"Dia da Comunidade Fev/2025 (Shelmet)"]]],[618,"Stunfisk",5,0,"",0,[]],[619,"Mienfoo",5,0,"",0,[]],[620,"Mienshao",5,0,"",0,[]],[621,"Druddigon",5,0,"",0,[]],[622,"Golett",5,0,"",0,[]],[623,"Golurk",5,0,"",0,[]],[624,"Pawniard",5,0,"",0,[]],[625,"Bisharp",5,0,"",0,[]],[626,"Bouffalant",5,0,"",0,[]],[627,"Rufflet",5,0,"",0,[]],[628,"Braviary",5,0,"",0,[]],[629,"Vullaby",5,0,"",0,[]],[630,"Mandibuzz",5,0,"",0,[]],[631,"Heatmor",5,0,"",0,[]],[632,"Durant",5,0,"",0,[]],[633,"Deino",5,0,"",0,[]],[634,"Zweilous",5,0,"",0,[]],[635,"Hydreigon",5,1,"Dom (Nat) • Sáb/Dom (Inc)",0,[["Balanço Violento","Brutal Swing","Sombrio","Carregado","CD",1,"Dia da Comunidade Jun/2022 (Deino)"]]],[636,"Larvesta",5,0,"",0,[]],[637,"Volcarona",5,0,"",0,[]],[638,"Cobalion",5,0,"",0,[["Espada Sagrada","Sacred Sword","Lutador","Carregado","ETM",1,"Reides Especiais Cobalion (MT Elite)"]]],[639,"Terrakion",5,0,"",0,[["Espada Sagrada","Sacred Sword","Lutador","Carregado","ETM",1,"Reides Especiais Terrakion (MT Elite)"]]],[640,"Virizion",5,0,"",0,[["Espada Sagrada","Sacred Sword","Lutador","Carregado","ETM",1,"Reides Especiais Virizion (MT Elite)"]]],[641,"Tornadus",5,0,"",0,[["Tempestade Desoladora","Bleakwind Storm","Voador","Carregado","ETM",1,"Reides Especiais Tornadus (MT Elite)"]]],[642,"Thundurus",5,0,"",0,[["Tempestade Selvagem","Wildbolt Storm","Elétrico","Carregado","ETM",1,"Reides Especiais Thundurus (MT Elite)"]]],[643,"Reshiram",5,0,"",0,[["Chama Fusão","Fusion Flare","Fogo","Carregado","ETM",1,"Reides Especiais Reshiram (MT Elite)"]]],[644,"Zekrom",5,0,"",0,[["Raio Fusão","Fusion Bolt","Elétrico","Carregado","ETM",1,"Reides Especiais Zekrom (MT Elite)"]]],[645,"Landorus",5,0,"",0,[["Tempestade de Areia","Sandsear Storm","Terrestre","Carregado","ETM",1,"Reides Especiais Landorus (MT Elite)"]]],[646,"Kyurem",5,0,"",0,[["Mundo Glacial","Glaciate","Gelo","Carregado","ETM",1,"Reides Especiais Kyurem (MT Elite)"],["Chama Gélida (Branco)","Ice Burn","Gelo","Carregado","OLD",0,"Efeito Aventura Kyurem Branco (Sem MT)"],["Choque Congelante (Preto)","Freeze Shock","Gelo","Carregado","OLD",0,"Efeito Aventura Kyurem Preto (Sem MT)"]]],[647,"Keldeo",5,0,"",0,[["Espada Sagrada","Sacred Sword","Lutador","Carregado","ETM",1,"Exclusivo Keldeo (MT Elite)"]]],[648,"Meloetta",5,0,"",0,[]],[649,"Genesect",5,0,"",0,[["Tecno Explosão","Techno Blast","Normal/Drive","Carregado","ETM",1,"Varia conforme Drive (MT Elite)"]]],[650,"Chespin",6,0,"",0,[]],[651,"Quilladin",6,0,"",0,[]],[652,"Chesnaught",6,0,"",0,[["Planta Mortal","Frenzy Plant","Planta","Carregado","CD",1,"Dia da Comunidade Jan/2023 (Chespin)"]]],[653,"Fennekin",6,0,"",0,[]],[654,"Braixen",6,0,"",0,[]],[655,"Delphox",6,0,"",0,[["Queimadura Explosiva","Blast Burn","Fogo","Carregado","CD",1,"Dia da Comunidade Mai/2023 (Fennekin)"]]],[656,"Froakie",6,0,"",0,[]],[657,"Frogadier",6,0,"",0,[]],[658,"Greninja",6,0,"",0,[["Hidrocanhão","Hydro Cannon","Água","Carregado","CD",1,"Dia da Comunidade Ago/2023 (Froakie)"]]],[659,"Bunnelby",6,0,"",0,[]],[660,"Diggersby",6,0,"",0,[]],[661,"Fletchling",6,0,"",0,[]],[662,"Fletchinder",6,0,"",0,[]],[663,"Talonflame",6,0,"",0,[["Incinerar","Incinerate","Fogo","Ágil","CD",1,"Dia da Comunidade Mar/2021 (Fletchling)"]]],[664,"Scatterbug",6,0,"",0,[]],[665,"Spewpa",6,0,"",0,[]],[666,"Vivillon",6,0,"",0,[]],[667,"Litleo",6,0,"",0,[]],[668,"Pyroar",6,0,"",0,[]],[669,"Flabébé",6,0,"",0,[]],[670,"Floette",6,0,"",0,[]],[671,"Florges",6,0,"",0,[["Água Fria","Chilling Water","Água","Carregado","CD",1,"Dia da Comunidade Set/2025 (Flabébé)"]]],[672,"Skiddo",6,0,"",0,[]],[673,"Gogoat",6,0,"",0,[]],[674,"Pancham",6,0,"",0,[]],[675,"Pangoro",6,0,"",0,[]],[676,"Furfrou",6,0,"",0,[]],[677,"Espurr",6,0,"",0,[]],[678,"Meowstic",6,0,"",0,[]],[679,"Honedge",6,0,"",0,[]],[680,"Doublade",6,0,"",0,[]],[681,"Aegislash",6,0,"",0,[]],[682,"Spritzee",6,0,"",0,[]],[683,"Aromatisse",6,0,"",0,[]],[684,"Swirlix",6,0,"",0,[]],[685,"Slurpuff",6,0,"",0,[]],[686,"Inkay",6,0,"",0,[]],[687,"Malamar",6,0,"",0,[]],[688,"Binacle",6,0,"",0,[]],[689,"Barbaracle",6,0,"",0,[]],[690,"Skrelp",6,0,"",0,[]],[691,"Dragalge",6,1,"Domingo (Natureza)",0,[]],[692,"Clauncher",6,0,"",0,[]],[693,"Clawitzer",6,0,"",0,[]],[694,"Helioptile",6,0,"",0,[]],[695,"Heliolisk",6,0,"",0,[]],[696,"Tyrunt",6,0,"",0,[]],[697,"Tyrantrum",6,0,"",0,[]],[698,"Amaura",6,0,"",0,[]],[699,"Aurorus",6,0,"",0,[]],[700,"Sylveon",6,0,"",0,[["Choque Psíquico","Psyshock","Psíquico","Carregado","CD",1,"Dia da Comunidade Eevee 2021"]]],[701,"Hawlucha",6,0,"",0,[]],[702,"Dedenne",6,0,"",0,[]],[703,"Carbink",6,0,"",0,[]],[704,"Goomy",6,0,"",0,[]],[705,"Sliggoo",6,0,"",0,[]],[706,"Goodra",6,0,"",0,[["Soco Trovoada","Thunder Punch","Elétrico","Carregado","CD",1,"Dia da Comunidade Jun/2024 (Goomy)"]]],[707,"Klefki",6,0,"",0,[]],[708,"Phantump",6,0,"",0,[]],[709,"Trevenant",6,0,"",0,[]],[710,"Pumpkaboo",6,0,"",0,[]],[711,"Gourgeist",6,0,"",0,[]],[712,"Bergmite",6,0,"",0,[]],[713,"Avalugg",6,0,"",0,[]],[714,"Noibat",6,0,"",0,[]],[715,"Noivern",6,0,"",0,[["Estrondo","Boomburst","Normal","Carregado","CD",1,"Dia da Comunidade Fev/2023 (Noibat)"]]],[716,"Xerneas",6,0,"",0,[["Geomancia","Geomancy","Fada","Ágil","ETM",1,"Reides Especiais Xerneas (MT Elite Ágil)"]]],[717,"Yveltal",6,0,"",0,[["Asa do Oblívio","Oblivion Wing","Voador","Carregado","ETM",1,"Reides Especiais Yveltal (MT Elite)"]]],[718,"Zygarde",6,0,"",0,[]],[719,"Diancie",6,0,"",0,[]],[720,"Hoopa",6,0,"",0,[]],[721,"Volcanion",6,0,"",0,[]],[722,"Rowlet",7,0,"",0,[]],[723,"Dartrix",7,0,"",0,[]],[724,"Decidueye",7,0,"",0,[["Planta Mortal","Frenzy Plant","Planta","Carregado","CD",1,"Dia da Comunidade Jan/2024 (Rowlet)"]]],[725,"Litten",7,0,"",0,[]],[726,"Torracat",7,0,"",0,[]],[727,"Incineroar",7,0,"",0,[["Queimadura Explosiva","Blast Burn","Fogo","Carregado","CD",1,"Dia da Comunidade Mar/2024 (Litten)"]]],[728,"Popplio",7,0,"",0,[]],[729,"Brionne",7,0,"",0,[]],[730,"Primarina",7,0,"",0,[["Hidrocanhão","Hydro Cannon","Água","Carregado","CD",1,"Dia da Comunidade Ago/2024 (Popplio)"]]],[731,"Pikipek",7,0,"",0,[]],[732,"Trumbeak",7,0,"",0,[]],[733,"Toucannon",7,0,"",0,[["Explosão de Bico","Beak Blast","Voador","Carregado","CD",1,"Dia da Comunidade Nov/2025 (Pikipek)"]]],[734,"Yungoos",7,0,"",0,[]],[735,"Gumshoos",7,0,"",0,[]],[736,"Grubbin",7,0,"",0,[]],[737,"Charjabug",7,0,"",0,[]],[738,"Vikavolt",7,0,"",0,[["Troca Elétrica","Volt Switch","Elétrico","Ágil","CD",1,"Dia da Comunidade Set/2023 (Grubbin)"]]],[739,"Crabrawler",7,0,"",0,[]],[740,"Crabominable",7,0,"",0,[]],[741,"Oricorio",7,0,"",0,[]],[742,"Cutiefly",7,0,"",0,[]],[743,"Ribombee",7,0,"",0,[]],[744,"Rockruff",7,0,"",0,[]],[745,"Lycanroc",7,0,"",0,[]],[746,"Wishiwashi",7,0,"",0,[]],[747,"Mareanie",7,0,"",0,[]],[748,"Toxapex",7,0,"",0,[]],[749,"Mudbray",7,0,"",0,[]],[750,"Mudsdale",7,0,"",0,[]],[751,"Dewpider",7,0,"",0,[]],[752,"Araquanid",7,0,"",0,[]],[753,"Fomantis",7,0,"",0,[]],[754,"Lurantis",7,0,"",0,[]],[755,"Morelull",7,0,"",0,[]],[756,"Shiinotic",7,0,"",0,[]],[757,"Salandit",7,0,"",0,[]],[758,"Salazzle",7,0,"",0,[]],[759,"Stufful",7,0,"",0,[]],[760,"Bewear",7,0,"",0,[["Soco Drenante","Drain Punch","Lutador","Carregado","CD",1,"Dia da Comunidade Abr/2022 (Stufful)"]]],[761,"Bounsweet",7,0,"",0,[]],[762,"Steenee",7,0,"",0,[]],[763,"Tsareena",7,0,"",0,[["Chute de Pulo Alto","High Jump Kick","Lutador","Carregado","CD",1,"Dia da Comunidade Mai/2024 (Bounsweet)"]]],[764,"Comfey",7,0,"",0,[]],[765,"Oranguru",7,0,"",0,[]],[766,"Passimian",7,0,"",0,[]],[767,"Wimpod",7,0,"",0,[]],[768,"Golisopod",7,0,"",0,[]],[769,"Sandygast",7,0,"",0,[]],[770,"Palossand",7,0,"",0,[]],[771,"Pyukumuku",7,0,"",0,[]],[772,"Type: Null",7,0,"",0,[]],[773,"Silvally",7,0,"",0,[]],[774,"Minior",7,0,"",0,[]],[775,"Komala",7,0,"",0,[]],[776,"Turtonator",7,0,"",0,[]],[777,"Togedemaru",7,0,"",0,[]],[778,"Mimikyu",7,0,"",0,[]],[779,"Bruxish",7,0,"",0,[]],[780,"Drampa",7,0,"",0,[]],[781,"Dhelmise",7,0,"",0,[]],[782,"Jangmo-o",7,0,"",0,[]],[783,"Hakamo-o",7,0,"",0,[]],[784,"Kommo-o",7,0,"",0,[["Escamas Estrondosas","Clanging Scales","Dragão","Carregado","CD",1,"Dia da Comunidade Jun/2025 (Jangmo-o)"]]],[785,"Tapu Koko",7,0,"",0,[["Fúria da Natureza","Nature's Madness","Fada","Carregado","ETM",1,"Reides Especiais Tapu Koko (MT Elite)"]]],[786,"Tapu Lele",7,0,"",0,[["Fúria da Natureza","Nature's Madness","Fada","Carregado","ETM",1,"Reides Especiais Tapu Lele (MT Elite)"]]],[787,"Tapu Bulu",7,0,"",0,[["Fúria da Natureza","Nature's Madness","Fada","Carregado","ETM",1,"Reides Especiais Tapu Bulu (MT Elite)"]]],[788,"Tapu Fini",7,0,"",0,[["Fúria da Natureza","Nature's Madness","Fada","Carregado","ETM",1,"Reides Especiais Tapu Fini (MT Elite)"]]],[789,"Cosmog",7,0,"",0,[]],[790,"Cosmoem",7,0,"",0,[]],[791,"Solgaleo",7,0,"",0,[]],[792,"Lunala",7,0,"",0,[]],[793,"Nihilego",7,0,"",0,[]],[794,"Buzzwole",7,0,"",0,[]],[795,"Pheromosa",7,0,"",0,[]],[796,"Xurkitree",7,0,"",0,[]],[797,"Celesteela",7,0,"",0,[]],[798,"Kartana",7,0,"",0,[]],[799,"Guzzlord",7,0,"",0,[]],[800,"Necrozma",7,0,"",0,[["Golpe de Sol (Juba Crepúsculo)","Sunsteel Strike","Aço","Carregado","OLD",0,"Fusão Necrozma Solgaleo (Sem MT)"],["Raio Espectral (Asas Alvorada)","Moongeist Beam","Fantasma","Carregado","OLD",0,"Fusão Necrozma Lunala (Sem MT)"]]],[801,"Magearna",7,0,"",0,[]],[802,"Marshadow",7,0,"",0,[]],[803,"Poipole",7,0,"",0,[]],[804,"Naganadel",7,0,"",0,[]],[805,"Stakataka",7,0,"",0,[]],[806,"Blacephalon",7,0,"",0,[]],[807,"Zeraora",7,0,"",0,[]],[808,"Meltan",7,0,"",0,[]],[809,"Melmetal",7,0,"",0,[["Dupla Pancada de Ferro","Double Iron Bash","Aço","Carregado","ETM",1,"Evento / Pesquisa Melmetal (MT Elite)"]]],[810,"Grookey",8,0,"",0,[]],[811,"Thwackey",8,0,"",0,[]],[812,"Rillaboom",8,0,"",0,[["Planta Mortal","Frenzy Plant","Planta","Carregado","CD",1,"Dia da Comunidade Jan/2026 (Grookey)"]]],[813,"Scorbunny",8,0,"",0,[]],[814,"Raboot",8,0,"",0,[]],[815,"Cinderace",8,0,"",0,[["Queimadura Explosiva","Blast Burn","Fogo","Carregado","CD",1,"Dia da Comunidade Mar/2026 (Scorbunny)"]]],[816,"Sobble",8,0,"",0,[]],[817,"Drizzile",8,0,"",0,[]],[818,"Inteleon",8,0,"",0,[["Hidrocanhão","Hydro Cannon","Água","Carregado","CD",1,"Dia da Comunidade Jul/2026 (Sobble)"]]],[819,"Skwovet",8,0,"",0,[]],[820,"Greedent",8,0,"",0,[]],[821,"Rookidee",8,0,"",0,[]],[822,"Corvisquire",8,0,"",0,[]],[823,"Corviknight",8,0,"",0,[["Cortador de Ar","Air Cutter","Voador","Carregado","CD",1,"Dia da Comunidade Ago/2025 (Rookidee)"]]],[824,"Blipbug",8,0,"",0,[]],[825,"Dottler",8,0,"",0,[]],[826,"Orbeetle",8,0,"",0,[]],[827,"Nickit",8,0,"",0,[]],[828,"Thievul",8,0,"",0,[["Vento Congelante","Icy Wind","Gelo","Carregado","CD",1,"Dia da Comunidade Ago/2026 (Nickit)"]]],[829,"Gossifleur",8,0,"",0,[]],[830,"Eldegoss",8,0,"",0,[]],[831,"Wooloo",8,0,"",0,[]],[832,"Dubwool",8,0,"",0,[]],[833,"Chewtle",8,0,"",0,[]],[834,"Drednaw",8,0,"",0,[]],[835,"Yamper",8,0,"",0,[]],[836,"Boltund",8,0,"",0,[]],[837,"Rolycoly",8,0,"",0,[]],[838,"Carkol",8,0,"",0,[]],[839,"Coalossal",8,0,"",0,[]],[840,"Applin",8,0,"",0,[]],[841,"Flapple",8,0,"",0,[]],[842,"Appletun",8,0,"",0,[]],[843,"Silicobra",8,0,"",0,[]],[844,"Sandaconda",8,0,"",0,[]],[845,"Cramorant",8,0,"",0,[]],[846,"Arrokuda",8,0,"",0,[]],[847,"Barraskewda",8,0,"",0,[]],[848,"Toxel",8,0,"",0,[]],[849,"Toxtricity",8,0,"",0,[]],[850,"Sizzlipede",8,0,"",0,[]],[851,"Centiskorch",8,0,"",0,[]],[852,"Clobbopus",8,0,"",0,[]],[853,"Grapploct",8,0,"",0,[]],[854,"Sinistea",8,0,"",0,[]],[855,"Polteageist",8,0,"",0,[]],[856,"Hatenna",8,0,"",0,[]],[857,"Hattrem",8,0,"",0,[]],[858,"Hatterene",8,1,"Domingo (Natureza)",1,[]],[859,"Impidimp",8,0,"",0,[]],[860,"Morgrem",8,0,"",0,[]],[861,"Grimmsnarl",8,1,"Domingo (Natureza)",0,[]],[862,"Obstagoon",8,1,"Sáb/Dom (Apenas Incenso)",0,[["Golpe Deslizante","Obstruct","Sombrio","Carregado","CD",1,"Dia da Comunidade Ago/2022 (Zigzagoon Galar)"]]],[863,"Perrserker",8,0,"",0,[]],[864,"Cursola",8,0,"",0,[]],[865,"Sirfetch'd",8,0,"",0,[]],[866,"Mr. Rime",8,0,"",0,[]],[867,"Runerigus",8,0,"",0,[]],[868,"Milcery",8,0,"",0,[]],[869,"Alcremie",8,0,"",0,[]],[870,"Falinks",8,0,"",0,[]],[871,"Pincurchin",8,0,"",0,[]],[872,"Snom",8,0,"",0,[]],[873,"Frosmoth",8,0,"",0,[]],[874,"Stonjourner",8,0,"",0,[]],[875,"Eiscue",8,0,"",0,[]],[876,"Indeedee",8,0,"",0,[]],[877,"Morpeko",8,0,"",0,[]],[878,"Cufant",8,0,"",0,[]],[879,"Copperajah",8,0,"",0,[]],[880,"Dracozolt",8,0,"",0,[]],[881,"Arctozolt",8,0,"",0,[]],[882,"Dracovish",8,0,"",0,[]],[883,"Arctovish",8,0,"",0,[]],[884,"Duraludon",8,0,"",0,[]],[885,"Dreepy",8,0,"",0,[]],[886,"Drakloak",8,0,"",0,[]],[887,"Dragapult",8,0,"",0,[]],[888,"Zacian",8,0,"",0,[["Lâmina Behemoth (Espada Coroada)","Behemoth Blade","Aço","Carregado","OLD",0,"Forma Espada Coroada Zacian (Sem MT)"]]],[889,"Zamazenta",8,0,"",0,[["Escudo Behemoth (Escudo Coroado)","Behemoth Bash","Aço","Carregado","OLD",0,"Forma Escudo Coroado Zamazenta (Sem MT)"]]],[890,"Eternatus",8,0,"",0,[["Canhão Dinamax","Dynamax Cannon","Dragão","Carregado","OLD",0,"Exclusivo Eternatus (Sem MT Elite)"]]],[891,"Kubfu",8,0,"",0,[]],[892,"Urshifu",8,0,"",0,[]],[893,"Zarude",8,0,"",0,[]],[894,"Regieleki",8,0,"",0,[]],[895,"Regidrago",8,0,"",0,[]],[896,"Glastrier",8,0,"",0,[]],[897,"Spectrier",8,0,"",0,[]],[898,"Calyrex",8,0,"",0,[]],[899,"Wyrdeer",8,0,"",0,[]],[900,"Kleavor",8,0,"",0,[]],[901,"Ursaluna",8,0,"",0,[["Investida Frontal","Headlong Rush","Terrestre","Carregado","CD",1,"Dia da Comunidade Nov/2022 (Teddiursa)"]]],[902,"Basculegion",8,0,"",0,[]],[903,"Sneasler",8,0,"",0,[]],[904,"Overqwil",8,0,"",0,[]],[905,"Enamorus",8,0,"",0,[]],[906,"Sprigatito",9,0,"",0,[]],[907,"Floragato",9,0,"",0,[]],[908,"Meowscarada",9,0,"",0,[["Planta Mortal","Frenzy Plant","Planta","Carregado","CD",1,"Dia da Comunidade Jan/2025 (Sprigatito)"]]],[909,"Fuecoco",9,0,"",0,[]],[910,"Crocalor",9,0,"",0,[]],[911,"Skeledirge",9,0,"",0,[["Queimadura Explosiva","Blast Burn","Fogo","Carregado","CD",1,"Dia da Comunidade Mar/2025 (Fuecoco)"]]],[912,"Quaxly",9,0,"",0,[]],[913,"Quaxwell",9,0,"",0,[]],[914,"Quaquaval",9,0,"",0,[["Hidrocanhão","Hydro Cannon","Água","Carregado","CD",1,"Dia da Comunidade Jul/2025 (Quaxly)"]]],[915,"Lechonk",9,0,"",0,[]],[916,"Oinkologne",9,0,"",0,[["Tapa de Lama","Mud-Slap","Terrestre","Ágil","CD",1,"Dia da Comunidade Mai/2026 (Lechonk)"]]],[917,"Tarountula",9,0,"",0,[]],[918,"Spidops",9,0,"",0,[]],[919,"Nymble",9,0,"",0,[]],[920,"Lokix",9,0,"",0,[]],[921,"Pawmi",9,0,"",0,[["Quebra-telha","Brick Break","Lutador","Carregado","OLD",0,"Evento Pawmi Mai/2025 (Sem MT Elite)"]]],[922,"Pawmo",9,0,"",0,[]],[923,"Pawmot",9,0,"",0,[["Quebra-telha","Brick Break","Lutador","Carregado","CD",1,"Dia da Comunidade Mai/2025 (Pawmi)"]]],[924,"Tandemaus",9,0,"",0,[]],[925,"Maushold",9,0,"",0,[]],[926,"Fidough",9,0,"",0,[]],[927,"Dachsbun",9,0,"",0,[]],[928,"Smoliv",9,0,"",0,[]],[929,"Dolliv",9,0,"",0,[]],[930,"Arboliva",9,0,"",0,[]],[931,"Squawkabilly",9,0,"",0,[]],[932,"Nacli",9,0,"",0,[]],[933,"Naclstack",9,0,"",0,[]],[934,"Garganacl",9,0,"",0,[]],[935,"Charcadet",9,0,"",0,[]],[936,"Armarouge",9,0,"",0,[]],[937,"Ceruledge",9,0,"",0,[]],[938,"Tadbulb",9,0,"",0,[]],[939,"Bellibolt",9,0,"",0,[]],[940,"Wattrel",9,0,"",0,[]],[941,"Kilowattrel",9,0,"",0,[]],[942,"Maschiff",9,0,"",0,[]],[943,"Mabosstiff",9,0,"",0,[]],[944,"Shroodle",9,0,"",0,[]],[945,"Grafaiai",9,0,"",0,[]],[946,"Bramblin",9,0,"",0,[]],[947,"Brambleghast",9,0,"",0,[]],[948,"Toedscool",9,0,"",0,[]],[949,"Toedscruel",9,0,"",0,[]],[950,"Klawf",9,0,"",0,[]],[951,"Capsakid",9,0,"",0,[]],[952,"Scovillain",9,0,"",0,[]],[953,"Rellor",9,0,"",0,[]],[954,"Rabsca",9,0,"",0,[]],[955,"Flittle",9,0,"",0,[]],[956,"Espathra",9,0,"",0,[]],[957,"Tinkatink",9,0,"",0,[]],[958,"Tinkatuff",9,0,"",0,[]],[959,"Tinkaton",9,0,"",0,[["Martelo Gigatônico","Gigaton Hammer","Aço","Carregado","CD",1,"Dia da Comunidade Abr/2026 (Tinkatink)"]]],[960,"Wiglett",9,0,"",0,[]],[961,"Wugtrio",9,0,"",0,[]],[962,"Bombirdier",9,0,"",0,[]],[963,"Finizen",9,0,"",0,[]],[964,"Palafin",9,0,"",0,[]],[965,"Varoom",9,0,"",0,[]],[966,"Revavroom",9,0,"",0,[]],[967,"Cyclizar",9,0,"",0,[]],[968,"Orthworm",9,0,"",0,[]],[969,"Glimmet",9,0,"",0,[]],[970,"Glimmora",9,0,"",0,[]],[971,"Greavard",9,0,"",0,[]],[972,"Houndstone",9,0,"",0,[]],[973,"Flamigo",9,0,"",0,[]],[974,"Cetoddle",9,0,"",0,[]],[975,"Cetitan",9,0,"",0,[]],[976,"Veluza",9,0,"",0,[]],[977,"Dondozo",9,0,"",0,[]],[978,"Tatsugiri",9,0,"",0,[]],[979,"Annihilape",9,0,"",0,[]],[980,"Clodsire",9,1,"Domingo (Natureza)",0,[["Megachifre","Megahorn","Inseto","Carregado","CD",1,"Dia da Comunidade Nov/2023 (Wooper Paldea)"]]],[981,"Farigiraf",9,0,"",0,[]],[982,"Dudunsparce",9,0,"",0,[]],[983,"Kingambit",9,0,"",0,[["Talho Reverente","Kowtow Cleave","Sombrio","Carregado","CD",1,"Dia da Comunidade Nov/2026 (Pawniard)"]]],[984,"Great Tusk",9,0,"",0,[]],[985,"Scream Tail",9,0,"",0,[]],[986,"Brute Bonnet",9,0,"",0,[]],[987,"Flutter Mane",9,0,"",0,[]],[988,"Slither Wing",9,0,"",0,[]],[989,"Sandy Shocks",9,0,"",0,[]],[990,"Iron Treads",9,0,"",0,[]],[991,"Iron Bundle",9,0,"",0,[]],[992,"Iron Hands",9,0,"",0,[]],[993,"Iron Jugulis",9,0,"",0,[]],[994,"Iron Moth",9,0,"",0,[]],[995,"Iron Thorns",9,0,"",0,[]],[996,"Frigibax",9,0,"",0,[]],[997,"Arctibax",9,0,"",0,[]],[998,"Baxcalibur",9,0,"",0,[["Investida Glaive","Glaive Rush","Dragão","Carregado","CD",1,"Dia da Comunidade Jun/2026 (Frigibax)"]]],[999,"Gimmighoul",9,0,"",0,[]],[1000,"Gholdengo",9,0,"",0,[]],[1001,"Wo-Chien",9,0,"",0,[]],[1002,"Chien-Pao",9,0,"",0,[]],[1003,"Ting-Lu",9,0,"",0,[]],[1004,"Chi-Yu",9,0,"",0,[]],[1005,"Roaring Moon",9,0,"",0,[]],[1006,"Iron Valiant",9,0,"",0,[]],[1007,"Koraidon",9,0,"",0,[]],[1008,"Miraidon",9,0,"",0,[]],[1009,"Walking Wake",9,0,"",0,[]],[1010,"Iron Leaves",9,0,"",0,[]],[1011,"Dipplin",9,0,"",0,[]],[1012,"Poltchageist",9,0,"",0,[]],[1013,"Sinistcha",9,0,"",0,[]],[1014,"Okidogi",9,0,"",0,[]],[1015,"Munkidori",9,0,"",0,[]],[1016,"Fezandipiti",9,0,"",0,[]],[1017,"Ogerpon",9,0,"",0,[]],[1018,"Archaludon",9,0,"",0,[]],[1019,"Hydrapple",9,0,"",0,[]],[1020,"Gouging Fire",9,0,"",0,[]],[1021,"Raging Bolt",9,0,"",0,[]],[1022,"Iron Boulder",9,0,"",0,[]],[1023,"Iron Crown",9,0,"",0,[]],[1024,"Terapagos",9,0,"",0,[]],[1025,"Pecharunt",9,0,"",0,[]]];
+    const TOTAL_LEGACY_COUNT = 298;
 
     const GEN_NAMES = {
       1: "Kanto", 2: "Johto", 3: "Hoenn", 4: "Sinnoh",
       5: "Unova", 6: "Kalos", 7: "Alola", 8: "Galar/Hisui", 9: "Paldea"
     };
 
-    const STORAGE_KEY = "pokedex_1025_android_v1";
-    let userState = {}; // { [id]: { c: bool, s: bool, i: bool, z: bool, n: string } }
+    const STORAGE_KEY = "pokedex_1025_legacy_android_v2";
+    let userState = {}; // { [id]: { c: bool, s: bool, i: bool, z: bool, n: string, m: number[] } }
 
     let currentGen = "ALL";
     let currentStatus = "ALL";
+    let currentLegacyFilter = "ALL";
     let searchQuery = "";
     let visibleLimit = 60;
     let globalShinyPreview = false;
     let editingNoteId = null;
     let deferredInstallPrompt = null;
 
-    // Load saved state + migrate any previous Wild Area 2026 state
     function loadState() {
       try {
-        const saved = localStorage.getItem(STORAGE_KEY);
+        const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem("pokedex_1025_android_v1");
         if (saved) {
           userState = JSON.parse(saved) || {};
-        }
-        // Migrate old Wild Area 2026 checklist keys if present
-        const oldSaved = localStorage.getItem("wild_area_2026_mighty_v2") || localStorage.getItem("wild_area_2026_mighty_v1");
-        if (oldSaved && Object.keys(userState).length === 0) {
-          const oldObj = JSON.parse(oldSaved);
-          for (const [k, v] of Object.entries(oldObj)) {
-            const numId = parseInt(k.replace(/\D/g, ""), 10);
-            if (numId >= 1 && numId <= 1025 && v) {
-              userState[numId] = {
-                c: !!v.captured,
-                s: !!v.shiny,
-                i: !!v.iv100,
-                z: !!v.xlxxl,
-                n: ""
-              };
-            }
-          }
-          saveState();
         }
       } catch (e) {
         console.warn("Erro ao carregar estado:", e);
@@ -576,7 +635,9 @@
     }
 
     function getRec(id) {
-      return userState[id] || { c: false, s: false, i: false, z: false, n: "" };
+      const r = userState[id];
+      return r ? { c: !!r.c, s: !!r.s, i: !!r.i, z: !!r.z, n: r.n || "", m: Array.isArray(r.m) ? r.m : [] }
+               : { c: false, s: false, i: false, z: false, n: "", m: [] };
     }
 
     function vibrate(ms = 14) {
@@ -598,10 +659,9 @@
     }
 
     function getArtworkUrl(id, isShiny) {
-      if (isShiny) {
-        return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${id}.png`;
-      }
-      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+      return isShiny
+        ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${id}.png`
+        : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
     }
 
     function handleImgError(img, id, isShiny) {
@@ -621,34 +681,47 @@
     function getFilteredList() {
       const q = searchQuery.trim().toLowerCase();
       return RAW_DEX.filter(p => {
-        const [id, name, gen, isWA, waAvail, legacy, ltype] = p;
+        const [id, name, gen, isWA, waAvail, shinyLocked, moves] = p;
+
+        // Legacy category filter
+        if (currentLegacyFilter === "ANY_LEGACY" && moves.length === 0) return false;
+        if (currentLegacyFilter === "CD" && !moves.some(m => m[4] === "CD")) return false;
+        if (currentLegacyFilter === "ETM" && !moves.some(m => m[5] === 1)) return false;
+        if (currentLegacyFilter === "OLD" && !moves.some(m => m[4] === "OLD")) return false;
+
+        // Generation filter
         if (currentGen === "WA2026" && !isWA) return false;
         if (currentGen !== "ALL" && currentGen !== "WA2026" && String(gen) !== currentGen) return false;
 
+        // Status filter
         const rec = getRec(id);
         if (currentStatus === "MISSING" && rec.c) return false;
         if (currentStatus === "CAP" && !rec.c) return false;
         if (currentStatus === "SHY" && !rec.s) return false;
         if (currentStatus === "IV" && !rec.i) return false;
         if (currentStatus === "SZ" && !rec.z) return false;
-        if (currentStatus === "NOTE" && !(rec.n || legacy)) return false;
+        if (currentStatus === "LEG_DONE" && rec.m.length === 0) return false;
 
+        // Text search
         if (q) {
           const cleanQ = q.replace(/^#/, "");
-          const idStr = String(id);
-          const padStr = padDex(id);
           const matchName = name.toLowerCase().includes(q);
-          const matchId = idStr === cleanQ || padStr.includes(cleanQ);
-          const matchLegacy = legacy.toLowerCase().includes(q) || ltype.toLowerCase().includes(q);
-          const matchNote = (rec.n || "").toLowerCase().includes(q);
-          if (!matchName && !matchId && !matchLegacy && !matchNote) return false;
+          const matchId = String(id) === cleanQ || padDex(id).includes(cleanQ);
+          const matchNote = rec.n.toLowerCase().includes(q);
+          const matchMove = moves.some(m =>
+            m[0].toLowerCase().includes(q) ||
+            m[1].toLowerCase().includes(q) ||
+            m[2].toLowerCase().includes(q) ||
+            m[6].toLowerCase().includes(q)
+          );
+          if (!matchName && !matchId && !matchNote && !matchMove) return false;
         }
         return true;
       });
     }
 
     function updateDashboard() {
-      let cap = 0, shy = 0, iv = 0, sz = 0;
+      let cap = 0, shy = 0, iv = 0, sz = 0, legDone = 0;
       for (const p of RAW_DEX) {
         const rec = userState[p[0]];
         if (!rec) continue;
@@ -656,9 +729,10 @@
         if (rec.s) shy++;
         if (rec.i) iv++;
         if (rec.z) sz++;
+        if (Array.isArray(rec.m)) legDone += rec.m.length;
       }
       const total = 1025;
-      const totalShiny = 1024; // Hatterene shiny locked in Wild Area note, general Dex 1024/1025
+      const totalShiny = 1024;
       document.getElementById("top-cap-pill").textContent = `${cap} / ${total}`;
       document.getElementById("val-cap").textContent = `${cap} / ${total}`;
       document.getElementById("pct-cap").textContent = `${((cap / total) * 100).toFixed(1)}%`;
@@ -675,6 +749,28 @@
       document.getElementById("val-sz").textContent = `${sz} / ${total}`;
       document.getElementById("pct-sz").textContent = `${((sz / total) * 100).toFixed(1)}%`;
       document.getElementById("bar-sz").style.width = `${(sz / total) * 100}%`;
+
+      document.getElementById("val-leg").textContent = `${legDone} / ${TOTAL_LEGACY_COUNT}`;
+      document.getElementById("pct-leg").textContent = `${((legDone / TOTAL_LEGACY_COUNT) * 100).toFixed(1)}%`;
+      document.getElementById("bar-leg").style.width = `${Math.min(100, (legDone / TOTAL_LEGACY_COUNT) * 100)}%`;
+    }
+
+    function renderLegacyBadges(m) {
+      // m: [movePt, moveEn, typePt, slot, cat, etmOk, note]
+      const cat = m[4];
+      const etmOk = m[5] === 1;
+      const badges = [];
+      if (cat === "CD") {
+        badges.push(`<span class="m-badge m-cd">🌟 Dia da Comunidade</span>`);
+      } else if (cat === "OLD") {
+        badges.push(`<span class="m-badge m-old">🏛️ Legado Antigo</span>`);
+      }
+      if (etmOk) {
+        badges.push(`<span class="m-badge m-etm">💎 MT Elite (${m[3]})</span>`);
+      } else {
+        badges.push(`<span class="m-badge m-old">🚫 Sem MT Elite</span>`);
+      }
+      return badges.join("");
     }
 
     function renderGrid() {
@@ -700,11 +796,32 @@
       }
 
       const html = slice.map(p => {
-        const [id, name, gen, isWA, waAvail, legacy, ltype, shinyLocked] = p;
+        const [id, name, gen, isWA, waAvail, shinyLocked, moves] = p;
         const rec = getRec(id);
         const showShiny = (rec.s || globalShinyPreview) && !shinyLocked;
         const displayName = id === 103 && currentGen === "WA2026" ? "Exeggutor (Alola)" : name;
         const hasNote = !!(rec.n && rec.n.trim());
+
+        let movesHtml = "";
+        if (moves.length > 0) {
+          const items = moves.map((m, idx) => {
+            const isChecked = rec.m.includes(idx);
+            return `
+              <div class="legacy-item ${isChecked ? 'checked' : ''}" onclick="toggleMove(${id}, ${idx})">
+                <div class="legacy-left">
+                  <div class="legacy-move-title">
+                    <span>${m[0]}</span>
+                    <span style="font-size:10.5px;color:var(--md-text-muted);font-weight:500;">(${m[1]} • ${m[2]})</span>
+                  </div>
+                  <div class="legacy-move-meta">${m[6]}</div>
+                  <div class="legacy-badges">${renderLegacyBadges(m)}</div>
+                </div>
+                <div class="m-check-box">${isChecked ? '✓' : ''}</div>
+              </div>
+            `;
+          }).join("");
+          movesHtml = `<div class="legacy-box">${items}</div>`;
+        }
 
         return `
           <article class="poke-card ${rec.c ? 'is-captured' : ''} ${showShiny ? 'is-shiny' : ''}" id="card-${id}">
@@ -721,11 +838,11 @@
                 </div>
                 <div class="poke-name">${displayName}</div>
                 <div class="poke-sub">${isWA ? waAvail : `Pokédex Nacional • ${GEN_NAMES[gen]}`}</div>
-                ${legacy ? `<span class="legacy-tag">⚔️ ${legacy} (${ltype})</span>` : ''}
                 ${hasNote ? `<div class="poke-sub" style="color:#7dd3fc;margin-top:3px;">📝 ${escapeHtml(rec.n)}</div>` : ''}
               </div>
-              <button class="note-btn ${hasNote ? 'has-note' : ''}" onclick="openNoteModal(${id})" title="Adicionar nota ou golpe Legacy">📝</button>
+              <button class="note-btn ${hasNote ? 'has-note' : ''}" onclick="openNoteModal(${id})" title="Adicionar nota personalizada">📝</button>
             </div>
+            ${movesHtml}
             <div class="status-row">
               <button class="st-btn cap ${rec.c ? 'on' : ''}" onclick="toggleField(${id}, 'c')">
                 <span>${rec.c ? '✓' : '○'}</span><span>Capturado</span>
@@ -751,15 +868,8 @@
       return str.replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
     }
 
-    function toggleField(id, field) {
-      vibrate(14);
-      const rec = { ...getRec(id) };
-      rec[field] = !rec[field];
-      // Auto-mark captured if user marks Shiny, IV 100% or XL/XXL
-      if ((field === 's' || field === 'i' || field === 'z') && rec[field] && !rec.c) {
-        rec.c = true;
-      }
-      if (!rec.c && !rec.s && !rec.i && !rec.z && !rec.n) {
+    function persistRecord(id, rec) {
+      if (!rec.c && !rec.s && !rec.i && !rec.z && !rec.n && rec.m.length === 0) {
         delete userState[id];
       } else {
         userState[id] = rec;
@@ -767,6 +877,30 @@
       saveState();
       updateDashboard();
       renderGrid();
+    }
+
+    function toggleField(id, field) {
+      vibrate(14);
+      const rec = getRec(id);
+      rec[field] = !rec[field];
+      if ((field === 's' || field === 'i' || field === 'z') && rec[field] && !rec.c) {
+        rec.c = true;
+      }
+      persistRecord(id, rec);
+    }
+
+    function toggleMove(id, moveIdx) {
+      vibrate(16);
+      const rec = getRec(id);
+      const pos = rec.m.indexOf(moveIdx);
+      if (pos >= 0) {
+        rec.m.splice(pos, 1);
+      } else {
+        rec.m.push(moveIdx);
+        rec.m.sort((a, b) => a - b);
+        if (!rec.c) rec.c = true;
+      }
+      persistRecord(id, rec);
     }
 
     function handleSearch(val) {
@@ -781,6 +915,14 @@
       inp.value = "";
       handleSearch("");
       inp.focus();
+    }
+
+    function setLegacyFilter(leg, btn) {
+      currentLegacyFilter = leg;
+      document.querySelectorAll("#legacy-chips .chip").forEach(c => c.classList.remove("active"));
+      btn.classList.add("active");
+      visibleLimit = 60;
+      renderGrid();
     }
 
     function setGenFilter(gen, btn) {
@@ -825,7 +967,7 @@
       const p = RAW_DEX[id - 1];
       const rec = getRec(id);
       document.getElementById("note-modal-title").textContent = `#${padDex(id)} ${p[1]} • Notas`;
-      document.getElementById("note-modal-input").value = rec.n || p[5] || "";
+      document.getElementById("note-modal-input").value = rec.n || "";
       document.getElementById("note-modal").classList.add("open");
     }
 
@@ -837,15 +979,10 @@
     function saveNoteModal() {
       if (!editingNoteId) return;
       const txt = document.getElementById("note-modal-input").value.trim();
-      const rec = { ...getRec(editingNoteId), n: txt };
-      if (!rec.c && !rec.s && !rec.i && !rec.z && !rec.n) {
-        delete userState[editingNoteId];
-      } else {
-        userState[editingNoteId] = rec;
-      }
-      saveState();
+      const rec = getRec(editingNoteId);
+      rec.n = txt;
+      persistRecord(editingNoteId, rec);
       closeNoteModal();
-      renderGrid();
       showToast("📝 Nota salva!");
     }
 
@@ -870,15 +1007,19 @@
     function buildDynamicString(mode) {
       const ids = [];
       for (const p of RAW_DEX) {
-        const id = p[0];
+        const [id, , , , , , moves] = p;
         const rec = getRec(id);
         if (mode === "MISSING" && !rec.c) ids.push(id);
         if (mode === "CAP" && rec.c) ids.push(id);
         if (mode === "SHY" && rec.s) ids.push(id);
         if (mode === "IV" && rec.i) ids.push(id);
         if (mode === "SZ" && rec.z) ids.push(id);
+        if (mode === "LEG_ALL" && moves.length > 0) ids.push(id);
+        if (mode === "LEG_CD" && moves.some(m => m[4] === "CD")) ids.push(id);
+        if (mode === "LEG_OLD" && moves.some(m => m[4] === "OLD")) ids.push(id);
       }
-      const str = compressIdsToRanges(ids);
+      const suffix = mode.startsWith("LEG_") ? "&@especial" : "";
+      const str = compressIdsToRanges(ids) + (ids.length ? suffix : "");
       document.getElementById("dynamic-string-box").textContent = str;
       showToast(`String gerada (${ids.length} Pokémon)!`);
     }
@@ -898,7 +1039,7 @@
     }
 
     // =========================================================================
-    // NATIVE OFFLINE ODF (.ODS) GENERATOR (CRC-32 + ZIP + OPENDOCUMENT XML)
+    // NATIVE OFFLINE ODF (.ODS) GENERATOR (4 SHEETS INCLUDING LEGACY CATALOG)
     // =========================================================================
     function xmlEscape(s) {
       return String(s ?? "")
@@ -931,7 +1072,6 @@
     }
 
     function buildZip(files) {
-      // files: [{ name, data: Uint8Array, store: bool }]
       const enc = new TextEncoder();
       const localParts = [];
       const centralParts = [];
@@ -947,8 +1087,8 @@
         const lv = new DataView(lh.buffer);
         lv.setUint32(0, 0x04034b50, true);
         lv.setUint16(4, 20, true);
-        lv.setUint16(6, 0x0800, true); // UTF-8
-        lv.setUint16(8, 0, true); // STORE (0) ensures universal compatibility
+        lv.setUint16(6, 0x0800, true);
+        lv.setUint16(8, 0, true);
         lv.setUint16(10, 0, true);
         lv.setUint16(12, 0, true);
         lv.setUint32(14, crc, true);
@@ -1011,39 +1151,61 @@
       }).join("")}</table:table-row>`;
     }
 
+    function catLabel(cat) {
+      if (cat === "CD") return "Dia da Comunidade";
+      if (cat === "OLD") return "Legado Antigo / Forma";
+      return "Exclusivo / Evento";
+    }
+
     async function exportODS(useShare) {
-      let cap = 0, shy = 0, iv = 0, sz = 0;
+      let cap = 0, shy = 0, iv = 0, sz = 0, legDone = 0;
       const genStats = {};
-      for (let g = 1; g <= 9; g++) genStats[g] = { total: 0, cap: 0, shy: 0, iv: 0, sz: 0 };
+      for (let g = 1; g <= 9; g++) genStats[g] = { total: 0, cap: 0, shy: 0, iv: 0, sz: 0, legDone: 0 };
 
       const dexRows = [
-        odsRow(["#Dex", "Pokémon", "Geração", "Região", "Evento Área Selvagem 2026", "Golpe Legacy (Tipo)", "Capturado", "Brilhante (Shiny)", "IV 100%", "XL / XXL", "Notas"])
+        odsRow(["#Dex", "Pokémon", "Geração", "Região", "Golpes Legacy", "Categorias Legacy", "MT Elite Disponível?", "Capturado", "Brilhante (Shiny)", "IV 100%", "XL / XXL", "Legacy Obtidos", "Notas"])
+      ];
+
+      const legacyRows = [
+        odsRow(["#Dex", "Pokémon", "Geração", "Golpe (PT-BR)", "Move (EN)", "Tipo", "Slot", "Categoria", "Disponível com MT Elite?", "Origem / Detalhe", "Registrado"])
       ];
 
       for (const p of RAW_DEX) {
-        const [id, name, gen, isWA, waAvail, legacy, ltype, shinyLocked] = p;
+        const [id, name, gen, isWA, waAvail, shinyLocked, moves] = p;
         const rec = getRec(id);
         genStats[gen].total++;
         if (rec.c) { cap++; genStats[gen].cap++; }
         if (rec.s) { shy++; genStats[gen].shy++; }
         if (rec.i) { iv++; genStats[gen].iv++; }
         if (rec.z) { sz++; genStats[gen].sz++; }
+        if (rec.m.length > 0) {
+          legDone += rec.m.length;
+          genStats[gen].legDone += rec.m.length;
+        }
 
-        const legacyStr = legacy ? `${legacy} (${ltype})` : "—";
+        const movesListStr = moves.length ? moves.map(m => `${m[0]} (${m[1]})`).join(" | ") : "—";
+        const catsListStr = moves.length ? [...new Set(moves.map(m => catLabel(m[4])))].join(", ") : "—";
+        const etmSummary = moves.length === 0 ? "—"
+          : (moves.every(m => m[5] === 1) ? "Sim (Todos)"
+          : (moves.some(m => m[5] === 1) ? "Parcial (Ver aba Legacy)" : "Não (Legado Antigo/Forma)"));
+        const ownedMovesStr = rec.m.length ? rec.m.map(idx => moves[idx]?.[0] || "").filter(Boolean).join(", ") : "—";
         const shinyStr = shinyLocked ? "Indisponível" : (rec.s ? "Sim" : "Não");
+
         dexRows.push(odsRow([
-          `#${padDex(id)}`,
-          name,
-          `Gen ${gen}`,
-          GEN_NAMES[gen],
-          isWA ? waAvail : "—",
-          legacyStr,
-          rec.c ? "Sim" : "Não",
-          shinyStr,
-          rec.i ? "Sim" : "Não",
-          rec.z ? "Sim" : "Não",
-          rec.n || ""
+          `#${padDex(id)}`, name, `Gen ${gen}`, GEN_NAMES[gen],
+          movesListStr, catsListStr, etmSummary,
+          rec.c ? "Sim" : "Não", shinyStr, rec.i ? "Sim" : "Não", rec.z ? "Sim" : "Não",
+          ownedMovesStr, rec.n || ""
         ]));
+
+        moves.forEach((m, idx) => {
+          legacyRows.push(odsRow([
+            `#${padDex(id)}`, name, `Gen ${gen}`,
+            m[0], m[1], m[2], m[3], catLabel(m[4]),
+            m[5] === 1 ? "Sim (MT Elite)" : "Não (Sem MT Elite)",
+            m[6], rec.m.includes(idx) ? "Sim" : "Não"
+          ]));
+        });
       }
 
       const summaryRows = [
@@ -1051,16 +1213,17 @@
         odsRow(["Capturados", cap, 1025, Number(((cap / 1025) * 100).toFixed(2))]),
         odsRow(["Brilhantes (Shiny)", shy, 1024, Number(((shy / 1024) * 100).toFixed(2))]),
         odsRow(["IV 100%", iv, 1025, Number(((iv / 1025) * 100).toFixed(2))]),
-        odsRow(["Tamanho XL / XXL", sz, 1025, Number(((sz / 1025) * 100).toFixed(2))])
+        odsRow(["Tamanho XL / XXL", sz, 1025, Number(((sz / 1025) * 100).toFixed(2))]),
+        odsRow(["Golpes Legacy Registrados", legDone, TOTAL_LEGACY_COUNT, Number(((legDone / TOTAL_LEGACY_COUNT) * 100).toFixed(2))])
       ];
 
       const genRows = [
-        odsRow(["Geração", "Região", "Total", "Capturados", "Brilhantes", "IV 100%", "XL / XXL", "% Capturado"])
+        odsRow(["Geração", "Região", "Total", "Capturados", "Brilhantes", "IV 100%", "XL / XXL", "Legacy Obtidos", "% Capturado"])
       ];
       for (let g = 1; g <= 9; g++) {
         const st = genStats[g];
         genRows.push(odsRow([
-          `Gen ${g}`, GEN_NAMES[g], st.total, st.cap, st.shy, st.iv, st.sz,
+          `Gen ${g}`, GEN_NAMES[g], st.total, st.cap, st.shy, st.iv, st.sz, st.legDone,
           Number(((st.cap / st.total) * 100).toFixed(2))
         ]));
       }
@@ -1075,6 +1238,7 @@
     <office:spreadsheet>
       <table:table table:name="Resumo_Geral">${summaryRows.join("")}</table:table>
       <table:table table:name="Resumo_Por_Geracao">${genRows.join("")}</table:table>
+      <table:table table:name="Catalogo_Golpes_Legacy">${legacyRows.join("")}</table:table>
       <table:table table:name="Pokedex_1025">${dexRows.join("")}</table:table>
     </office:spreadsheet>
   </office:body>
@@ -1093,14 +1257,14 @@
         { name: "META-INF/manifest.xml", data: enc.encode(manifestXml) }
       ]);
 
-      const filename = "pokedex_1025_checklist.ods";
+      const filename = "pokedex_1025_legacy_checklist.ods";
       if (useShare && navigator.share && navigator.canShare) {
         const file = new File([odsBlob], filename, { type: "application/vnd.oasis.opendocument.spreadsheet" });
         if (navigator.canShare({ files: [file] })) {
           try {
             await navigator.share({
-              title: "Pokédex 1025 Checklist (ODF)",
-              text: `Meu progresso na Pokédex 1025: ${cap}/1025 capturados!`,
+              title: "Pokédex 1025 + Legacy Checklist (ODF)",
+              text: `Meu progresso Pokédex 1025: ${cap}/1025 capturados e ${legDone}/${TOTAL_LEGACY_COUNT} golpes Legacy!`,
               files: [file]
             });
             return;
@@ -1116,7 +1280,7 @@
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 4000);
-      showToast("📊 Planilha pokedex_1025_checklist.ods exportada!");
+      showToast("📊 Planilha pokedex_1025_legacy_checklist.ods exportada!");
     }
 
     // Backup & Restore JSON
@@ -1125,7 +1289,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "backup_pokedex_1025.json";
+      a.download = "backup_pokedex_1025_legacy.json";
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 3000);
       showToast("💾 Backup JSON exportado!");
@@ -1153,7 +1317,7 @@
     }
 
     function resetAllData() {
-      if (!confirm("Deseja realmente apagar todos os seus registros dos 1.025 Pokémon?")) return;
+      if (!confirm("Deseja realmente apagar todos os seus registros dos 1.025 Pokémon e golpes Legacy?")) return;
       userState = {};
       saveState();
       updateDashboard();
@@ -1168,36 +1332,45 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "pokedex_1025_android.html";
+      a.download = "pokedex_1025_android-v5.html";
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 3000);
       showToast("💾 Arquivo HTML baixado!");
     }
 
-    // Dynamic PWA Manifest & WebAPK Install Prompt
     function initPWA() {
-      const manifestObj = {
-        name: "Pokédex 1025 GO • Checklist Android",
-        short_name: "Pokédex 1025",
-        description: "Checklist completo dos 1.025 Pokémon com captura, Shiny, IV 100%, XL/XXL e exportação ODF.",
-        start_url: "./",
-        display: "standalone",
-        orientation: "portrait",
-        background_color: "#0b1120",
-        theme_color: "#0f172a",
-        icons: [
-          {
-            src: "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="40" fill="#0f172a"/><circle cx="96" cy="96" r="68" fill="#f8fafc"/><path d="M28 96a68 68 0 0 1 136 0z" fill="#ef4444"/><rect x="28" y="90" width="136" height="12" fill="#0f172a"/><circle cx="96" cy="96" r="22" fill="#f8fafc" stroke="#0f172a" stroke-width="10"/></svg>`),
-            sizes: "192x192",
-            type: "image/svg+xml"
-          }
-        ]
-      };
-      const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: "application/manifest+json" });
-      const link = document.createElement("link");
-      link.rel = "manifest";
-      link.href = URL.createObjectURL(manifestBlob);
-      document.head.appendChild(link);
+      if (window.location.protocol === "file:") {
+        const manifestObj = {
+          name: "Pokédex 1025 GO • Legacy & MT Elite",
+          short_name: "Pokédex 1025",
+          description: "Checklist completo dos 1.025 Pokémon e todos os golpes Legacy (MT Elite, Dia da Comunidade e Legado Antigo).",
+          lang: "pt-BR",
+          dir: "ltr",
+          scope_extensions: [{ origin: "https://*.github.io" }, { origin: "https://*.vercel.app" }, { origin: "https://*.netlify.app" }],
+          start_url: "./",
+          scope: "./",
+          display: "standalone",
+          display_override: ["standalone", "minimal-ui", "browser"],
+          orientation: "portrait",
+          background_color: "#0b1120",
+          theme_color: "#0f172a",
+          categories: ["games", "utilities", "entertainment"],
+          iarc_rating_id: "e84b072d-71b3-4def-86ae-0040262df285",
+          icons: [
+            {
+              src: "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="40" fill="#0f172a"/><circle cx="96" cy="96" r="68" fill="#f8fafc"/><path d="M28 96a68 68 0 0 1 136 0z" fill="#ef4444"/><rect x="28" y="90" width="136" height="12" fill="#0f172a"/><circle cx="96" cy="96" r="22" fill="#f8fafc" stroke="#0f172a" stroke-width="10"/></svg>`),
+              sizes: "192x192",
+              type: "image/svg+xml",
+              purpose: "any"
+            }
+          ]
+        };
+        const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: "application/manifest+json" });
+        const existing = document.querySelector('link[rel="manifest"]');
+        if (existing) existing.href = URL.createObjectURL(manifestBlob);
+      } else if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      }
 
       window.addEventListener("beforeinstallprompt", (e) => {
         e.preventDefault();
@@ -1215,11 +1388,64 @@
       }
     }
 
+
+    function handleDeepLinksAndFiles() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get("tab");
+        if (tab && ["checklist", "strings", "export"].includes(tab)) {
+          const navBtns = document.querySelectorAll(".nav-item");
+          const idx = tab === "checklist" ? 0 : (tab === "strings" ? 1 : 2);
+          if (navBtns[idx]) switchTab(tab, navBtns[idx]);
+        }
+        const gen = params.get("gen");
+        if (gen) {
+          const chip = document.querySelector(`#gen-chips .chip[data-gen="${gen}"]`);
+          if (chip) setGenFilter(gen, chip);
+        }
+        const rawQ = params.get("q") || params.get("text") || params.get("title");
+        if (rawQ) {
+          const cleaned = rawQ.replace(/^web\+pokedex:/i, "").trim();
+          const inp = document.getElementById("search-input");
+          if (inp) {
+            inp.value = cleaned;
+            handleSearch(cleaned);
+          }
+        }
+        if (params.get("action") === "new-note") {
+          openNoteModal(1);
+        }
+      } catch (e) {}
+
+      // File Handlers API (opening .json backup files directly with the PWA)
+      if ("launchQueue" in window && "files" in LaunchParams.prototype) {
+        window.launchQueue.setConsumer(async (launchParams) => {
+          if (!launchParams.files || !launchParams.files.length) return;
+          try {
+            const fileHandle = launchParams.files[0];
+            const file = await fileHandle.getFile();
+            const text = await file.text();
+            const parsed = JSON.parse(text);
+            if (typeof parsed === "object" && parsed !== null) {
+              userState = parsed;
+              saveState();
+              updateDashboard();
+              renderGrid();
+              showToast("✅ Backup JSON importado via sistema!");
+            }
+          } catch (err) {
+            showToast("❌ Erro ao abrir arquivo JSON.");
+          }
+        });
+      }
+    }
+
     // Boot
     loadState();
     initPWA();
     updateDashboard();
     renderGrid();
+    handleDeepLinksAndFiles();
   </script>
 </body>
 </html>

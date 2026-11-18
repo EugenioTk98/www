@@ -1,16 +1,226 @@
 {
-  "name": "Pokédex 1025 GO • Checklist Android",
+  "id": "./index.html",
+  "name": "Pokédex 1025 GO • Legacy & MT Elite",
   "short_name": "Pokédex 1025",
-  "start_url": "index.html",
+  "description": "Checklist completo dos 1.025 Pokémon no Pokémon GO com todos os golpes Legacy (MT Elite, Dia da Comunidade e Legado Antigo), gerador de strings e exportação ODF (.ods).",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "scope_extensions": [
+    {
+      "origin": "https://*.github.io"
+    },
+    {
+      "origin": "https://*.vercel.app"
+    },
+    {
+      "origin": "https://*.netlify.app"
+    }
+  ],
   "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "tabbed",
+    "standalone",
+    "minimal-ui",
+    "browser"
+  ],
+  "tab_strip": {
+    "home_tab": {
+      "url": "./index.html",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    "new_tab_button": {
+      "url": "./index.html?tab=strings"
+    }
+  },
   "orientation": "portrait",
   "background_color": "#0b1120",
   "theme_color": "#0f172a",
+  "categories": [
+    "games",
+    "utilities",
+    "entertainment"
+  ],
+  "iarc_rating_id": "e84b072d-71b3-4def-86ae-0040262df285",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "launch_handler": {
+    "client_mode": [
+      "focus-existing",
+      "auto"
+    ]
+  },
+  "handle_links": "preferred",
+  "edge_side_panel": {
+    "preferred_width": 420
+  },
+  "note_taking": {
+    "new_note_url": "./index.html?action=new-note"
+  },
+  "share_target": {
+    "action": "./index.html",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+pokedex",
+      "url": "./index.html?q=%s"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "./index.html",
+      "accept": {
+        "application/json": [
+          ".json"
+        ]
+      },
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ],
+      "launch_type": "single-client"
+    }
+  ],
+  "widgets": [
+    {
+      "name": "Progresso Pokédex 1025 GO",
+      "short_name": "Pokédex GO",
+      "description": "Acompanhe suas capturas, Shinies, IV 100% e golpes Legacy direto na tela inicial.",
+      "tag": "pokedex-1025-progress",
+      "template": "pokedex-widget",
+      "ms_ac_template": "./widget.json",
+      "data": "./widget-data.json",
+      "type": "application/json",
+      "screenshots": [
+        {
+          "src": "./screenshot-mobile.png",
+          "sizes": "540x960",
+          "label": "Widget de progresso da Pokédex 1025"
+        }
+      ],
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ],
+      "auth": false,
+      "update": 86400
+    }
+  ],
   "icons": [
     {
-      "src": "icon.svg",
-      "sizes": "192x192 512x512",
-      "type": "image/svg+xml"
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "./screenshot-mobile.png",
+      "sizes": "540x960",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Checklist completo dos 1.025 Pokémon e ataques Legacy"
+    },
+    {
+      "src": "./screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Painel de progresso e filtros no navegador"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Checklist 1025 & Legacy",
+      "short_name": "Pokédex",
+      "description": "Abrir checklist completo dos 1.025 Pokémon",
+      "url": "./index.html?tab=checklist",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Área Selvagem 2026 (21)",
+      "short_name": "Incríveis 21",
+      "description": "Filtrar os 21 Pokémon Incríveis do evento",
+      "url": "./index.html?gen=WA2026",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Gerador de Strings GO",
+      "short_name": "Strings GO",
+      "description": "Copiar strings de busca do Pokémon GO",
+      "url": "./index.html?tab=strings",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Exportar Planilha ODF (.ods)",
+      "short_name": "Exportar ODF",
+      "description": "Baixar ou compartilhar planilha .ods",
+      "url": "./index.html?tab=export",
+      "icons": [
+        {
+          "src": "./icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }
