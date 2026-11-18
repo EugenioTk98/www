@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="application-name" content="Pokédex 1025 GO" />
+  <title>Pokédex 1025 • Checklist Android & ODF</title>
+  <style>
+    :root {
+      --md-bg: #0b1120;
+      --md-surface: #131c31;
+      --md-surface-2: #1b2640;
+      --md-surface-3: #243252;
+      --md-outline: rgba(148, 163, 184, 0.16);
+      --md-text: #f8fafc;
+      --md-text-muted: #94a3b8;
+      --md-primary: #38bdf8;
+      --md-primary-container: rgba(56, 189, 248, 0.16);
+      --c-cap: #10b981;
+      --c-cap-bg: rgba(16, 185, 129, 0.16);
+      --c-shiny: #f59e0b;
+      --c-shiny-bg: rgba(245, 158, 11, 0.18);
+      --c-iv: #f43f5e;
+      --c-iv-bg: rgba(244, 63, 94, 0.18);
+      --c-size: #a855f7;
+      --c-size-bg: rgba(168, 85, 247, 0.18);
+      --c-wa: #22d3ee;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--md-bg);
+      color: var(--md-text);
+      font-family: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      overscroll-behavior-y: contain;
+    }
+
+    /* Android Top App Bar */
+    .top-app-bar {
+      position: sticky; top: 0; z-index: 40;
+      padding: calc(10px + var(--safe-top)) 14px 10px;
+      background: rgba(11, 17, 32, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--md-outline);
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .app-title-group { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .app-icon {
+      width: 38px; height: 38px; border-radius: 12px; flex-shrink: 0;
+      background: linear-gradient(135deg, #ef4444 0%, #ef4444 48%, #f8fafc 48%, #f8fafc 52%, #e2e8f0 52%, #cbd5e1 100%);
+      border: 2px solid #334155; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .app-icon::after {
+      content: ""; position: absolute; inset: 0; margin: auto;
+      width: 11px; height: 11px; border-radius: 50%;
+      background: #fff; border: 3px solid #1e293b;
+    }
+    .app-title { font-size: 16px; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .app-subtitle { font-size: 11px; color: var(--md-text-muted); }
+
+    .top-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .pill-counter {
+      background: var(--md-surface-2); border: 1px solid var(--md-outline);
+      padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      color: var(--c-cap);
+    }
+    .btn-odf-top {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #fff; border: none; border-radius: 999px;
+      padding: 7px 12px; font-size: 12px; font-weight: 700;
+      display: inline-flex; align-items: center; gap: 5px; cursor: pointer;
+      box-shadow: 0 2px 10px rgba(37, 99, 235, 0.35);
+    }
+    .btn-odf-top:active { transform: scale(0.96); }
+
+    /* Main Container */
+    .main-content {
+      max-width: 960px; margin: 0 auto;
+      padding: 12px 12px calc(86px + var(--safe-bottom));
+    }
+    .tab-view { display: none; animation: fadeIn 0.18s ease; }
+    .tab-view.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Stats Dashboard */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px;
+    }
+    @media (min-width: 640px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+    .stat-card {
+      background: var(--md-surface); border: 1px solid var(--md-outline);
+      border-radius: 16px; padding: 10px 12px;
+    }
+    .stat-head { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--md-text-muted); font-weight: 600; }
+    .stat-val { font-size: 18px; font-weight: 800; margin: 4px 0 6px; }
+    .stat-bar { height: 5px; border-radius: 999px; background: var(--md-surface-3); overflow: hidden; }
+    .stat-bar > div { height: 100%; border-radius: 999px; transition: width 0.25s ease; }
+
+    /* Search & Filter Controls */
+    .search-box {
+      position: relative; margin-bottom: 10px;
+    }
+    .search-input {
+      width: 100%; background: var(--md-surface); border: 1px solid var(--md-outline);
+      color: var(--md-text); border-radius: 14px; padding: 11px 38px 11px 38px;
+      font-size: 14px; outline: none;
+    }
+    .search-input:focus { border-color: var(--md-primary); }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--md-text-muted); font-size: 15px; pointer-events: none; }
+    .clear-search {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: var(--md-surface-3); border: none; color: var(--md-text);
+      width: 22px; height: 22px; border-radius: 50%; font-size: 12px; cursor: pointer; display: none;
+    }
+
+    .filter-scroll {
+      display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 6px;
+      scrollbar-width: none;
+    }
+    .filter-scroll::-webkit-scrollbar { display: none; }
+    .chip {
+      flex-shrink: 0; background: var(--md-surface); border: 1px solid var(--md-outline);
+      color: var(--md-text-muted); border-radius: 999px; padding: 6px 12px;
+      font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+    }
+    .chip.active {
+      background: var(--md-primary-container); border-color: var(--md-primary); color: var(--md-primary);
+    }
+    .chip.wa-chip.active {
+      background: rgba(34, 211, 238, 0.16); border-color: var(--c-wa); color: var(--c-wa);
+    }
+
+    .results-meta {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; color: var(--md-text-muted); margin: 6px 2px 10px;
+    }
+
+    /* Pokemon Cards Grid */
+    .poke-grid {
+      display: grid; grid-template-columns: 1fr; gap: 10px;
+    }
+    @media (min-width: 600px) { .poke-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 900px) { .poke-grid { grid-template-columns: repeat(3, 1fr); } }
+
+    .poke-card {
+      background: var(--md-surface); border: 1px solid var(--md-outline);
+      border-radius: 18px; padding: 12px; display: flex; flex-direction: column; gap: 10px;
+      transition: border-color 0.2s, transform 0.1s;
+    }
+    .poke-card.is-captured { border-color: rgba(16, 185, 129, 0.45); }
+    .poke-card.is-shiny { box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.45); }
+
+    .poke-top { display: flex; align-items: center; gap: 12px; }
+    .sprite-wrap {
+      width: 68px; height: 68px; border-radius: 16px; flex-shrink: 0;
+      background: radial-gradient(circle at center, var(--md-surface-3), var(--md-surface-2));
+      display: flex; align-items: center; justify-content: center; position: relative;
+      overflow: hidden;
+    }
+    .sprite-wrap img { width: 60px; height: 60px; object-fit: contain; transition: transform 0.2s; }
+    .poke-card.is-shiny .sprite-wrap { background: radial-gradient(circle at center, rgba(245, 158, 11, 0.28), var(--md-surface-2)); }
+    .shiny-sparkle {
+      position: absolute; top: 4px; right: 5px; font-size: 12px; display: none;
+    }
+    .poke-card.is-shiny .shiny-sparkle { display: block; }
+
+    .poke-info { flex: 1; min-width: 0; }
+    .poke-dex-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .dex-num { font-size: 11px; font-weight: 800; color: var(--md-primary); font-family: monospace; }
+    .gen-badge {
+      font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 6px;
+      background: var(--md-surface-3); color: var(--md-text-muted);
+    }
+    .wa-badge {
+      font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 6px;
+      background: rgba(34, 211, 238, 0.16); color: var(--c-wa);
+    }
+    .poke-name { font-size: 16px; font-weight: 800; margin: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .poke-sub { font-size: 11px; color: var(--md-text-muted); line-height: 1.3; }
+    .legacy-tag {
+      display: inline-block; margin-top: 4px; font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 6px;
+      background: rgba(244, 63, 94, 0.16); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+
+    .note-btn {
+      background: var(--md-surface-2); border: 1px solid var(--md-outline);
+      color: var(--md-text-muted); border-radius: 10px; width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+      font-size: 14px;
+    }
+    .note-btn.has-note { border-color: var(--md-primary); color: var(--md-primary); background: var(--md-primary-container); }
+
+    /* 4 Status Toggle Buttons */
+    .status-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .st-btn {
+      border: 1px solid var(--md-outline); background: var(--md-surface-2);
+      color: var(--md-text-muted); border-radius: 11px; padding: 7px 4px;
+      font-size: 11px; font-weight: 700; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      transition: all 0.15s;
+    }
+    .st-btn:active { transform: scale(0.95); }
+    .st-btn.cap.on { background: var(--c-cap-bg); border-color: var(--c-cap); color: #6ee7b7; }
+    .st-btn.shy.on { background: var(--c-shiny-bg); border-color: var(--c-shiny); color: #fcd34d; }
+    .st-btn.iv.on { background: var(--c-iv-bg); border-color: var(--c-iv); color: #fda4af; }
+    .st-btn.sz.on { background: var(--c-size-bg); border-color: var(--c-size); color: #d8b4fe; }
+    .st-btn:disabled { opacity: 0.38; cursor: not-allowed; }
+
+    .load-more-wrap { text-align: center; margin: 18px 0 8px; }
+    .btn-load-more {
+      background: var(--md-surface-2); border: 1px solid var(--md-primary);
+      color: var(--md-primary); border-radius: 999px; padding: 11px 24px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+
+    /* Section Cards (Strings & Export/APK tabs) */
+    .panel-card {
+      background: var(--md-surface); border: 1px solid var(--md-outline);
+      border-radius: 18px; padding: 16px; margin-bottom: 12px;
+    }
+    .panel-title { font-size: 16px; font-weight: 800; margin: 0 0 6px; display: flex; align-items: center; gap: 8px; }
+    .panel-desc { font-size: 13px; color: var(--md-text-muted); margin: 0 0 12px; line-height: 1.45; }
+
+    .string-box {
+      background: var(--md-bg); border: 1px solid var(--md-outline);
+      border-radius: 12px; padding: 10px 12px; font-family: monospace; font-size: 12px;
+      color: #e2e8f0; word-break: break-all; max-height: 110px; overflow-y: auto;
+      margin-bottom: 8px;
+    }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .action-btn {
+      background: var(--md-primary); color: #0b1120; border: none;
+      border-radius: 12px; padding: 10px 14px; font-size: 13px; font-weight: 700;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .action-btn.secondary {
+      background: var(--md-surface-2); color: var(--md-text); border: 1px solid var(--md-outline);
+    }
+    .action-btn.emerald { background: var(--c-cap); color: #052e16; }
+    .action-btn.danger { background: rgba(239, 68, 68, 0.16); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.35); }
+    .action-btn:active { transform: scale(0.97); }
+
+    .gen-string-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 8px;
+    }
+
+    /* Android Bottom Navigation */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 45;
+      background: rgba(19, 28, 49, 0.96); backdrop-filter: blur(16px);
+      border-top: 1px solid var(--md-outline);
+      padding: 6px 8px calc(6px + var(--safe-bottom));
+      display: grid; grid-template-columns: repeat(3, 1fr);
+    }
+    .nav-item {
+      background: none; border: none; color: var(--md-text-muted);
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      padding: 4px 0; cursor: pointer; font-size: 11px; font-weight: 600;
+    }
+    .nav-pill {
+      padding: 4px 18px; border-radius: 999px; font-size: 16px; transition: background 0.15s;
+    }
+    .nav-item.active { color: var(--md-primary); }
+    .nav-item.active .nav-pill { background: var(--md-primary-container); }
+
+    /* Modal & Snackbar */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.72); z-index: 60;
+      display: none; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-card {
+      background: var(--md-surface); border: 1px solid var(--md-outline);
+      border-radius: 20px; padding: 18px; width: 100%; max-width: 420px;
+    }
+    .modal-textarea {
+      width: 100%; min-height: 90px; background: var(--md-bg); color: var(--md-text);
+      border: 1px solid var(--md-outline); border-radius: 12px; padding: 10px;
+      font-size: 14px; margin: 10px 0 14px; resize: vertical;
+    }
+    .snackbar {
+      position: fixed; bottom: calc(74px + var(--safe-bottom)); left: 50%; transform: translateX(-50%) translateY(20px);
+      background: #1e293b; color: #f8fafc; border: 1px solid var(--md-primary);
+      padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5); opacity: 0; pointer-events: none;
+      transition: all 0.2s ease; z-index: 70; white-space: nowrap;
+    }
+    .snackbar.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media print {
+      .top-app-bar, .bottom-nav, .search-box, .filter-scroll, .load-more-wrap { display: none !important; }
+      body { background: #fff; color: #000; }
+      .poke-card { break-inside: avoid; border: 1px solid #ccc; background: #fff; color: #000; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top App Bar -->
+  <header class="top-app-bar">
+    <div class="app-title-group">
+      <div class="app-icon"></div>
+      <div>
+        <div class="app-title">Pokédex 1025 GO</div>
+        <div class="app-subtitle">Nacional Completa • Android & ODF</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span class="pill-counter" id="top-cap-pill">0 / 1025</span>
+      <button class="btn-odf-top" onclick="exportODS(false)" title="Exportar Planilha ODF (.ods)">
+        📊 ODF
+      </button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- TAB 1: CHECKLIST 1025 -->
+    <section id="tab-checklist" class="tab-view active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-head"><span>CAPTURADOS</span><span id="pct-cap" style="color:var(--c-cap)">0%</span></div>
+          <div class="stat-val" id="val-cap" style="color:var(--c-cap)">0 / 1025</div>
+          <div class="stat-bar"><div id="bar-cap" style="width:0%;background:var(--c-cap)"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head"><span>BRILHANTES</span><span id="pct-shy" style="color:var(--c-shiny)">0%</span></div>
+          <div class="stat-val" id="val-shy" style="color:var(--c-shiny)">0 / 1024</div>
+          <div class="stat-bar"><div id="bar-shy" style="width:0%;background:var(--c-shiny)"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head"><span>IV 100%</span><span id="pct-iv" style="color:var(--c-iv)">0%</span></div>
+          <div class="stat-val" id="val-iv" style="color:var(--c-iv)">0 / 1025</div>
+          <div class="stat-bar"><div id="bar-iv" style="width:0%;background:var(--c-iv)"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-head"><span>XL / XXL</span><span id="pct-sz" style="color:var(--c-size)">0%</span></div>
+          <div class="stat-val" id="val-sz" style="color:var(--c-size)">0 / 1025</div>
+          <div class="stat-bar"><div id="bar-sz" style="width:0%;background:var(--c-size)"></div></div>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" class="search-input" placeholder="Buscar por nome, #Dex (ex: 0006, 1025) ou golpe..." oninput="handleSearch(this.value)" />
+        <button id="clear-search" class="clear-search" onclick="clearSearch()">✕</button>
+      </div>
+
+      <!-- Generation & Event Chips -->
+      <div class="filter-scroll" id="gen-chips">
+        <button class="chip active" data-gen="ALL" onclick="setGenFilter('ALL', this)">Todos (1025)</button>
+        <button class="chip wa-chip" data-gen="WA2026" onclick="setGenFilter('WA2026', this)">⚡ Área Selvagem 2026 (21)</button>
+        <button class="chip" data-gen="1" onclick="setGenFilter('1', this)">Gen 1 • Kanto (151)</button>
+        <button class="chip" data-gen="2" onclick="setGenFilter('2', this)">Gen 2 • Johto (100)</button>
+        <button class="chip" data-gen="3" onclick="setGenFilter('3', this)">Gen 3 • Hoenn (135)</button>
+        <button class="chip" data-gen="4" onclick="setGenFilter('4', this)">Gen 4 • Sinnoh (107)</button>
+        <button class="chip" data-gen="5" onclick="setGenFilter('5', this)">Gen 5 • Unova (156)</button>
+        <button class="chip" data-gen="6" onclick="setGenFilter('6', this)">Gen 6 • Kalos (72)</button>
+        <button class="chip" data-gen="7" onclick="setGenFilter('7', this)">Gen 7 • Alola (88)</button>
+        <button class="chip" data-gen="8" onclick="setGenFilter('8', this)">Gen 8 • Galar/Hisui (96)</button>
+        <button class="chip" data-gen="9" onclick="setGenFilter('9', this)">Gen 9 • Paldea (120)</button>
+      </div>
+
+      <!-- Status Chips -->
+      <div class="filter-scroll" id="status-chips">
+        <button class="chip active" data-st="ALL" onclick="setStatusFilter('ALL', this)">Status: Todos</button>
+        <button class="chip" data-st="MISSING" onclick="setStatusFilter('MISSING', this)">🎯 Faltando Capturar</button>
+        <button class="chip" data-st="CAP" onclick="setStatusFilter('CAP', this)">✓ Capturados</button>
+        <button class="chip" data-st="SHY" onclick="setStatusFilter('SHY', this)">✨ Brilhantes</button>
+        <button class="chip" data-st="IV" onclick="setStatusFilter('IV', this)">💯 IV 100%</button>
+        <button class="chip" data-st="SZ" onclick="setStatusFilter('SZ', this)">📏 XL / XXL</button>
+        <button class="chip" data-st="NOTE" onclick="setStatusFilter('NOTE', this)">📝 Com Notas/Legacy</button>
+      </div>
+
+      <div class="results-meta">
+        <span id="results-count">Exibindo 60 de 1025 Pokémon</span>
+        <button class="chip" style="padding:3px 10px;font-size:11px;" onclick="toggleAllSpritesShiny()">✨ Prévia Shiny Global</button>
+      </div>
+
+      <div class="poke-grid" id="poke-grid"></div>
+
+      <div class="load-more-wrap" id="load-more-wrap">
+        <button class="btn-load-more" id="btn-load-more" onclick="loadMore()">Carregar mais Pokémon</button>
+      </div>
+    </section>
+
+    <!-- TAB 2: STRINGS POKÉMON GO -->
+    <section id="tab-strings" class="tab-view">
+      <div class="panel-card">
+        <h2 class="panel-title">⚡ Gerador Dinâmico (Seu Progresso Atual)</h2>
+        <p class="panel-desc">Gera automaticamente strings compactadas com intervalos de Pokédex a partir dos seus registros atuais nos 1.025 Pokémon.</p>
+        <div class="btn-row" style="margin-bottom:10px;">
+          <button class="action-btn" onclick="buildDynamicString('MISSING')">🎯 Faltando Capturar</button>
+          <button class="action-btn secondary" onclick="buildDynamicString('CAP')">✓ Capturados</button>
+          <button class="action-btn secondary" onclick="buildDynamicString('SHY')">✨ Brilhantes</button>
+          <button class="action-btn secondary" onclick="buildDynamicString('IV')">💯 IV 100%</button>
+          <button class="action-btn secondary" onclick="buildDynamicString('SZ')">📏 XL / XXL</button>
+        </div>
+        <div class="string-box" id="dynamic-string-box">1-1025</div>
+        <button class="action-btn emerald" onclick="copyTextById('dynamic-string-box')">📋 Copiar String Gerada</button>
+      </div>
+
+      <div class="panel-card">
+        <h2 class="panel-title">🌍 Strings por Região / Geração</h2>
+        <p class="panel-desc">Toque em uma geração para copiar o intervalo exato da Pokédex Nacional no Pokémon GO.</p>
+        <div class="gen-string-grid">
+          <button class="action-btn secondary" onclick="copyRawString('1-151', 'Gen 1 • Kanto')">Gen 1 (1-151)</button>
+          <button class="action-btn secondary" onclick="copyRawString('152-251', 'Gen 2 • Johto')">Gen 2 (152-251)</button>
+          <button class="action-btn secondary" onclick="copyRawString('252-386', 'Gen 3 • Hoenn')">Gen 3 (252-386)</button>
+          <button class="action-btn secondary" onclick="copyRawString('387-493', 'Gen 4 • Sinnoh')">Gen 4 (387-493)</button>
+          <button class="action-btn secondary" onclick="copyRawString('494-649', 'Gen 5 • Unova')">Gen 5 (494-649)</button>
+          <button class="action-btn secondary" onclick="copyRawString('650-721', 'Gen 6 • Kalos')">Gen 6 (650-721)</button>
+          <button class="action-btn secondary" onclick="copyRawString('722-809', 'Gen 7 • Alola')">Gen 7 (722-809)</button>
+          <button class="action-btn secondary" onclick="copyRawString('810-905', 'Gen 8 • Galar')">Gen 8 (810-905)</button>
+          <button class="action-btn secondary" onclick="copyRawString('906-1025', 'Gen 9 • Paldea')">Gen 9 (906-1025)</button>
+          <button class="action-btn secondary" onclick="copyRawString('1-1025&4*', 'Todos IV 100%')">Todos IV 100%</button>
+          <button class="action-btn secondary" onclick="copyRawString('1-1025&brilhante', 'Todos Brilhantes')">Todos Shiny</button>
+          <button class="action-btn secondary" onclick="copyRawString('1-1025&@especial', 'Golpes Legacy')">Golpes Legacy</button>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h2 class="panel-title">🔥 21 Pokémon Incríveis • Área Selvagem 2026</h2>
+        <div class="string-box" id="wa-base-str">103,184,212,230,330,365,376,395,430,452,461,462,526,534,560,635,691,858,861,862,980</div>
+        <div class="btn-row">
+          <button class="action-btn" onclick="copyRawString('103,184,212,230,330,365,376,395,430,452,461,462,526,534,560,635,691,858,861,862,980', '21 Incríveis')">📋 Copiar Base</button>
+          <button class="action-btn secondary" onclick="copyRawString('103,184,212,230,330,365,376,395,430,452,461,462,526,534,560,635,691,858,861,862,980&3*,4*', 'Incríveis 3*/4*')">3* / 4*</button>
+          <button class="action-btn secondary" onclick="copyRawString('103,184,212,230,330,365,376,395,430,452,461,462,526,534,560,635,691,858,861,862,980&brilhante', 'Incríveis Shiny')">Brilhante</button>
+          <button class="action-btn secondary" onclick="copyRawString('103,184,212,230,330,365,376,395,430,452,461,462,526,534,560,635,691,858,861,862,980&@especial', 'Incríveis Legacy')">@especial</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: EXPORTAR ODF & INSTALAÇÃO ANDROID APK -->
+    <section id="tab-export" class="tab-view">
+      <div class="panel-card">
+        <h2 class="panel-title">📊 Exportar Planilha ODF (.ods) Offline</h2>
+        <p class="panel-desc">
+          Gera nativamente no seu Android um arquivo OpenDocument Spreadsheet (<strong>pokedex_1025_checklist.ods</strong>) com <strong>3 abas</strong>:
+          <em>Resumo_Geral</em>, <em>Resumo_Por_Geracao</em> e <em>Pokedex_1025</em> (todos os 1.025 Pokémon, status, golpes Legacy e notas).
+        </p>
+        <div class="btn-row">
+          <button class="action-btn emerald" onclick="exportODS(false)">⬇️ Baixar Planilha .ODS</button>
+          <button class="action-btn" onclick="exportODS(true)">📤 Compartilhar .ODS (Android)</button>
+          <button class="action-btn secondary" onclick="window.print()">🖨️ Salvar PDF</button>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h2 class="panel-title">📱 Instalar no Android (WebAPK & APK)</h2>
+        <p class="panel-desc">
+          Este aplicativo já inclui <strong>Manifesto WebAPK + Service Worker offline</strong> para funcionar em tela cheia no Android sem barra de navegador:
+        </p>
+        <ul style="font-size:13px; color:var(--md-text-muted); padding-left:18px; line-height:1.6; margin:0 0 12px;">
+          <li><strong>Instalação Direta no Celular (1 toque):</strong> Abra este arquivo no Google Chrome do Android, toque nos <strong>3 pontinhos (⋮)</strong> e selecione <strong>"Instalar aplicativo"</strong> ou <strong>"Adicionar à tela inicial"</strong>.</li>
+          <li><strong>Gerar pacote .APK instalável:</strong> Utilize o arquivo <code>pokedex_1025_android_projeto_apk.zip</code> fornecido junto com este app para compilar o <code>app-release.apk</code> via Capacitor/Android Studio ou PWABuilder.</li>
+        </ul>
+        <div class="btn-row">
+          <button class="action-btn" id="btn-pwa-install" onclick="triggerPWAInstall()">📲 Instalar App na Tela Inicial</button>
+          <button class="action-btn secondary" onclick="downloadStandaloneHTML()">💾 Baixar Código HTML Completo</button>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h2 class="panel-title">🔄 Backup & Restauração dos 1.025 Registros</h2>
+        <p class="panel-desc">Salve um backup JSON do seu progresso ou restaure seus dados a qualquer momento.</p>
+        <div class="btn-row">
+          <button class="action-btn secondary" onclick="exportJSON()">⬇️ Exportar Backup (.json)</button>
+          <label class="action-btn secondary" style="cursor:pointer;">
+            ⬆️ Importar Backup (.json)
+            <input type="file" accept=".json" style="display:none" onchange="importJSON(event)" />
+          </label>
+          <button class="action-btn danger" onclick="resetAllData()">🗑️ Zerar Todos os Registros</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Android Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchTab('checklist', this)">
+      <span class="nav-pill">📋</span>
+      <span>Pokédex (1025)</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('strings', this)">
+      <span class="nav-pill">🔍</span>
+      <span>Strings GO</span>
+    </button>
+    <button class="nav-item" onclick="switchTab('export', this)">
+      <span class="nav-pill">📊</span>
+      <span>ODF & APK</span>
+    </button>
+  </nav>
+
+  <!-- Note Modal -->
+  <div class="modal-backdrop" id="note-modal" onclick="if(event.target===this) closeNoteModal()">
+    <div class="modal-card">
+      <div style="font-size:16px;font-weight:800;" id="note-modal-title">Notas & Golpe Legacy</div>
+      <div style="font-size:12px;color:var(--md-text-muted);margin-top:2px;" id="note-modal-sub">Registre golpes Legacy, CP, local de captura ou trocas.</div>
+      <textarea id="note-modal-input" class="modal-textarea" placeholder="Ex: Meteoro Esmagador, Lucky Trade, Shiny 98%..."></textarea>
+      <div class="btn-row" style="justify-content:flex-end;">
+        <button class="action-btn secondary" onclick="closeNoteModal()">Cancelar</button>
+        <button class="action-btn" onclick="saveNoteModal()">Salvar Nota</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Snackbar -->
+  <div class="snackbar" id="snackbar"></div>
+
+  <script>
+    // Embedded National Pokédex #0001 to #1025
+    // Format: [id, name, gen, isWildArea, waAvail, legacyMove, legacyType, shinyLocked]
+    const RAW_DEX = [[1,"Bulbasaur",1,0,"","","",0],[2,"Ivysaur",1,0,"","","",0],[3,"Venusaur",1,0,"","","",0],[4,"Charmander",1,0,"","","",0],[5,"Charmeleon",1,0,"","","",0],[6,"Charizard",1,0,"","","",0],[7,"Squirtle",1,0,"","","",0],[8,"Wartortle",1,0,"","","",0],[9,"Blastoise",1,0,"","","",0],[10,"Caterpie",1,0,"","","",0],[11,"Metapod",1,0,"","","",0],[12,"Butterfree",1,0,"","","",0],[13,"Weedle",1,0,"","","",0],[14,"Kakuna",1,0,"","","",0],[15,"Beedrill",1,0,"","","",0],[16,"Pidgey",1,0,"","","",0],[17,"Pidgeotto",1,0,"","","",0],[18,"Pidgeot",1,0,"","","",0],[19,"Rattata",1,0,"","","",0],[20,"Raticate",1,0,"","","",0],[21,"Spearow",1,0,"","","",0],[22,"Fearow",1,0,"","","",0],[23,"Ekans",1,0,"","","",0],[24,"Arbok",1,0,"","","",0],[25,"Pikachu",1,0,"","","",0],[26,"Raichu",1,0,"","","",0],[27,"Sandshrew",1,0,"","","",0],[28,"Sandslash",1,0,"","","",0],[29,"Nidoran♀",1,0,"","","",0],[30,"Nidorina",1,0,"","","",0],[31,"Nidoqueen",1,0,"","","",0],[32,"Nidoran♂",1,0,"","","",0],[33,"Nidorino",1,0,"","","",0],[34,"Nidoking",1,0,"","","",0],[35,"Clefairy",1,0,"","","",0],[36,"Clefable",1,0,"","","",0],[37,"Vulpix",1,0,"","","",0],[38,"Ninetales",1,0,"","","",0],[39,"Jigglypuff",1,0,"","","",0],[40,"Wigglytuff",1,0,"","","",0],[41,"Zubat",1,0,"","","",0],[42,"Golbat",1,0,"","","",0],[43,"Oddish",1,0,"","","",0],[44,"Gloom",1,0,"","","",0],[45,"Vileplume",1,0,"","","",0],[46,"Paras",1,0,"","","",0],[47,"Parasect",1,0,"","","",0],[48,"Venonat",1,0,"","","",0],[49,"Venomoth",1,0,"","","",0],[50,"Diglett",1,0,"","","",0],[51,"Dugtrio",1,0,"","","",0],[52,"Meowth",1,0,"","","",0],[53,"Persian",1,0,"","","",0],[54,"Psyduck",1,0,"","","",0],[55,"Golduck",1,0,"","","",0],[56,"Mankey",1,0,"","","",0],[57,"Primeape",1,0,"","","",0],[58,"Growlithe",1,0,"","","",0],[59,"Arcanine",1,0,"","","",0],[60,"Poliwag",1,0,"","","",0],[61,"Poliwhirl",1,0,"","","",0],[62,"Poliwrath",1,0,"","","",0],[63,"Abra",1,0,"","","",0],[64,"Kadabra",1,0,"","","",0],[65,"Alakazam",1,0,"","","",0],[66,"Machop",1,0,"","","",0],[67,"Machoke",1,0,"","","",0],[68,"Machamp",1,0,"","","",0],[69,"Bellsprout",1,0,"","","",0],[70,"Weepinbell",1,0,"","","",0],[71,"Victreebel",1,0,"","","",0],[72,"Tentacool",1,0,"","","",0],[73,"Tentacruel",1,0,"","","",0],[74,"Geodude",1,0,"","","",0],[75,"Graveler",1,0,"","","",0],[76,"Golem",1,0,"","","",0],[77,"Ponyta",1,0,"","","",0],[78,"Rapidash",1,0,"","","",0],[79,"Slowpoke",1,0,"","","",0],[80,"Slowbro",1,0,"","","",0],[81,"Magnemite",1,0,"","","",0],[82,"Magneton",1,0,"","","",0],[83,"Farfetch'd",1,0,"","","",0],[84,"Doduo",1,0,"","","",0],[85,"Dodrio",1,0,"","","",0],[86,"Seel",1,0,"","","",0],[87,"Dewgong",1,0,"","","",0],[88,"Grimer",1,0,"","","",0],[89,"Muk",1,0,"","","",0],[90,"Shellder",1,0,"","","",0],[91,"Cloyster",1,0,"","","",0],[92,"Gastly",1,0,"","","",0],[93,"Haunter",1,0,"","","",0],[94,"Gengar",1,0,"","","",0],[95,"Onix",1,0,"","","",0],[96,"Drowzee",1,0,"","","",0],[97,"Hypno",1,0,"","","",0],[98,"Krabby",1,0,"","","",0],[99,"Kingler",1,0,"","","",0],[100,"Voltorb",1,0,"","","",0],[101,"Electrode",1,0,"","","",0],[102,"Exeggcute",1,0,"","","",0],[103,"Exeggutor",1,1,"Sáb (Nat) • Sáb/Dom (Inc)","","",0],[104,"Cubone",1,0,"","","",0],[105,"Marowak",1,0,"","","",0],[106,"Hitmonlee",1,0,"","","",0],[107,"Hitmonchan",1,0,"","","",0],[108,"Lickitung",1,0,"","","",0],[109,"Koffing",1,0,"","","",0],[110,"Weezing",1,0,"","","",0],[111,"Rhyhorn",1,0,"","","",0],[112,"Rhydon",1,0,"","","",0],[113,"Chansey",1,0,"","","",0],[114,"Tangela",1,0,"","","",0],[115,"Kangaskhan",1,0,"","","",0],[116,"Horsea",1,0,"","","",0],[117,"Seadra",1,0,"","","",0],[118,"Goldeen",1,0,"","","",0],[119,"Seaking",1,0,"","","",0],[120,"Staryu",1,0,"","","",0],[121,"Starmie",1,0,"","","",0],[122,"Mr. Mime",1,0,"","","",0],[123,"Scyther",1,0,"","","",0],[124,"Jynx",1,0,"","","",0],[125,"Electabuzz",1,0,"","","",0],[126,"Magmar",1,0,"","","",0],[127,"Pinsir",1,0,"","","",0],[128,"Tauros",1,0,"","","",0],[129,"Magikarp",1,0,"","","",0],[130,"Gyarados",1,0,"","","",0],[131,"Lapras",1,0,"","","",0],[132,"Ditto",1,0,"","","",0],[133,"Eevee",1,0,"","","",0],[134,"Vaporeon",1,0,"","","",0],[135,"Jolteon",1,0,"","","",0],[136,"Flareon",1,0,"","","",0],[137,"Porygon",1,0,"","","",0],[138,"Omanyte",1,0,"","","",0],[139,"Omastar",1,0,"","","",0],[140,"Kabuto",1,0,"","","",0],[141,"Kabutops",1,0,"","","",0],[142,"Aerodactyl",1,0,"","","",0],[143,"Snorlax",1,0,"","","",0],[144,"Articuno",1,0,"","","",0],[145,"Zapdos",1,0,"","","",0],[146,"Moltres",1,0,"","","",0],[147,"Dratini",1,0,"","","",0],[148,"Dragonair",1,0,"","","",0],[149,"Dragonite",1,0,"","","",0],[150,"Mewtwo",1,0,"","","",0],[151,"Mew",1,0,"","","",0],[152,"Chikorita",2,0,"","","",0],[153,"Bayleef",2,0,"","","",0],[154,"Meganium",2,0,"","","",0],[155,"Cyndaquil",2,0,"","","",0],[156,"Quilava",2,0,"","","",0],[157,"Typhlosion",2,0,"","","",0],[158,"Totodile",2,0,"","","",0],[159,"Croconaw",2,0,"","","",0],[160,"Feraligatr",2,0,"","","",0],[161,"Sentret",2,0,"","","",0],[162,"Furret",2,0,"","","",0],[163,"Hoothoot",2,0,"","","",0],[164,"Noctowl",2,0,"","","",0],[165,"Ledyba",2,0,"","","",0],[166,"Ledian",2,0,"","","",0],[167,"Spinarak",2,0,"","","",0],[168,"Ariados",2,0,"","","",0],[169,"Crobat",2,0,"","","",0],[170,"Chinchou",2,0,"","","",0],[171,"Lanturn",2,0,"","","",0],[172,"Pichu",2,0,"","","",0],[173,"Cleffa",2,0,"","","",0],[174,"Igglybuff",2,0,"","","",0],[175,"Togepi",2,0,"","","",0],[176,"Togetic",2,0,"","","",0],[177,"Natu",2,0,"","","",0],[178,"Xatu",2,0,"","","",0],[179,"Mareep",2,0,"","","",0],[180,"Flaaffy",2,0,"","","",0],[181,"Ampharos",2,0,"","","",0],[182,"Bellossom",2,0,"","","",0],[183,"Marill",2,0,"","","",0],[184,"Azumarill",2,1,"Dom (Nat) • Sáb/Dom (Inc)","","",0],[185,"Sudowoodo",2,0,"","","",0],[186,"Politoed",2,0,"","","",0],[187,"Hoppip",2,0,"","","",0],[188,"Skiploom",2,0,"","","",0],[189,"Jumpluff",2,0,"","","",0],[190,"Aipom",2,0,"","","",0],[191,"Sunkern",2,0,"","","",0],[192,"Sunflora",2,0,"","","",0],[193,"Yanma",2,0,"","","",0],[194,"Wooper",2,0,"","","",0],[195,"Quagsire",2,0,"","","",0],[196,"Espeon",2,0,"","","",0],[197,"Umbreon",2,0,"","","",0],[198,"Murkrow",2,0,"","","",0],[199,"Slowking",2,0,"","","",0],[200,"Misdreavus",2,0,"","","",0],[201,"Unown",2,0,"","","",0],[202,"Wobbuffet",2,0,"","","",0],[203,"Girafarig",2,0,"","","",0],[204,"Pineco",2,0,"","","",0],[205,"Forretress",2,0,"","","",0],[206,"Dunsparce",2,0,"","","",0],[207,"Gligar",2,0,"","","",0],[208,"Steelix",2,0,"","","",0],[209,"Snubbull",2,0,"","","",0],[210,"Granbull",2,0,"","","",0],[211,"Qwilfish",2,0,"","","",0],[212,"Scizor",2,1,"Sáb (Nat) • Sáb/Dom (Inc)","","",0],[213,"Shuckle",2,0,"","","",0],[214,"Heracross",2,0,"","","",0],[215,"Sneasel",2,0,"","","",0],[216,"Teddiursa",2,0,"","","",0],[217,"Ursaring",2,0,"","","",0],[218,"Slugma",2,0,"","","",0],[219,"Magcargo",2,0,"","","",0],[220,"Swinub",2,0,"","","",0],[221,"Piloswine",2,0,"","","",0],[222,"Corsola",2,0,"","","",0],[223,"Remoraid",2,0,"","","",0],[224,"Octillery",2,0,"","","",0],[225,"Delibird",2,0,"","","",0],[226,"Mantine",2,0,"","","",0],[227,"Skarmory",2,0,"","","",0],[228,"Houndour",2,0,"","","",0],[229,"Houndoom",2,0,"","","",0],[230,"Kingdra",2,1,"Dom (Nat) • Sáb/Dom (Inc)","","",0],[231,"Phanpy",2,0,"","","",0],[232,"Donphan",2,0,"","","",0],[233,"Porygon2",2,0,"","","",0],[234,"Stantler",2,0,"","","",0],[235,"Smeargle",2,0,"","","",0],[236,"Tyrogue",2,0,"","","",0],[237,"Hitmontop",2,0,"","","",0],[238,"Smoochum",2,0,"","","",0],[239,"Elekid",2,0,"","","",0],[240,"Magby",2,0,"","","",0],[241,"Miltank",2,0,"","","",0],[242,"Blissey",2,0,"","","",0],[243,"Raikou",2,0,"","","",0],[244,"Entei",2,0,"","","",0],[245,"Suicune",2,0,"","","",0],[246,"Larvitar",2,0,"","","",0],[247,"Pupitar",2,0,"","","",0],[248,"Tyranitar",2,0,"","","",0],[249,"Lugia",2,0,"","","",0],[250,"Ho-Oh",2,0,"","","",0],[251,"Celebi",2,0,"","","",0],[252,"Treecko",3,0,"","","",0],[253,"Grovyle",3,0,"","","",0],[254,"Sceptile",3,0,"","","",0],[255,"Torchic",3,0,"","","",0],[256,"Combusken",3,0,"","","",0],[257,"Blaziken",3,0,"","","",0],[258,"Mudkip",3,0,"","","",0],[259,"Marshtomp",3,0,"","","",0],[260,"Swampert",3,0,"","","",0],[261,"Poochyena",3,0,"","","",0],[262,"Mightyena",3,0,"","","",0],[263,"Zigzagoon",3,0,"","","",0],[264,"Linoone",3,0,"","","",0],[265,"Wurmple",3,0,"","","",0],[266,"Silcoon",3,0,"","","",0],[267,"Beautifly",3,0,"","","",0],[268,"Cascoon",3,0,"","","",0],[269,"Dustox",3,0,"","","",0],[270,"Lotad",3,0,"","","",0],[271,"Lombre",3,0,"","","",0],[272,"Ludicolo",3,0,"","","",0],[273,"Seedot",3,0,"","","",0],[274,"Nuzleaf",3,0,"","","",0],[275,"Shiftry",3,0,"","","",0],[276,"Taillow",3,0,"","","",0],[277,"Swellow",3,0,"","","",0],[278,"Wingull",3,0,"","","",0],[279,"Pelipper",3,0,"","","",0],[280,"Ralts",3,0,"","","",0],[281,"Kirlia",3,0,"","","",0],[282,"Gardevoir",3,0,"","","",0],[283,"Surskit",3,0,"","","",0],[284,"Masquerain",3,0,"","","",0],[285,"Shroomish",3,0,"","","",0],[286,"Breloom",3,0,"","","",0],[287,"Slakoth",3,0,"","","",0],[288,"Vigoroth",3,0,"","","",0],[289,"Slaking",3,0,"","","",0],[290,"Nincada",3,0,"","","",0],[291,"Ninjask",3,0,"","","",0],[292,"Shedinja",3,0,"","","",0],[293,"Whismur",3,0,"","","",0],[294,"Loudred",3,0,"","","",0],[295,"Exploud",3,0,"","","",0],[296,"Makuhita",3,0,"","","",0],[297,"Hariyama",3,0,"","","",0],[298,"Azurill",3,0,"","","",0],[299,"Nosepass",3,0,"","","",0],[300,"Skitty",3,0,"","","",0],[301,"Delcatty",3,0,"","","",0],[302,"Sableye",3,0,"","","",0],[303,"Mawile",3,0,"","","",0],[304,"Aron",3,0,"","","",0],[305,"Lairon",3,0,"","","",0],[306,"Aggron",3,0,"","","",0],[307,"Meditite",3,0,"","","",0],[308,"Medicham",3,0,"","","",0],[309,"Electrike",3,0,"","","",0],[310,"Manectric",3,0,"","","",0],[311,"Plusle",3,0,"","","",0],[312,"Minun",3,0,"","","",0],[313,"Volbeat",3,0,"","","",0],[314,"Illumise",3,0,"","","",0],[315,"Roselia",3,0,"","","",0],[316,"Gulpin",3,0,"","","",0],[317,"Swalot",3,0,"","","",0],[318,"Carvanha",3,0,"","","",0],[319,"Sharpedo",3,0,"","","",0],[320,"Wailmer",3,0,"","","",0],[321,"Wailord",3,0,"","","",0],[322,"Numel",3,0,"","","",0],[323,"Camerupt",3,0,"","","",0],[324,"Torkoal",3,0,"","","",0],[325,"Spoink",3,0,"","","",0],[326,"Grumpig",3,0,"","","",0],[327,"Spinda",3,0,"","","",0],[328,"Trapinch",3,0,"","","",0],[329,"Vibrava",3,0,"","","",0],[330,"Flygon",3,1,"Sáb (Nat) • Sáb/Dom (Inc)","Poder da Terra","Terrestre",0],[331,"Cacnea",3,0,"","","",0],[332,"Cacturne",3,0,"","","",0],[333,"Swablu",3,0,"","","",0],[334,"Altaria",3,0,"","","",0],[335,"Zangoose",3,0,"","","",0],[336,"Seviper",3,0,"","","",0],[337,"Lunatone",3,0,"","","",0],[338,"Solrock",3,0,"","","",0],[339,"Barboach",3,0,"","","",0],[340,"Whiscash",3,0,"","","",0],[341,"Corphish",3,0,"","","",0],[342,"Crawdaunt",3,0,"","","",0],[343,"Baltoy",3,0,"","","",0],[344,"Claydol",3,0,"","","",0],[345,"Lileep",3,0,"","","",0],[346,"Cradily",3,0,"","","",0],[347,"Anorith",3,0,"","","",0],[348,"Armaldo",3,0,"","","",0],[349,"Feebas",3,0,"","","",0],[350,"Milotic",3,0,"","","",0],[351,"Castform",3,0,"","","",0],[352,"Kecleon",3,0,"","","",0],[353,"Shuppet",3,0,"","","",0],[354,"Banette",3,0,"","","",0],[355,"Duskull",3,0,"","","",0],[356,"Dusclops",3,0,"","","",0],[357,"Tropius",3,0,"","","",0],[358,"Chimecho",3,0,"","","",0],[359,"Absol",3,0,"","","",0],[360,"Wynaut",3,0,"","","",0],[361,"Snorunt",3,0,"","","",0],[362,"Glalie",3,0,"","","",0],[363,"Spheal",3,0,"","","",0],[364,"Sealeo",3,0,"","","",0],[365,"Walrein",3,1,"Sábado (Natureza)","","",0],[366,"Clamperl",3,0,"","","",0],[367,"Huntail",3,0,"","","",0],[368,"Gorebyss",3,0,"","","",0],[369,"Relicanth",3,0,"","","",0],[370,"Luvdisc",3,0,"","","",0],[371,"Bagon",3,0,"","","",0],[372,"Shelgon",3,0,"","","",0],[373,"Salamence",3,0,"","","",0],[374,"Beldum",3,0,"","","",0],[375,"Metang",3,0,"","","",0],[376,"Metagross",3,1,"Sábado (Natureza)","Meteoro Esmagador","Aço",0],[377,"Regirock",3,0,"","","",0],[378,"Regice",3,0,"","","",0],[379,"Registeel",3,0,"","","",0],[380,"Latias",3,0,"","","",0],[381,"Latios",3,0,"","","",0],[382,"Kyogre",3,0,"","","",0],[383,"Groudon",3,0,"","","",0],[384,"Rayquaza",3,0,"","","",0],[385,"Jirachi",3,0,"","","",0],[386,"Deoxys",3,0,"","","",0],[387,"Turtwig",4,0,"","","",0],[388,"Grotle",4,0,"","","",0],[389,"Torterra",4,0,"","","",0],[390,"Chimchar",4,0,"","","",0],[391,"Monferno",4,0,"","","",0],[392,"Infernape",4,0,"","","",0],[393,"Piplup",4,0,"","","",0],[394,"Prinplup",4,0,"","","",0],[395,"Empoleon",4,1,"Sáb (Nat) • Sáb/Dom (Inc)","","",0],[396,"Starly",4,0,"","","",0],[397,"Staravia",4,0,"","","",0],[398,"Staraptor",4,0,"","","",0],[399,"Bidoof",4,0,"","","",0],[400,"Bibarel",4,0,"","","",0],[401,"Kricketot",4,0,"","","",0],[402,"Kricketune",4,0,"","","",0],[403,"Shinx",4,0,"","","",0],[404,"Luxio",4,0,"","","",0],[405,"Luxray",4,0,"","","",0],[406,"Budew",4,0,"","","",0],[407,"Roserade",4,0,"","","",0],[408,"Cranidos",4,0,"","","",0],[409,"Rampardos",4,0,"","","",0],[410,"Shieldon",4,0,"","","",0],[411,"Bastiodon",4,0,"","","",0],[412,"Burmy",4,0,"","","",0],[413,"Wormadam",4,0,"","","",0],[414,"Mothim",4,0,"","","",0],[415,"Combee",4,0,"","","",0],[416,"Vespiquen",4,0,"","","",0],[417,"Pachirisu",4,0,"","","",0],[418,"Buizel",4,0,"","","",0],[419,"Floatzel",4,0,"","","",0],[420,"Cherubi",4,0,"","","",0],[421,"Cherrim",4,0,"","","",0],[422,"Shellos",4,0,"","","",0],[423,"Gastrodon",4,0,"","","",0],[424,"Ambipom",4,0,"","","",0],[425,"Drifloon",4,0,"","","",0],[426,"Drifblim",4,0,"","","",0],[427,"Buneary",4,0,"","","",0],[428,"Lopunny",4,0,"","","",0],[429,"Mismagius",4,0,"","","",0],[430,"Honchkrow",4,1,"Domingo (Natureza)","","",0],[431,"Glameow",4,0,"","","",0],[432,"Purugly",4,0,"","","",0],[433,"Chingling",4,0,"","","",0],[434,"Stunky",4,0,"","","",0],[435,"Skuntank",4,0,"","","",0],[436,"Bronzor",4,0,"","","",0],[437,"Bronzong",4,0,"","","",0],[438,"Bonsly",4,0,"","","",0],[439,"Mime Jr.",4,0,"","","",0],[440,"Happiny",4,0,"","","",0],[441,"Chatot",4,0,"","","",0],[442,"Spiritomb",4,0,"","","",0],[443,"Gible",4,0,"","","",0],[444,"Gabite",4,0,"","","",0],[445,"Garchomp",4,0,"","","",0],[446,"Munchlax",4,0,"","","",0],[447,"Riolu",4,0,"","","",0],[448,"Lucario",4,0,"","","",0],[449,"Hippopotas",4,0,"","","",0],[450,"Hippowdon",4,0,"","","",0],[451,"Skorupi",4,0,"","","",0],[452,"Drapion",4,1,"Domingo (Natureza)","","",0],[453,"Croagunk",4,0,"","","",0],[454,"Toxicroak",4,0,"","","",0],[455,"Carnivine",4,0,"","","",0],[456,"Finneon",4,0,"","","",0],[457,"Lumineon",4,0,"","","",0],[458,"Mantyke",4,0,"","","",0],[459,"Snover",4,0,"","","",0],[460,"Abomasnow",4,0,"","","",0],[461,"Weavile",4,1,"Domingo (Natureza)","","",0],[462,"Magnezone",4,1,"Sábado (Natureza)","Bomba Imã","Aço",0],[463,"Lickilicky",4,0,"","","",0],[464,"Rhyperior",4,0,"","","",0],[465,"Tangrowth",4,0,"","","",0],[466,"Electivire",4,0,"","","",0],[467,"Magmortar",4,0,"","","",0],[468,"Togekiss",4,0,"","","",0],[469,"Yanmega",4,0,"","","",0],[470,"Leafeon",4,0,"","","",0],[471,"Glaceon",4,0,"","","",0],[472,"Gliscor",4,0,"","","",0],[473,"Mamoswine",4,0,"","","",0],[474,"Porygon-Z",4,0,"","","",0],[475,"Gallade",4,0,"","","",0],[476,"Probopass",4,0,"","","",0],[477,"Dusknoir",4,0,"","","",0],[478,"Froslass",4,0,"","","",0],[479,"Rotom",4,0,"","","",0],[480,"Uxie",4,0,"","","",0],[481,"Mesprit",4,0,"","","",0],[482,"Azelf",4,0,"","","",0],[483,"Dialga",4,0,"","","",0],[484,"Palkia",4,0,"","","",0],[485,"Heatran",4,0,"","","",0],[486,"Regigigas",4,0,"","","",0],[487,"Giratina",4,0,"","","",0],[488,"Cresselia",4,0,"","","",0],[489,"Phione",4,0,"","","",0],[490,"Manaphy",4,0,"","","",0],[491,"Darkrai",4,0,"","","",0],[492,"Shaymin",4,0,"","","",0],[493,"Arceus",4,0,"","","",0],[494,"Victini",5,0,"","","",0],[495,"Snivy",5,0,"","","",0],[496,"Servine",5,0,"","","",0],[497,"Serperior",5,0,"","","",0],[498,"Tepig",5,0,"","","",0],[499,"Pignite",5,0,"","","",0],[500,"Emboar",5,0,"","","",0],[501,"Oshawott",5,0,"","","",0],[502,"Dewott",5,0,"","","",0],[503,"Samurott",5,0,"","","",0],[504,"Patrat",5,0,"","","",0],[505,"Watchog",5,0,"","","",0],[506,"Lillipup",5,0,"","","",0],[507,"Herdier",5,0,"","","",0],[508,"Stoutland",5,0,"","","",0],[509,"Purrloin",5,0,"","","",0],[510,"Liepard",5,0,"","","",0],[511,"Pansage",5,0,"","","",0],[512,"Simisage",5,0,"","","",0],[513,"Pansear",5,0,"","","",0],[514,"Simisear",5,0,"","","",0],[515,"Panpour",5,0,"","","",0],[516,"Simipour",5,0,"","","",0],[517,"Munna",5,0,"","","",0],[518,"Musharna",5,0,"","","",0],[519,"Pidove",5,0,"","","",0],[520,"Tranquill",5,0,"","","",0],[521,"Unfezant",5,0,"","","",0],[522,"Blitzle",5,0,"","","",0],[523,"Zebstrika",5,0,"","","",0],[524,"Roggenrola",5,0,"","","",0],[525,"Boldore",5,0,"","","",0],[526,"Gigalith",5,1,"Sábado (Natureza)","","",0],[527,"Woobat",5,0,"","","",0],[528,"Swoobat",5,0,"","","",0],[529,"Drilbur",5,0,"","","",0],[530,"Excadrill",5,0,"","","",0],[531,"Audino",5,0,"","","",0],[532,"Timburr",5,0,"","","",0],[533,"Gurdurr",5,0,"","","",0],[534,"Conkeldurr",5,1,"Sáb (Nat) • Sáb/Dom (Inc)","","",0],[535,"Tympole",5,0,"","","",0],[536,"Palpitoad",5,0,"","","",0],[537,"Seismitoad",5,0,"","","",0],[538,"Throh",5,0,"","","",0],[539,"Sawk",5,0,"","","",0],[540,"Sewaddle",5,0,"","","",0],[541,"Swadloon",5,0,"","","",0],[542,"Leavanny",5,0,"","","",0],[543,"Venipede",5,0,"","","",0],[544,"Whirlipede",5,0,"","","",0],[545,"Scolipede",5,0,"","","",0],[546,"Cottonee",5,0,"","","",0],[547,"Whimsicott",5,0,"","","",0],[548,"Petilil",5,0,"","","",0],[549,"Lilligant",5,0,"","","",0],[550,"Basculin",5,0,"","","",0],[551,"Sandile",5,0,"","","",0],[552,"Krokorok",5,0,"","","",0],[553,"Krookodile",5,0,"","","",0],[554,"Darumaka",5,0,"","","",0],[555,"Darmanitan",5,0,"","","",0],[556,"Maractus",5,0,"","","",0],[557,"Dwebble",5,0,"","","",0],[558,"Crustle",5,0,"","","",0],[559,"Scraggy",5,0,"","","",0],[560,"Scrafty",5,1,"Sábado (Natureza)","","",0],[561,"Sigilyph",5,0,"","","",0],[562,"Yamask",5,0,"","","",0],[563,"Cofagrigus",5,0,"","","",0],[564,"Tirtouga",5,0,"","","",0],[565,"Carracosta",5,0,"","","",0],[566,"Archen",5,0,"","","",0],[567,"Archeops",5,0,"","","",0],[568,"Trubbish",5,0,"","","",0],[569,"Garbodor",5,0,"","","",0],[570,"Zorua",5,0,"","","",0],[571,"Zoroark",5,0,"","","",0],[572,"Minccino",5,0,"","","",0],[573,"Cinccino",5,0,"","","",0],[574,"Gothita",5,0,"","","",0],[575,"Gothorita",5,0,"","","",0],[576,"Gothitelle",5,0,"","","",0],[577,"Solosis",5,0,"","","",0],[578,"Duosion",5,0,"","","",0],[579,"Reuniclus",5,0,"","","",0],[580,"Ducklett",5,0,"","","",0],[581,"Swanna",5,0,"","","",0],[582,"Vanillite",5,0,"","","",0],[583,"Vanillish",5,0,"","","",0],[584,"Vanilluxe",5,0,"","","",0],[585,"Deerling",5,0,"","","",0],[586,"Sawsbuck",5,0,"","","",0],[587,"Emolga",5,0,"","","",0],[588,"Karrablast",5,0,"","","",0],[589,"Escavalier",5,0,"","","",0],[590,"Foongus",5,0,"","","",0],[591,"Amoonguss",5,0,"","","",0],[592,"Frillish",5,0,"","","",0],[593,"Jellicent",5,0,"","","",0],[594,"Alomomola",5,0,"","","",0],[595,"Joltik",5,0,"","","",0],[596,"Galvantula",5,0,"","","",0],[597,"Ferroseed",5,0,"","","",0],[598,"Ferrothorn",5,0,"","","",0],[599,"Klink",5,0,"","","",0],[600,"Klang",5,0,"","","",0],[601,"Klinklang",5,0,"","","",0],[602,"Tynamo",5,0,"","","",0],[603,"Eelektrik",5,0,"","","",0],[604,"Eelektross",5,0,"","","",0],[605,"Elgyem",5,0,"","","",0],[606,"Beheeyem",5,0,"","","",0],[607,"Litwick",5,0,"","","",0],[608,"Lampent",5,0,"","","",0],[609,"Chandelure",5,0,"","","",0],[610,"Axew",5,0,"","","",0],[611,"Fraxure",5,0,"","","",0],[612,"Haxorus",5,0,"","","",0],[613,"Cubchoo",5,0,"","","",0],[614,"Beartic",5,0,"","","",0],[615,"Cryogonal",5,0,"","","",0],[616,"Shelmet",5,0,"","","",0],[617,"Accelgor",5,0,"","","",0],[618,"Stunfisk",5,0,"","","",0],[619,"Mienfoo",5,0,"","","",0],[620,"Mienshao",5,0,"","","",0],[621,"Druddigon",5,0,"","","",0],[622,"Golett",5,0,"","","",0],[623,"Golurk",5,0,"","","",0],[624,"Pawniard",5,0,"","","",0],[625,"Bisharp",5,0,"","","",0],[626,"Bouffalant",5,0,"","","",0],[627,"Rufflet",5,0,"","","",0],[628,"Braviary",5,0,"","","",0],[629,"Vullaby",5,0,"","","",0],[630,"Mandibuzz",5,0,"","","",0],[631,"Heatmor",5,0,"","","",0],[632,"Durant",5,0,"","","",0],[633,"Deino",5,0,"","","",0],[634,"Zweilous",5,0,"","","",0],[635,"Hydreigon",5,1,"Dom (Nat) • Sáb/Dom (Inc)","Balanço Violento","Sombrio",0],[636,"Larvesta",5,0,"","","",0],[637,"Volcarona",5,0,"","","",0],[638,"Cobalion",5,0,"","","",0],[639,"Terrakion",5,0,"","","",0],[640,"Virizion",5,0,"","","",0],[641,"Tornadus",5,0,"","","",0],[642,"Thundurus",5,0,"","","",0],[643,"Reshiram",5,0,"","","",0],[644,"Zekrom",5,0,"","","",0],[645,"Landorus",5,0,"","","",0],[646,"Kyurem",5,0,"","","",0],[647,"Keldeo",5,0,"","","",0],[648,"Meloetta",5,0,"","","",0],[649,"Genesect",5,0,"","","",0],[650,"Chespin",6,0,"","","",0],[651,"Quilladin",6,0,"","","",0],[652,"Chesnaught",6,0,"","","",0],[653,"Fennekin",6,0,"","","",0],[654,"Braixen",6,0,"","","",0],[655,"Delphox",6,0,"","","",0],[656,"Froakie",6,0,"","","",0],[657,"Frogadier",6,0,"","","",0],[658,"Greninja",6,0,"","","",0],[659,"Bunnelby",6,0,"","","",0],[660,"Diggersby",6,0,"","","",0],[661,"Fletchling",6,0,"","","",0],[662,"Fletchinder",6,0,"","","",0],[663,"Talonflame",6,0,"","","",0],[664,"Scatterbug",6,0,"","","",0],[665,"Spewpa",6,0,"","","",0],[666,"Vivillon",6,0,"","","",0],[667,"Litleo",6,0,"","","",0],[668,"Pyroar",6,0,"","","",0],[669,"Flabébé",6,0,"","","",0],[670,"Floette",6,0,"","","",0],[671,"Florges",6,0,"","","",0],[672,"Skiddo",6,0,"","","",0],[673,"Gogoat",6,0,"","","",0],[674,"Pancham",6,0,"","","",0],[675,"Pangoro",6,0,"","","",0],[676,"Furfrou",6,0,"","","",0],[677,"Espurr",6,0,"","","",0],[678,"Meowstic",6,0,"","","",0],[679,"Honedge",6,0,"","","",0],[680,"Doublade",6,0,"","","",0],[681,"Aegislash",6,0,"","","",0],[682,"Spritzee",6,0,"","","",0],[683,"Aromatisse",6,0,"","","",0],[684,"Swirlix",6,0,"","","",0],[685,"Slurpuff",6,0,"","","",0],[686,"Inkay",6,0,"","","",0],[687,"Malamar",6,0,"","","",0],[688,"Binacle",6,0,"","","",0],[689,"Barbaracle",6,0,"","","",0],[690,"Skrelp",6,0,"","","",0],[691,"Dragalge",6,1,"Domingo (Natureza)","","",0],[692,"Clauncher",6,0,"","","",0],[693,"Clawitzer",6,0,"","","",0],[694,"Helioptile",6,0,"","","",0],[695,"Heliolisk",6,0,"","","",0],[696,"Tyrunt",6,0,"","","",0],[697,"Tyrantrum",6,0,"","","",0],[698,"Amaura",6,0,"","","",0],[699,"Aurorus",6,0,"","","",0],[700,"Sylveon",6,0,"","","",0],[701,"Hawlucha",6,0,"","","",0],[702,"Dedenne",6,0,"","","",0],[703,"Carbink",6,0,"","","",0],[704,"Goomy",6,0,"","","",0],[705,"Sliggoo",6,0,"","","",0],[706,"Goodra",6,0,"","","",0],[707,"Klefki",6,0,"","","",0],[708,"Phantump",6,0,"","","",0],[709,"Trevenant",6,0,"","","",0],[710,"Pumpkaboo",6,0,"","","",0],[711,"Gourgeist",6,0,"","","",0],[712,"Bergmite",6,0,"","","",0],[713,"Avalugg",6,0,"","","",0],[714,"Noibat",6,0,"","","",0],[715,"Noivern",6,0,"","","",0],[716,"Xerneas",6,0,"","","",0],[717,"Yveltal",6,0,"","","",0],[718,"Zygarde",6,0,"","","",0],[719,"Diancie",6,0,"","","",0],[720,"Hoopa",6,0,"","","",0],[721,"Volcanion",6,0,"","","",0],[722,"Rowlet",7,0,"","","",0],[723,"Dartrix",7,0,"","","",0],[724,"Decidueye",7,0,"","","",0],[725,"Litten",7,0,"","","",0],[726,"Torracat",7,0,"","","",0],[727,"Incineroar",7,0,"","","",0],[728,"Popplio",7,0,"","","",0],[729,"Brionne",7,0,"","","",0],[730,"Primarina",7,0,"","","",0],[731,"Pikipek",7,0,"","","",0],[732,"Trumbeak",7,0,"","","",0],[733,"Toucannon",7,0,"","","",0],[734,"Yungoos",7,0,"","","",0],[735,"Gumshoos",7,0,"","","",0],[736,"Grubbin",7,0,"","","",0],[737,"Charjabug",7,0,"","","",0],[738,"Vikavolt",7,0,"","","",0],[739,"Crabrawler",7,0,"","","",0],[740,"Crabominable",7,0,"","","",0],[741,"Oricorio",7,0,"","","",0],[742,"Cutiefly",7,0,"","","",0],[743,"Ribombee",7,0,"","","",0],[744,"Rockruff",7,0,"","","",0],[745,"Lycanroc",7,0,"","","",0],[746,"Wishiwashi",7,0,"","","",0],[747,"Mareanie",7,0,"","","",0],[748,"Toxapex",7,0,"","","",0],[749,"Mudbray",7,0,"","","",0],[750,"Mudsdale",7,0,"","","",0],[751,"Dewpider",7,0,"","","",0],[752,"Araquanid",7,0,"","","",0],[753,"Fomantis",7,0,"","","",0],[754,"Lurantis",7,0,"","","",0],[755,"Morelull",7,0,"","","",0],[756,"Shiinotic",7,0,"","","",0],[757,"Salandit",7,0,"","","",0],[758,"Salazzle",7,0,"","","",0],[759,"Stufful",7,0,"","","",0],[760,"Bewear",7,0,"","","",0],[761,"Bounsweet",7,0,"","","",0],[762,"Steenee",7,0,"","","",0],[763,"Tsareena",7,0,"","","",0],[764,"Comfey",7,0,"","","",0],[765,"Oranguru",7,0,"","","",0],[766,"Passimian",7,0,"","","",0],[767,"Wimpod",7,0,"","","",0],[768,"Golisopod",7,0,"","","",0],[769,"Sandygast",7,0,"","","",0],[770,"Palossand",7,0,"","","",0],[771,"Pyukumuku",7,0,"","","",0],[772,"Type: Null",7,0,"","","",0],[773,"Silvally",7,0,"","","",0],[774,"Minior",7,0,"","","",0],[775,"Komala",7,0,"","","",0],[776,"Turtonator",7,0,"","","",0],[777,"Togedemaru",7,0,"","","",0],[778,"Mimikyu",7,0,"","","",0],[779,"Bruxish",7,0,"","","",0],[780,"Drampa",7,0,"","","",0],[781,"Dhelmise",7,0,"","","",0],[782,"Jangmo-o",7,0,"","","",0],[783,"Hakamo-o",7,0,"","","",0],[784,"Kommo-o",7,0,"","","",0],[785,"Tapu Koko",7,0,"","","",0],[786,"Tapu Lele",7,0,"","","",0],[787,"Tapu Bulu",7,0,"","","",0],[788,"Tapu Fini",7,0,"","","",0],[789,"Cosmog",7,0,"","","",0],[790,"Cosmoem",7,0,"","","",0],[791,"Solgaleo",7,0,"","","",0],[792,"Lunala",7,0,"","","",0],[793,"Nihilego",7,0,"","","",0],[794,"Buzzwole",7,0,"","","",0],[795,"Pheromosa",7,0,"","","",0],[796,"Xurkitree",7,0,"","","",0],[797,"Celesteela",7,0,"","","",0],[798,"Kartana",7,0,"","","",0],[799,"Guzzlord",7,0,"","","",0],[800,"Necrozma",7,0,"","","",0],[801,"Magearna",7,0,"","","",0],[802,"Marshadow",7,0,"","","",0],[803,"Poipole",7,0,"","","",0],[804,"Naganadel",7,0,"","","",0],[805,"Stakataka",7,0,"","","",0],[806,"Blacephalon",7,0,"","","",0],[807,"Zeraora",7,0,"","","",0],[808,"Meltan",7,0,"","","",0],[809,"Melmetal",7,0,"","","",0],[810,"Grookey",8,0,"","","",0],[811,"Thwackey",8,0,"","","",0],[812,"Rillaboom",8,0,"","","",0],[813,"Scorbunny",8,0,"","","",0],[814,"Raboot",8,0,"","","",0],[815,"Cinderace",8,0,"","","",0],[816,"Sobble",8,0,"","","",0],[817,"Drizzile",8,0,"","","",0],[818,"Inteleon",8,0,"","","",0],[819,"Skwovet",8,0,"","","",0],[820,"Greedent",8,0,"","","",0],[821,"Rookidee",8,0,"","","",0],[822,"Corvisquire",8,0,"","","",0],[823,"Corviknight",8,0,"","","",0],[824,"Blipbug",8,0,"","","",0],[825,"Dottler",8,0,"","","",0],[826,"Orbeetle",8,0,"","","",0],[827,"Nickit",8,0,"","","",0],[828,"Thievul",8,0,"","","",0],[829,"Gossifleur",8,0,"","","",0],[830,"Eldegoss",8,0,"","","",0],[831,"Wooloo",8,0,"","","",0],[832,"Dubwool",8,0,"","","",0],[833,"Chewtle",8,0,"","","",0],[834,"Drednaw",8,0,"","","",0],[835,"Yamper",8,0,"","","",0],[836,"Boltund",8,0,"","","",0],[837,"Rolycoly",8,0,"","","",0],[838,"Carkol",8,0,"","","",0],[839,"Coalossal",8,0,"","","",0],[840,"Applin",8,0,"","","",0],[841,"Flapple",8,0,"","","",0],[842,"Appletun",8,0,"","","",0],[843,"Silicobra",8,0,"","","",0],[844,"Sandaconda",8,0,"","","",0],[845,"Cramorant",8,0,"","","",0],[846,"Arrokuda",8,0,"","","",0],[847,"Barraskewda",8,0,"","","",0],[848,"Toxel",8,0,"","","",0],[849,"Toxtricity",8,0,"","","",0],[850,"Sizzlipede",8,0,"","","",0],[851,"Centiskorch",8,0,"","","",0],[852,"Clobbopus",8,0,"","","",0],[853,"Grapploct",8,0,"","","",0],[854,"Sinistea",8,0,"","","",0],[855,"Polteageist",8,0,"","","",0],[856,"Hatenna",8,0,"","","",0],[857,"Hattrem",8,0,"","","",0],[858,"Hatterene",8,1,"Domingo (Natureza)","","",1],[859,"Impidimp",8,0,"","","",0],[860,"Morgrem",8,0,"","","",0],[861,"Grimmsnarl",8,1,"Domingo (Natureza)","","",0],[862,"Obstagoon",8,1,"Sáb/Dom (Apenas Incenso)","Golpe Deslizante","Sombrio",0],[863,"Perrserker",8,0,"","","",0],[864,"Cursola",8,0,"","","",0],[865,"Sirfetch'd",8,0,"","","",0],[866,"Mr. Rime",8,0,"","","",0],[867,"Runerigus",8,0,"","","",0],[868,"Milcery",8,0,"","","",0],[869,"Alcremie",8,0,"","","",0],[870,"Falinks",8,0,"","","",0],[871,"Pincurchin",8,0,"","","",0],[872,"Snom",8,0,"","","",0],[873,"Frosmoth",8,0,"","","",0],[874,"Stonjourner",8,0,"","","",0],[875,"Eiscue",8,0,"","","",0],[876,"Indeedee",8,0,"","","",0],[877,"Morpeko",8,0,"","","",0],[878,"Cufant",8,0,"","","",0],[879,"Copperajah",8,0,"","","",0],[880,"Dracozolt",8,0,"","","",0],[881,"Arctozolt",8,0,"","","",0],[882,"Dracovish",8,0,"","","",0],[883,"Arctovish",8,0,"","","",0],[884,"Duraludon",8,0,"","","",0],[885,"Dreepy",8,0,"","","",0],[886,"Drakloak",8,0,"","","",0],[887,"Dragapult",8,0,"","","",0],[888,"Zacian",8,0,"","","",0],[889,"Zamazenta",8,0,"","","",0],[890,"Eternatus",8,0,"","","",0],[891,"Kubfu",8,0,"","","",0],[892,"Urshifu",8,0,"","","",0],[893,"Zarude",8,0,"","","",0],[894,"Regieleki",8,0,"","","",0],[895,"Regidrago",8,0,"","","",0],[896,"Glastrier",8,0,"","","",0],[897,"Spectrier",8,0,"","","",0],[898,"Calyrex",8,0,"","","",0],[899,"Wyrdeer",8,0,"","","",0],[900,"Kleavor",8,0,"","","",0],[901,"Ursaluna",8,0,"","","",0],[902,"Basculegion",8,0,"","","",0],[903,"Sneasler",8,0,"","","",0],[904,"Overqwil",8,0,"","","",0],[905,"Enamorus",8,0,"","","",0],[906,"Sprigatito",9,0,"","","",0],[907,"Floragato",9,0,"","","",0],[908,"Meowscarada",9,0,"","","",0],[909,"Fuecoco",9,0,"","","",0],[910,"Crocalor",9,0,"","","",0],[911,"Skeledirge",9,0,"","","",0],[912,"Quaxly",9,0,"","","",0],[913,"Quaxwell",9,0,"","","",0],[914,"Quaquaval",9,0,"","","",0],[915,"Lechonk",9,0,"","","",0],[916,"Oinkologne",9,0,"","","",0],[917,"Tarountula",9,0,"","","",0],[918,"Spidops",9,0,"","","",0],[919,"Nymble",9,0,"","","",0],[920,"Lokix",9,0,"","","",0],[921,"Pawmi",9,0,"","","",0],[922,"Pawmo",9,0,"","","",0],[923,"Pawmot",9,0,"","","",0],[924,"Tandemaus",9,0,"","","",0],[925,"Maushold",9,0,"","","",0],[926,"Fidough",9,0,"","","",0],[927,"Dachsbun",9,0,"","","",0],[928,"Smoliv",9,0,"","","",0],[929,"Dolliv",9,0,"","","",0],[930,"Arboliva",9,0,"","","",0],[931,"Squawkabilly",9,0,"","","",0],[932,"Nacli",9,0,"","","",0],[933,"Naclstack",9,0,"","","",0],[934,"Garganacl",9,0,"","","",0],[935,"Charcadet",9,0,"","","",0],[936,"Armarouge",9,0,"","","",0],[937,"Ceruledge",9,0,"","","",0],[938,"Tadbulb",9,0,"","","",0],[939,"Bellibolt",9,0,"","","",0],[940,"Wattrel",9,0,"","","",0],[941,"Kilowattrel",9,0,"","","",0],[942,"Maschiff",9,0,"","","",0],[943,"Mabosstiff",9,0,"","","",0],[944,"Shroodle",9,0,"","","",0],[945,"Grafaiai",9,0,"","","",0],[946,"Bramblin",9,0,"","","",0],[947,"Brambleghast",9,0,"","","",0],[948,"Toedscool",9,0,"","","",0],[949,"Toedscruel",9,0,"","","",0],[950,"Klawf",9,0,"","","",0],[951,"Capsakid",9,0,"","","",0],[952,"Scovillain",9,0,"","","",0],[953,"Rellor",9,0,"","","",0],[954,"Rabsca",9,0,"","","",0],[955,"Flittle",9,0,"","","",0],[956,"Espathra",9,0,"","","",0],[957,"Tinkatink",9,0,"","","",0],[958,"Tinkatuff",9,0,"","","",0],[959,"Tinkaton",9,0,"","","",0],[960,"Wiglett",9,0,"","","",0],[961,"Wugtrio",9,0,"","","",0],[962,"Bombirdier",9,0,"","","",0],[963,"Finizen",9,0,"","","",0],[964,"Palafin",9,0,"","","",0],[965,"Varoom",9,0,"","","",0],[966,"Revavroom",9,0,"","","",0],[967,"Cyclizar",9,0,"","","",0],[968,"Orthworm",9,0,"","","",0],[969,"Glimmet",9,0,"","","",0],[970,"Glimmora",9,0,"","","",0],[971,"Greavard",9,0,"","","",0],[972,"Houndstone",9,0,"","","",0],[973,"Flamigo",9,0,"","","",0],[974,"Cetoddle",9,0,"","","",0],[975,"Cetitan",9,0,"","","",0],[976,"Veluza",9,0,"","","",0],[977,"Dondozo",9,0,"","","",0],[978,"Tatsugiri",9,0,"","","",0],[979,"Annihilape",9,0,"","","",0],[980,"Clodsire",9,1,"Domingo (Natureza)","","",0],[981,"Farigiraf",9,0,"","","",0],[982,"Dudunsparce",9,0,"","","",0],[983,"Kingambit",9,0,"","","",0],[984,"Great Tusk",9,0,"","","",0],[985,"Scream Tail",9,0,"","","",0],[986,"Brute Bonnet",9,0,"","","",0],[987,"Flutter Mane",9,0,"","","",0],[988,"Slither Wing",9,0,"","","",0],[989,"Sandy Shocks",9,0,"","","",0],[990,"Iron Treads",9,0,"","","",0],[991,"Iron Bundle",9,0,"","","",0],[992,"Iron Hands",9,0,"","","",0],[993,"Iron Jugulis",9,0,"","","",0],[994,"Iron Moth",9,0,"","","",0],[995,"Iron Thorns",9,0,"","","",0],[996,"Frigibax",9,0,"","","",0],[997,"Arctibax",9,0,"","","",0],[998,"Baxcalibur",9,0,"","","",0],[999,"Gimmighoul",9,0,"","","",0],[1000,"Gholdengo",9,0,"","","",0],[1001,"Wo-Chien",9,0,"","","",0],[1002,"Chien-Pao",9,0,"","","",0],[1003,"Ting-Lu",9,0,"","","",0],[1004,"Chi-Yu",9,0,"","","",0],[1005,"Roaring Moon",9,0,"","","",0],[1006,"Iron Valiant",9,0,"","","",0],[1007,"Koraidon",9,0,"","","",0],[1008,"Miraidon",9,0,"","","",0],[1009,"Walking Wake",9,0,"","","",0],[1010,"Iron Leaves",9,0,"","","",0],[1011,"Dipplin",9,0,"","","",0],[1012,"Poltchageist",9,0,"","","",0],[1013,"Sinistcha",9,0,"","","",0],[1014,"Okidogi",9,0,"","","",0],[1015,"Munkidori",9,0,"","","",0],[1016,"Fezandipiti",9,0,"","","",0],[1017,"Ogerpon",9,0,"","","",0],[1018,"Archaludon",9,0,"","","",0],[1019,"Hydrapple",9,0,"","","",0],[1020,"Gouging Fire",9,0,"","","",0],[1021,"Raging Bolt",9,0,"","","",0],[1022,"Iron Boulder",9,0,"","","",0],[1023,"Iron Crown",9,0,"","","",0],[1024,"Terapagos",9,0,"","","",0],[1025,"Pecharunt",9,0,"","","",0]];
+
+    const GEN_NAMES = {
+      1: "Kanto", 2: "Johto", 3: "Hoenn", 4: "Sinnoh",
+      5: "Unova", 6: "Kalos", 7: "Alola", 8: "Galar/Hisui", 9: "Paldea"
+    };
+
+    const STORAGE_KEY = "pokedex_1025_android_v1";
+    let userState = {}; // { [id]: { c: bool, s: bool, i: bool, z: bool, n: string } }
+
+    let currentGen = "ALL";
+    let currentStatus = "ALL";
+    let searchQuery = "";
+    let visibleLimit = 60;
+    let globalShinyPreview = false;
+    let editingNoteId = null;
+    let deferredInstallPrompt = null;
+
+    // Load saved state + migrate any previous Wild Area 2026 state
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          userState = JSON.parse(saved) || {};
+        }
+        // Migrate old Wild Area 2026 checklist keys if present
+        const oldSaved = localStorage.getItem("wild_area_2026_mighty_v2") || localStorage.getItem("wild_area_2026_mighty_v1");
+        if (oldSaved && Object.keys(userState).length === 0) {
+          const oldObj = JSON.parse(oldSaved);
+          for (const [k, v] of Object.entries(oldObj)) {
+            const numId = parseInt(k.replace(/\D/g, ""), 10);
+            if (numId >= 1 && numId <= 1025 && v) {
+              userState[numId] = {
+                c: !!v.captured,
+                s: !!v.shiny,
+                i: !!v.iv100,
+                z: !!v.xlxxl,
+                n: ""
+              };
+            }
+          }
+          saveState();
+        }
+      } catch (e) {
+        console.warn("Erro ao carregar estado:", e);
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(userState));
+      } catch (e) {
+        showToast("Aviso: armazenamento local cheio.");
+      }
+    }
+
+    function getRec(id) {
+      return userState[id] || { c: false, s: false, i: false, z: false, n: "" };
+    }
+
+    function vibrate(ms = 14) {
+      if (navigator.vibrate) {
+        try { navigator.vibrate(ms); } catch (_) {}
+      }
+    }
+
+    function showToast(msg) {
+      const sb = document.getElementById("snackbar");
+      sb.textContent = msg;
+      sb.classList.add("show");
+      clearTimeout(sb._t);
+      sb._t = setTimeout(() => sb.classList.remove("show"), 2600);
+    }
+
+    function padDex(id) {
+      return String(id).padStart(4, "0");
+    }
+
+    function getArtworkUrl(id, isShiny) {
+      if (isShiny) {
+        return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${id}.png`;
+      }
+      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+    }
+
+    function handleImgError(img, id, isShiny) {
+      if (!img.dataset.fallback1) {
+        img.dataset.fallback1 = "1";
+        img.src = isShiny
+          ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/${id}.png`
+          : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+      } else {
+        img.onerror = null;
+        img.src = "data:image/svg+xml;utf8," + encodeURIComponent(
+          `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" fill="#1e293b" stroke="#475569" stroke-width="4"/><path d="M4 32h56" stroke="#475569" stroke-width="4"/><circle cx="32" cy="32" r="8" fill="#94a3b8" stroke="#1e293b" stroke-width="3"/></svg>`
+        );
+      }
+    }
+
+    function getFilteredList() {
+      const q = searchQuery.trim().toLowerCase();
+      return RAW_DEX.filter(p => {
+        const [id, name, gen, isWA, waAvail, legacy, ltype] = p;
+        if (currentGen === "WA2026" && !isWA) return false;
+        if (currentGen !== "ALL" && currentGen !== "WA2026" && String(gen) !== currentGen) return false;
+
+        const rec = getRec(id);
+        if (currentStatus === "MISSING" && rec.c) return false;
+        if (currentStatus === "CAP" && !rec.c) return false;
+        if (currentStatus === "SHY" && !rec.s) return false;
+        if (currentStatus === "IV" && !rec.i) return false;
+        if (currentStatus === "SZ" && !rec.z) return false;
+        if (currentStatus === "NOTE" && !(rec.n || legacy)) return false;
+
+        if (q) {
+          const cleanQ = q.replace(/^#/, "");
+          const idStr = String(id);
+          const padStr = padDex(id);
+          const matchName = name.toLowerCase().includes(q);
+          const matchId = idStr === cleanQ || padStr.includes(cleanQ);
+          const matchLegacy = legacy.toLowerCase().includes(q) || ltype.toLowerCase().includes(q);
+          const matchNote = (rec.n || "").toLowerCase().includes(q);
+          if (!matchName && !matchId && !matchLegacy && !matchNote) return false;
+        }
+        return true;
+      });
+    }
+
+    function updateDashboard() {
+      let cap = 0, shy = 0, iv = 0, sz = 0;
+      for (const p of RAW_DEX) {
+        const rec = userState[p[0]];
+        if (!rec) continue;
+        if (rec.c) cap++;
+        if (rec.s) shy++;
+        if (rec.i) iv++;
+        if (rec.z) sz++;
+      }
+      const total = 1025;
+      const totalShiny = 1024; // Hatterene shiny locked in Wild Area note, general Dex 1024/1025
+      document.getElementById("top-cap-pill").textContent = `${cap} / ${total}`;
+      document.getElementById("val-cap").textContent = `${cap} / ${total}`;
+      document.getElementById("pct-cap").textContent = `${((cap / total) * 100).toFixed(1)}%`;
+      document.getElementById("bar-cap").style.width = `${(cap / total) * 100}%`;
+
+      document.getElementById("val-shy").textContent = `${shy} / ${totalShiny}`;
+      document.getElementById("pct-shy").textContent = `${((shy / totalShiny) * 100).toFixed(1)}%`;
+      document.getElementById("bar-shy").style.width = `${Math.min(100, (shy / totalShiny) * 100)}%`;
+
+      document.getElementById("val-iv").textContent = `${iv} / ${total}`;
+      document.getElementById("pct-iv").textContent = `${((iv / total) * 100).toFixed(1)}%`;
+      document.getElementById("bar-iv").style.width = `${(iv / total) * 100}%`;
+
+      document.getElementById("val-sz").textContent = `${sz} / ${total}`;
+      document.getElementById("pct-sz").textContent = `${((sz / total) * 100).toFixed(1)}%`;
+      document.getElementById("bar-sz").style.width = `${(sz / total) * 100}%`;
+    }
+
+    function renderGrid() {
+      const filtered = getFilteredList();
+      const slice = filtered.slice(0, visibleLimit);
+      const grid = document.getElementById("poke-grid");
+
+      document.getElementById("results-count").textContent =
+        `Exibindo ${slice.length} de ${filtered.length} Pokémon`;
+
+      const loadWrap = document.getElementById("load-more-wrap");
+      if (filtered.length > visibleLimit) {
+        loadWrap.style.display = "block";
+        document.getElementById("btn-load-more").textContent =
+          `Carregar mais (${filtered.length - visibleLimit} restantes)`;
+      } else {
+        loadWrap.style.display = "none";
+      }
+
+      if (slice.length === 0) {
+        grid.innerHTML = `<div class="panel-card" style="grid-column:1/-1;text-align:center;color:var(--md-text-muted);">Nenhum Pokémon encontrado com os filtros atuais.</div>`;
+        return;
+      }
+
+      const html = slice.map(p => {
+        const [id, name, gen, isWA, waAvail, legacy, ltype, shinyLocked] = p;
+        const rec = getRec(id);
+        const showShiny = (rec.s || globalShinyPreview) && !shinyLocked;
+        const displayName = id === 103 && currentGen === "WA2026" ? "Exeggutor (Alola)" : name;
+        const hasNote = !!(rec.n && rec.n.trim());
+
+        return `
+          <article class="poke-card ${rec.c ? 'is-captured' : ''} ${showShiny ? 'is-shiny' : ''}" id="card-${id}">
+            <div class="poke-top">
+              <div class="sprite-wrap">
+                <span class="shiny-sparkle">✨</span>
+                <img src="${getArtworkUrl(id, showShiny)}" alt="${displayName}" loading="lazy" onerror="handleImgError(this, ${id}, ${showShiny})" />
+              </div>
+              <div class="poke-info">
+                <div class="poke-dex-row">
+                  <span class="dex-num">#${padDex(id)}</span>
+                  <span class="gen-badge">Gen ${gen} • ${GEN_NAMES[gen]}</span>
+                  ${isWA ? `<span class="wa-badge">⚡ Incrível</span>` : ''}
+                </div>
+                <div class="poke-name">${displayName}</div>
+                <div class="poke-sub">${isWA ? waAvail : `Pokédex Nacional • ${GEN_NAMES[gen]}`}</div>
+                ${legacy ? `<span class="legacy-tag">⚔️ ${legacy} (${ltype})</span>` : ''}
+                ${hasNote ? `<div class="poke-sub" style="color:#7dd3fc;margin-top:3px;">📝 ${escapeHtml(rec.n)}</div>` : ''}
+              </div>
+              <button class="note-btn ${hasNote ? 'has-note' : ''}" onclick="openNoteModal(${id})" title="Adicionar nota ou golpe Legacy">📝</button>
+            </div>
+            <div class="status-row">
+              <button class="st-btn cap ${rec.c ? 'on' : ''}" onclick="toggleField(${id}, 'c')">
+                <span>${rec.c ? '✓' : '○'}</span><span>Capturado</span>
+              </button>
+              <button class="st-btn shy ${rec.s ? 'on' : ''}" ${shinyLocked ? 'disabled title="Shiny indisponível no evento"' : ''} onclick="toggleField(${id}, 's')">
+                <span>✨</span><span>${shinyLocked ? 'Bloq.' : 'Shiny'}</span>
+              </button>
+              <button class="st-btn iv ${rec.i ? 'on' : ''}" onclick="toggleField(${id}, 'i')">
+                <span>💯</span><span>IV 100%</span>
+              </button>
+              <button class="st-btn sz ${rec.z ? 'on' : ''}" onclick="toggleField(${id}, 'z')">
+                <span>📏</span><span>XL/XXL</span>
+              </button>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      grid.innerHTML = html;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+    }
+
+    function toggleField(id, field) {
+      vibrate(14);
+      const rec = { ...getRec(id) };
+      rec[field] = !rec[field];
+      // Auto-mark captured if user marks Shiny, IV 100% or XL/XXL
+      if ((field === 's' || field === 'i' || field === 'z') && rec[field] && !rec.c) {
+        rec.c = true;
+      }
+      if (!rec.c && !rec.s && !rec.i && !rec.z && !rec.n) {
+        delete userState[id];
+      } else {
+        userState[id] = rec;
+      }
+      saveState();
+      updateDashboard();
+      renderGrid();
+    }
+
+    function handleSearch(val) {
+      searchQuery = val;
+      document.getElementById("clear-search").style.display = val ? "block" : "none";
+      visibleLimit = 60;
+      renderGrid();
+    }
+
+    function clearSearch() {
+      const inp = document.getElementById("search-input");
+      inp.value = "";
+      handleSearch("");
+      inp.focus();
+    }
+
+    function setGenFilter(gen, btn) {
+      currentGen = gen;
+      document.querySelectorAll("#gen-chips .chip").forEach(c => c.classList.remove("active"));
+      btn.classList.add("active");
+      visibleLimit = 60;
+      renderGrid();
+    }
+
+    function setStatusFilter(st, btn) {
+      currentStatus = st;
+      document.querySelectorAll("#status-chips .chip").forEach(c => c.classList.remove("active"));
+      btn.classList.add("active");
+      visibleLimit = 60;
+      renderGrid();
+    }
+
+    function loadMore() {
+      visibleLimit += 90;
+      renderGrid();
+    }
+
+    function toggleAllSpritesShiny() {
+      globalShinyPreview = !globalShinyPreview;
+      renderGrid();
+      showToast(globalShinyPreview ? "✨ Prévia Shiny ativada para todos!" : "Prévia Shiny desativada.");
+    }
+
+    function switchTab(tabName, btn) {
+      vibrate(10);
+      document.querySelectorAll(".tab-view").forEach(t => t.classList.remove("active"));
+      document.getElementById(`tab-${tabName}`).classList.add("active");
+      document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+      btn.classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Note Modal
+    function openNoteModal(id) {
+      editingNoteId = id;
+      const p = RAW_DEX[id - 1];
+      const rec = getRec(id);
+      document.getElementById("note-modal-title").textContent = `#${padDex(id)} ${p[1]} • Notas`;
+      document.getElementById("note-modal-input").value = rec.n || p[5] || "";
+      document.getElementById("note-modal").classList.add("open");
+    }
+
+    function closeNoteModal() {
+      document.getElementById("note-modal").classList.remove("open");
+      editingNoteId = null;
+    }
+
+    function saveNoteModal() {
+      if (!editingNoteId) return;
+      const txt = document.getElementById("note-modal-input").value.trim();
+      const rec = { ...getRec(editingNoteId), n: txt };
+      if (!rec.c && !rec.s && !rec.i && !rec.z && !rec.n) {
+        delete userState[editingNoteId];
+      } else {
+        userState[editingNoteId] = rec;
+      }
+      saveState();
+      closeNoteModal();
+      renderGrid();
+      showToast("📝 Nota salva!");
+    }
+
+    // Compressed Range String Builder for Pokémon GO
+    function compressIdsToRanges(ids) {
+      if (!ids.length) return "Nenhum Pokémon neste filtro";
+      ids.sort((a, b) => a - b);
+      const parts = [];
+      let start = ids[0], prev = ids[0];
+      for (let i = 1; i < ids.length; i++) {
+        if (ids[i] === prev + 1) {
+          prev = ids[i];
+        } else {
+          parts.push(start === prev ? `${start}` : `${start}-${prev}`);
+          start = prev = ids[i];
+        }
+      }
+      parts.push(start === prev ? `${start}` : `${start}-${prev}`);
+      return parts.join(",");
+    }
+
+    function buildDynamicString(mode) {
+      const ids = [];
+      for (const p of RAW_DEX) {
+        const id = p[0];
+        const rec = getRec(id);
+        if (mode === "MISSING" && !rec.c) ids.push(id);
+        if (mode === "CAP" && rec.c) ids.push(id);
+        if (mode === "SHY" && rec.s) ids.push(id);
+        if (mode === "IV" && rec.i) ids.push(id);
+        if (mode === "SZ" && rec.z) ids.push(id);
+      }
+      const str = compressIdsToRanges(ids);
+      document.getElementById("dynamic-string-box").textContent = str;
+      showToast(`String gerada (${ids.length} Pokémon)!`);
+    }
+
+    function copyRawString(str, label) {
+      navigator.clipboard.writeText(str).then(() => {
+        vibrate(18);
+        showToast(`📋 Copiado: ${label}`);
+      }).catch(() => {
+        showToast("Selecione e copie manualmente.");
+      });
+    }
+
+    function copyTextById(elId) {
+      const txt = document.getElementById(elId).textContent;
+      copyRawString(txt, "String de Busca GO");
+    }
+
+    // =========================================================================
+    // NATIVE OFFLINE ODF (.ODS) GENERATOR (CRC-32 + ZIP + OPENDOCUMENT XML)
+    // =========================================================================
+    function xmlEscape(s) {
+      return String(s ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&apos;");
+    }
+
+    function makeCRC32Table() {
+      const table = new Uint32Array(256);
+      for (let i = 0; i < 256; i++) {
+        let c = i;
+        for (let k = 0; k < 8; k++) {
+          c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+        }
+        table[i] = c;
+      }
+      return table;
+    }
+    const CRC_TABLE = makeCRC32Table();
+
+    function crc32(buf) {
+      let crc = 0 ^ (-1);
+      for (let i = 0; i < buf.length; i++) {
+        crc = (crc >>> 8) ^ CRC_TABLE[(crc ^ buf[i]) & 0xFF];
+      }
+      return (crc ^ (-1)) >>> 0;
+    }
+
+    function buildZip(files) {
+      // files: [{ name, data: Uint8Array, store: bool }]
+      const enc = new TextEncoder();
+      const localParts = [];
+      const centralParts = [];
+      let offset = 0;
+
+      for (const f of files) {
+        const nameBytes = enc.encode(f.name);
+        const data = f.data;
+        const crc = crc32(data);
+        const size = data.length;
+
+        const lh = new Uint8Array(30 + nameBytes.length);
+        const lv = new DataView(lh.buffer);
+        lv.setUint32(0, 0x04034b50, true);
+        lv.setUint16(4, 20, true);
+        lv.setUint16(6, 0x0800, true); // UTF-8
+        lv.setUint16(8, 0, true); // STORE (0) ensures universal compatibility
+        lv.setUint16(10, 0, true);
+        lv.setUint16(12, 0, true);
+        lv.setUint32(14, crc, true);
+        lv.setUint32(18, size, true);
+        lv.setUint32(22, size, true);
+        lv.setUint16(26, nameBytes.length, true);
+        lv.setUint16(28, 0, true);
+        lh.set(nameBytes, 30);
+
+        localParts.push(lh, data);
+
+        const ch = new Uint8Array(46 + nameBytes.length);
+        const cv = new DataView(ch.buffer);
+        cv.setUint32(0, 0x02014b50, true);
+        cv.setUint16(4, 20, true);
+        cv.setUint16(6, 20, true);
+        cv.setUint16(8, 0x0800, true);
+        cv.setUint16(10, 0, true);
+        cv.setUint16(12, 0, true);
+        cv.setUint16(14, 0, true);
+        cv.setUint32(16, crc, true);
+        cv.setUint32(20, size, true);
+        cv.setUint32(24, size, true);
+        cv.setUint16(28, nameBytes.length, true);
+        cv.setUint16(30, 0, true);
+        cv.setUint16(32, 0, true);
+        cv.setUint16(34, 0, true);
+        cv.setUint16(36, 0, true);
+        cv.setUint32(38, 0, true);
+        cv.setUint32(42, offset, true);
+        ch.set(nameBytes, 46);
+
+        centralParts.push(ch);
+        offset += lh.length + size;
+      }
+
+      const centralSize = centralParts.reduce((s, a) => s + a.length, 0);
+      const eocd = new Uint8Array(22);
+      const ev = new DataView(eocd.buffer);
+      ev.setUint32(0, 0x06054b50, true);
+      ev.setUint16(4, 0, true);
+      ev.setUint16(6, 0, true);
+      ev.setUint16(8, files.length, true);
+      ev.setUint16(10, files.length, true);
+      ev.setUint32(12, centralSize, true);
+      ev.setUint32(16, offset, true);
+      ev.setUint16(20, 0, true);
+
+      return new Blob([...localParts, ...centralParts, eocd], {
+        type: "application/vnd.oasis.opendocument.spreadsheet"
+      });
+    }
+
+    function odsRow(cells) {
+      return `<table:table-row>${cells.map(c => {
+        if (typeof c === "number") {
+          return `<table:table-cell office:value-type="float" office:value="${c}"><text:p>${c}</text:p></table:table-cell>`;
+        }
+        return `<table:table-cell office:value-type="string"><text:p>${xmlEscape(c)}</text:p></table:table-cell>`;
+      }).join("")}</table:table-row>`;
+    }
+
+    async function exportODS(useShare) {
+      let cap = 0, shy = 0, iv = 0, sz = 0;
+      const genStats = {};
+      for (let g = 1; g <= 9; g++) genStats[g] = { total: 0, cap: 0, shy: 0, iv: 0, sz: 0 };
+
+      const dexRows = [
+        odsRow(["#Dex", "Pokémon", "Geração", "Região", "Evento Área Selvagem 2026", "Golpe Legacy (Tipo)", "Capturado", "Brilhante (Shiny)", "IV 100%", "XL / XXL", "Notas"])
+      ];
+
+      for (const p of RAW_DEX) {
+        const [id, name, gen, isWA, waAvail, legacy, ltype, shinyLocked] = p;
+        const rec = getRec(id);
+        genStats[gen].total++;
+        if (rec.c) { cap++; genStats[gen].cap++; }
+        if (rec.s) { shy++; genStats[gen].shy++; }
+        if (rec.i) { iv++; genStats[gen].iv++; }
+        if (rec.z) { sz++; genStats[gen].sz++; }
+
+        const legacyStr = legacy ? `${legacy} (${ltype})` : "—";
+        const shinyStr = shinyLocked ? "Indisponível" : (rec.s ? "Sim" : "Não");
+        dexRows.push(odsRow([
+          `#${padDex(id)}`,
+          name,
+          `Gen ${gen}`,
+          GEN_NAMES[gen],
+          isWA ? waAvail : "—",
+          legacyStr,
+          rec.c ? "Sim" : "Não",
+          shinyStr,
+          rec.i ? "Sim" : "Não",
+          rec.z ? "Sim" : "Não",
+          rec.n || ""
+        ]));
+      }
+
+      const summaryRows = [
+        odsRow(["Indicador", "Registrados", "Total", "Progresso (%)"]),
+        odsRow(["Capturados", cap, 1025, Number(((cap / 1025) * 100).toFixed(2))]),
+        odsRow(["Brilhantes (Shiny)", shy, 1024, Number(((shy / 1024) * 100).toFixed(2))]),
+        odsRow(["IV 100%", iv, 1025, Number(((iv / 1025) * 100).toFixed(2))]),
+        odsRow(["Tamanho XL / XXL", sz, 1025, Number(((sz / 1025) * 100).toFixed(2))])
+      ];
+
+      const genRows = [
+        odsRow(["Geração", "Região", "Total", "Capturados", "Brilhantes", "IV 100%", "XL / XXL", "% Capturado"])
+      ];
+      for (let g = 1; g <= 9; g++) {
+        const st = genStats[g];
+        genRows.push(odsRow([
+          `Gen ${g}`, GEN_NAMES[g], st.total, st.cap, st.shy, st.iv, st.sz,
+          Number(((st.cap / st.total) * 100).toFixed(2))
+        ]));
+      }
+
+      const contentXml = `<?xml version="1.0" encoding="UTF-8"?>
+<office:document-content
+  xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0"
+  xmlns:table="urn:oasis:names:tc:opendocument:xmlns:table:1.0"
+  xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0"
+  office:version="1.2">
+  <office:body>
+    <office:spreadsheet>
+      <table:table table:name="Resumo_Geral">${summaryRows.join("")}</table:table>
+      <table:table table:name="Resumo_Por_Geracao">${genRows.join("")}</table:table>
+      <table:table table:name="Pokedex_1025">${dexRows.join("")}</table:table>
+    </office:spreadsheet>
+  </office:body>
+</office:document-content>`;
+
+      const manifestXml = `<?xml version="1.0" encoding="UTF-8"?>
+<manifest:manifest xmlns:manifest="urn:oasis:names:tc:opendocument:xmlns:manifest:1.0" manifest:version="1.2">
+  <manifest:file-entry manifest:full-path="/" manifest:version="1.2" manifest:media-type="application/vnd.oasis.opendocument.spreadsheet"/>
+  <manifest:file-entry manifest:full-path="content.xml" manifest:media-type="text/xml"/>
+</manifest:manifest>`;
+
+      const enc = new TextEncoder();
+      const odsBlob = buildZip([
+        { name: "mimetype", data: enc.encode("application/vnd.oasis.opendocument.spreadsheet") },
+        { name: "content.xml", data: enc.encode(contentXml) },
+        { name: "META-INF/manifest.xml", data: enc.encode(manifestXml) }
+      ]);
+
+      const filename = "pokedex_1025_checklist.ods";
+      if (useShare && navigator.share && navigator.canShare) {
+        const file = new File([odsBlob], filename, { type: "application/vnd.oasis.opendocument.spreadsheet" });
+        if (navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              title: "Pokédex 1025 Checklist (ODF)",
+              text: `Meu progresso na Pokédex 1025: ${cap}/1025 capturados!`,
+              files: [file]
+            });
+            return;
+          } catch (_) {}
+        }
+      }
+
+      const url = URL.createObjectURL(odsBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      showToast("📊 Planilha pokedex_1025_checklist.ods exportada!");
+    }
+
+    // Backup & Restore JSON
+    function exportJSON() {
+      const blob = new Blob([JSON.stringify(userState, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "backup_pokedex_1025.json";
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 3000);
+      showToast("💾 Backup JSON exportado!");
+    }
+
+    function importJSON(ev) {
+      const file = ev.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          if (typeof parsed === "object" && parsed !== null) {
+            userState = parsed;
+            saveState();
+            updateDashboard();
+            renderGrid();
+            showToast("✅ Backup restaurado com sucesso!");
+          }
+        } catch (e) {
+          showToast("❌ Arquivo JSON inválido.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetAllData() {
+      if (!confirm("Deseja realmente apagar todos os seus registros dos 1.025 Pokémon?")) return;
+      userState = {};
+      saveState();
+      updateDashboard();
+      renderGrid();
+      showToast("🗑️ Registros zerados.");
+    }
+
+    function downloadStandaloneHTML() {
+      const htmlStr = "<!DOCTYPE html>
+" + document.documentElement.outerHTML;
+      const blob = new Blob([htmlStr], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "pokedex_1025_android.html";
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 3000);
+      showToast("💾 Arquivo HTML baixado!");
+    }
+
+    // Dynamic PWA Manifest & WebAPK Install Prompt
+    function initPWA() {
+      const manifestObj = {
+        name: "Pokédex 1025 GO • Checklist Android",
+        short_name: "Pokédex 1025",
+        description: "Checklist completo dos 1.025 Pokémon com captura, Shiny, IV 100%, XL/XXL e exportação ODF.",
+        start_url: "./",
+        display: "standalone",
+        orientation: "portrait",
+        background_color: "#0b1120",
+        theme_color: "#0f172a",
+        icons: [
+          {
+            src: "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="40" fill="#0f172a"/><circle cx="96" cy="96" r="68" fill="#f8fafc"/><path d="M28 96a68 68 0 0 1 136 0z" fill="#ef4444"/><rect x="28" y="90" width="136" height="12" fill="#0f172a"/><circle cx="96" cy="96" r="22" fill="#f8fafc" stroke="#0f172a" stroke-width="10"/></svg>`),
+            sizes: "192x192",
+            type: "image/svg+xml"
+          }
+        ]
+      };
+      const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: "application/manifest+json" });
+      const link = document.createElement("link");
+      link.rel = "manifest";
+      link.href = URL.createObjectURL(manifestBlob);
+      document.head.appendChild(link);
+
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+      });
+    }
+
+    async function triggerPWAInstall() {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+      } else {
+        showToast("No Chrome Android: toque em ⋮ > Instalar aplicativo");
+      }
+    }
+
+    // Boot
+    loadState();
+    initPWA();
+    updateDashboard();
+    renderGrid();
+  </script>
+</body>
+</html>

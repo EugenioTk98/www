@@ -1,0 +1,16 @@
+{
+  "name": "Pokédex 1025 GO • Checklist Android",
+  "short_name": "Pokédex 1025",
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b1120",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
