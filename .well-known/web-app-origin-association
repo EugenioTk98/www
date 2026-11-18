@@ -1,0 +1,13 @@
+{
+  "web_apps": [
+    {
+      "manifest": "https://eugeniotk98.github.io/www/manifest.json",
+      "details": {
+        "paths": [
+          "/www/*"
+        ],
+        "exclude_paths": []
+      }
+    }
+  ]
+}

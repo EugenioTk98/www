@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "io.github.eugeniotk98.twa",
+      "sha256_cert_fingerprints": [
+        "69:E8:05:9D:10:4D:2C:41:EE:64:9E:D7:8B:6E:2C:19:D2:EA:16:31:D1:81:24:5A:86:3D:E2:07:62:E4:DF:4F"
+      ]
+    }
+  }
+]

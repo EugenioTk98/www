@@ -9,13 +9,7 @@
   "scope": "./",
   "scope_extensions": [
     {
-      "origin": "https://*.github.io"
-    },
-    {
-      "origin": "https://*.vercel.app"
-    },
-    {
-      "origin": "https://*.netlify.app"
+      "origin": "https://eugeniotk98.github.io"
     }
   ],
   "display": "standalone",
@@ -51,7 +45,13 @@
   ],
   "iarc_rating_id": "e84b072d-71b3-4def-86ae-0040262df285",
   "prefer_related_applications": false,
-  "related_applications": [],
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=io.github.eugeniotk98.twa",
+      "id": "io.github.eugeniotk98.twa"
+    }
+  ],
   "launch_handler": {
     "client_mode": [
       "focus-existing",

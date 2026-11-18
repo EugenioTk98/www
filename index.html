@@ -536,7 +536,7 @@
         </p>
         <ul style="font-size:13px; color:var(--md-text-muted); padding-left:18px; line-height:1.6; margin:0 0 12px;">
           <li><strong>Instalação Direta no Celular (1 toque):</strong> Abra este arquivo no Google Chrome do Android, toque nos <strong>3 pontinhos (⋮)</strong> e selecione <strong>"Instalar aplicativo"</strong> ou <strong>"Adicionar à tela inicial"</strong>.</li>
-          <li><strong>Compilar pacote .APK:</strong> Use o projeto <code>pokedex_1025_android_projeto_apk-v5.zip</code> para gerar o <code>app-debug.apk</code> via Capacitor/Android Studio ou PWABuilder.</li>
+          <li><strong>Compilar pacote .APK:</strong> Use o projeto <code>pokedex_1025_android_projeto_apk-v7.zip</code> para gerar o <code>app-debug.apk</code> via Capacitor/Android Studio ou PWABuilder.</li>
         </ul>
         <div class="btn-row">
           <button class="action-btn" id="btn-pwa-install" onclick="triggerPWAInstall()">📲 Instalar App na Tela Inicial</button>
@@ -1326,13 +1326,12 @@
     }
 
     function downloadStandaloneHTML() {
-      const htmlStr = "<!DOCTYPE html>
-" + document.documentElement.outerHTML;
+      const htmlStr = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
       const blob = new Blob([htmlStr], { type: "text/html;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "pokedex_1025_android-v5.html";
+      a.download = "pokedex_1025_android-v7.html";
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 3000);
       showToast("💾 Arquivo HTML baixado!");
@@ -1346,7 +1345,9 @@
           description: "Checklist completo dos 1.025 Pokémon e todos os golpes Legacy (MT Elite, Dia da Comunidade e Legado Antigo).",
           lang: "pt-BR",
           dir: "ltr",
-          scope_extensions: [{ origin: "https://*.github.io" }, { origin: "https://*.vercel.app" }, { origin: "https://*.netlify.app" }],
+          scope_extensions: [{ origin: "https://eugeniotk98.github.io" }],
+          prefer_related_applications: false,
+          related_applications: [{ platform: "play", url: "https://play.google.com/store/apps/details?id=io.github.eugeniotk98.twa", id: "io.github.eugeniotk98.twa" }],
           start_url: "./",
           scope: "./",
           display: "standalone",

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pokedex-1025-legacy-v5';
+const CACHE_NAME = 'pokedex-1025-legacy-v7';
 const CORE_ASSETS = [
   './',
   './index.html',
